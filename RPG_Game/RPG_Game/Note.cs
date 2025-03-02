@@ -10,5 +10,5 @@ namespace RPG_Game;
 public class Note : ILoot
 {
     public string Name => "A mysterious note";
-    public void Inspect() => Console.WriteLine("Hmm.. Exploration - is the KEY to finding treasures")
+    public void Inspect() => Console.WriteLine("Hmm.. Exploration - is the KEY to finding treasures");
 }
