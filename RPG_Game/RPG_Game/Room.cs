@@ -39,7 +39,6 @@ public class Room
             if (CellType == CellType.Wall || CellType == CellType.Player) return false;
             return true;
         }
-
     };
 
     private const int _width = 22; // additional 2 accounts for a wall as an outer frame
@@ -73,4 +72,21 @@ public class Room
 
     }
 
+    public bool IsPosAvailable(int x, int y) => Grid[x, y].IsWalkable();
+
+    public bool RemoveObject(CellType cellType, (int x, int y) position) //assuming the position is the position of the player
+    {
+        if (Grid[position.x, position.y].CellType != cellType)
+            return false;
+        Grid[position.x, position.y].CellType = Grid[position.x, position.y].CellType & ~cellType;
+        return true;
+    }
+
+    public bool AddObject(CellType cellType, (int x, int y) position) //assuming the position is the position of the player; this ensures that we do not need to check bounds
+    {
+        if (Grid[position.x, position.y].CellType != cellType) // we assume only one object of a type can be placed at the position; at least for now
+        {
+
+        }
+    }
 }
