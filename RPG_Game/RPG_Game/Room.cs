@@ -13,7 +13,6 @@ public class Room
     {
         public CellType CellType { get; set; } = CellType.Empty;
 
-
         public void PrintCell()
         {
             switch (this.CellType)
@@ -122,7 +121,8 @@ public class Room
         string? output = null;
         if (Items[position.x, position.y] != null)
         {
-            output = String.Join(',', Items[position.x, position.y].Select(item => item.Name)); // On each element of the sequence the lambda function is called
+            // On each element of the sequence the lambda function is called
+            output = String.Join(',', Items[position.x, position.y].Select(item => item.Name)); 
         }
         // Displays none if output == null
         Console.WriteLine($"Items: {output ?? "None"}"); 
