@@ -1,0 +1,24 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace RPG_Game;
+
+[Flags] // This allows combining the enum values using bitwise operators
+public enum CellType
+{
+    Empty = 0,
+    Wall = 1, // We cannot place items where the wall is placed, add validation
+    Player = 2,
+    Weapon1 = 4,
+    Weapon2 = 8,
+    Weapon3 = 16,
+    Unusable1 = 32,
+    Unusable2 = 64,
+    Unusable3 = 128,
+    Coin = 256,
+    Gold = 512,
+}
+
