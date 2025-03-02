@@ -15,11 +15,16 @@ public class Player
     public int Aggresion { get; set; }
 
     private (int x, int y) Position;
+
+    private List<IItem> inventory = new List<IItem>();
+    private List<IItem> hands = new List<IItem>();
+    public const int MaxCapacity = 2; // MaxCapacity of Hands
+    public int Capacity { get; set; } = 0;
     public Player()
     {
         Strength = 0;
         Dexterity = 0;
-        Health = 0;
+        Health = 100;
         Luck = 0;
         Aggresion = 0;
         Position = (1, 1);
@@ -67,5 +72,10 @@ public class Player
             return true;
         }
         return false;
+    }
+
+    public void ReceiveDamage(int damage) // To implement
+    {
+        Health = (Health - damage < 0) ? 0 : Health;
     }
 }

@@ -11,20 +11,16 @@ public class Game
 {
     private Room _room = new Room();
 
-    public Game()
-    {
-
-    }
-
     public void StartGame()
     {
 
         Player player = new Player();
 
-        while (true)
+        while (true) // How to make a smooth output?
         {
             if (Console.KeyAvailable)
             {
+ 
                 var key = Console.ReadKey(true).Key; // Retrieves the key
 
                 switch (key)
@@ -42,6 +38,10 @@ public class Game
                         player.Move(Direction.Right, this._room);
                         break;
                 }
+                Thread.Sleep(1); //Ensures smoothness
+                Console.Clear(); // Clear the screen before printing the new grid
+                _room.PrintGrid(); // Print the grid
+
             }
 
         }
