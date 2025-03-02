@@ -14,7 +14,7 @@ public class Player
     public int Luck { get; set; }
     public int Aggresion { get; set; }
 
-    private (int x, int y) Position;
+    public (int x, int y) Position { get; private set; }
 
     private List<IItem> inventory = new List<IItem>();
 

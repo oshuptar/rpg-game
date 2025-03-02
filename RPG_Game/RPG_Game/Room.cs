@@ -16,7 +16,7 @@ public class Room
 
         public void PrintCell()
         {
-            switch(CellType)
+            switch (this.CellType)
             {
                 case CellType.Empty:
                     Console.Write(" ");
@@ -24,7 +24,8 @@ public class Room
                 case CellType.Wall:
                     Console.Write("█");
                     break;
-                case CellType.Player:
+                //Ensures Player sign stays on top
+                case CellType cType when ((cType & CellType.Player) != 0): // Constant pattern matching
                     Console.Write("¶");
                     break;
                 default:
@@ -40,11 +41,14 @@ public class Room
             return true;
         }
     };
-    private const int _defaultWidth = 20;
-    private const int _defaultHeight = 40;
-    private const int _frameSize = 1;
-    private const int _width = _defaultWidth + 2*_frameSize; // additional 2 accounts for a wall as an outer frame
-    private const int _height = _defaultHeight + 2*_frameSize; // additional 2 accounts for a wall as an outer frame
+
+
+    public const int _defaultWidth = 20;
+    public const int _defaultHeight = 40;
+    public const int _frameSize = 1;
+    public const int _width = _defaultWidth + 2 * _frameSize; // additional 2 accounts for a wall as an outer frame
+    public const int _height = _defaultHeight + 2 * _frameSize; 
+
     private Cell[,] Grid { get; } = new Cell[_width, _height]; //Array of references
     public List<IItem>[,] Items { get; } = new List<IItem>[_width, _height]; // Will be used to store items on each of the tile of the room
 
@@ -61,16 +65,7 @@ public class Room
         }
         Grid[1, 1].CellType = CellType.Player;
 
-        //Let's say we would have 10% of obstacles of the total map size
-        int widthPlayAreaSize = (_width - 2 * _frameSize);
-        int heightPlayAreaSize = (_height - 2 * _frameSize);
-        Random random = new Random();
-        for(int i = 0; i < widthPlayAreaSize*heightPlayAreaSize/10; i++)
-        {
-            int X = _frameSize + random.Next() % (widthPlayAreaSize - _frameSize);
-            int Y = _frameSize + random.Next() % (heightPlayAreaSize - _frameSize);
-            AddObject(CellType.Wall, (X, Y));
-        }
+        RoomGenerator.RandomRoomGeneration(this);
     }
 
     public void PrintGrid()
@@ -83,12 +78,11 @@ public class Room
             }
             Console.WriteLine();
         }
-
     }
 
     public bool IsPosAvailable(int x, int y)
     {
-        if(x < 0 || y < 0 || x > _width - 1 || y > _height - 1)
+        if (x < 0 || y < 0 || x > _width - 1 || y > _height - 1)
             return false;
         return Grid[x, y].IsWalkable();
     }
@@ -98,24 +92,40 @@ public class Room
         if ((Grid[position.x, position.y].CellType & cellType) == 0)
             return false;
         //if (Items[position.x, position.y].Count == 0)
-            Grid[position.x, position.y].CellType = Grid[position.x, position.y].CellType & ~cellType;
+        Grid[position.x, position.y].CellType = Grid[position.x, position.y].CellType & ~cellType;
         return true;
     }
 
-    public bool AddObject(CellType cellType, (int x, int y) position) //assuming the position is the position of the player; this ensures that we do not need to check bounds
+    //assuming the position is the position of the player; this ensures that we do not need to check bounds
+    // this method is called after the check or from active position
+    public bool AddObject(CellType cellType, (int x, int y) position) 
     {
-        if ((Grid[position.x, position.y].CellType & cellType) != 0) // we assume only one object of a type can be placed at the position; at least for now
-            return false;
-
-        // no need to check for a wall
         Grid[position.x, position.y].CellType = Grid[position.x, position.y].CellType | cellType;
         return true;
     }
 
+    public void AddItem(IItem item, (int x, int y) position)
+    {
+        if (!this.Grid[position.x, position.y].IsWalkable())
+            return;
+
+        AddObject(CellType.Item, position);
+
+        if (this.Items[position.x, position.y] == null)
+            this.Items[position.x, position.y] = new List<IItem>()
+                ;
+        this.Items[position.x, position.y].Add(item);
+    }
+
     public void DisplayTileItems((int x, int y) position)
     {
-        string output = String.Join(',', Items[position.x, position.y]);
-        Console.WriteLine($"Items: {output}");
+        string? output = null;
+        if (Items[position.x, position.y] != null)
+        {
+            output = String.Join(',', Items[position.x, position.y].Select(item => item.Name)); // On each element of the sequence the lambda function is called
+        }
+        // Displays none if output == null
+        Console.WriteLine($"Items: {output ?? "None"}"); 
     }
 
     //public IItem ChooseItem((int x, int y) position)
@@ -123,3 +133,9 @@ public class Room
 
     //}
 }
+
+
+//if ((Grid[position.x, position.y].CellType & cellType) != 0) // we assume only one object of a type can be placed at the position; at least for now
+//    return false;
+
+// no need to check for a wall

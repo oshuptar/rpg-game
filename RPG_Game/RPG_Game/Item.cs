@@ -11,4 +11,6 @@ public interface IItem
 {
     public string Name { get; }
     public void PickUp(Player player) => player.PickUp(this);
+
+    public string ToString() => Name; // Why this does not override?
 }

@@ -49,6 +49,7 @@ public class Game
                 Thread.Sleep(1); //Ensures smoothness
                 Console.Clear(); // Clear the screen before printing the new grid
                 _room.PrintGrid(); // Print the grid
+                _room.DisplayTileItems(player.Position);
 
             }
 
