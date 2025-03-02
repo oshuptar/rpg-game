@@ -17,7 +17,9 @@ public class Player
     private (int x, int y) Position;
 
     private List<IItem> inventory = new List<IItem>();
+
     private List<IItem> hands = new List<IItem>();
+
     public const int MaxCapacity = 2; // MaxCapacity of Hands
     public int Capacity { get; private set; } = 0;
     public int TotalMoneyValue { get; private set; } = 50; // 50 as a default value
@@ -95,5 +97,16 @@ public class Player
             return;
         }
         hands.Add(weapon);
+    }
+
+    public void AddCoin(ICurrency coin)
+    {
+        CollectedCoins++;
+        TotalMoneyValue += coin.Value;
+    }
+    public void AddGold(ICurrency gold)
+    {
+        CollectedGold++;
+        TotalMoneyValue += gold.Value;
     }
 }

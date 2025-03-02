@@ -40,9 +40,11 @@ public class Room
             return true;
         }
     };
-
-    private const int _width = 22; // additional 2 accounts for a wall as an outer frame
-    private const int _height = 42; // additional 2 accounts for a wall as an outer frame
+    private const int _defaultWidth = 20;
+    private const int _defaultHeight = 40;
+    private const int _frameSize = 1;
+    private const int _width = _defaultWidth + 2*_frameSize; // additional 2 accounts for a wall as an outer frame
+    private const int _height = _defaultHeight + 2*_frameSize; // additional 2 accounts for a wall as an outer frame
     private Cell[,] Grid { get; } = new Cell[_width, _height]; //Array of references
     public List<IItem>[,] Items { get; } = new List<IItem>[_width, _height]; // Will be used to store items on each of the tile of the room
 
@@ -58,6 +60,17 @@ public class Room
             }
         }
         Grid[1, 1].CellType = CellType.Player;
+
+        //Let's say we would have 10% of obstacles of the total map size
+        int widthPlayAreaSize = (_width - 2 * _frameSize);
+        int heightPlayAreaSize = (_height - 2 * _frameSize);
+        Random random = new Random();
+        for(int i = 0; i < widthPlayAreaSize*heightPlayAreaSize/10; i++)
+        {
+            int X = _frameSize + random.Next() % (widthPlayAreaSize - _frameSize);
+            int Y = _frameSize + random.Next() % (heightPlayAreaSize - _frameSize);
+            AddObject(CellType.Wall, (X, Y));
+        }
     }
 
     public void PrintGrid()
@@ -105,8 +118,8 @@ public class Room
         Console.WriteLine($"Items: {output}");
     }
 
-    public IItem ChooseItem((int x, int y) position)
-    {
+    //public IItem ChooseItem((int x, int y) position)
+    //{
 
-    }
+    //}
 }

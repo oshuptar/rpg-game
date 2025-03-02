@@ -10,4 +10,9 @@ public class Gold : ICurrency
 {
     public string Name => "Gold";
     public int Value => 50;
+    public void PickUp(Player player)
+    {
+        player.PickUp(this);
+        player.AddGold(this);
+    }
 }
