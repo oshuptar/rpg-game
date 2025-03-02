@@ -11,7 +11,7 @@ public class WeaponDecorator : IWeapon
 {
     protected IWeapon weapon;
 
-    public virtual int Capacity => weapon.Capacity;
+    public int Capacity => weapon.Capacity;
     public virtual int Damage => weapon.Damage;
     public virtual string Name => weapon.Name;
 
