@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace RPG_Game;
 
-public class Coin
+public class Coin : ICurrency
 {
     public int Value => 10;
+    public string Name => "Coin";
 }

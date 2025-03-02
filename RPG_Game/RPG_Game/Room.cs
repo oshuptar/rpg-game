@@ -44,6 +44,7 @@ public class Room
     private const int _width = 22; // additional 2 accounts for a wall as an outer frame
     private const int _height = 42; // additional 2 accounts for a wall as an outer frame
     private Cell[,] Grid { get; } = new Cell[_width, _height]; //Array of references
+    public List<IItem>[,] Items { get; } = new List<IItem>[_width, _height]; // Will be used to store items on each of the tile of the room
 
     public Room()
     {
@@ -83,7 +84,8 @@ public class Room
     {
         if ((Grid[position.x, position.y].CellType & cellType) == 0)
             return false;
-        Grid[position.x, position.y].CellType = Grid[position.x, position.y].CellType & ~cellType;
+        //if (Items[position.x, position.y].Count == 0)
+            Grid[position.x, position.y].CellType = Grid[position.x, position.y].CellType & ~cellType;
         return true;
     }
 

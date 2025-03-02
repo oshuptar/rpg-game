@@ -20,5 +20,7 @@ public enum CellType // what if two objects of the same kind are placed on the s
     Unusable3 = 128,
     Coin = 256,
     Gold = 512,
+
+    // Or just add Other?
 }
 

@@ -8,5 +8,5 @@ namespace RPG_Game;
 
 public interface ILoot : IItem
 {
-    public string GetDescription();
+    void Inspect(); // Describes the item when checked in inventory
 }

@@ -78,4 +78,16 @@ public class Player
     {
         Health = (Health - damage < 0) ? 0 : Health;
     }
+
+    public void PickUp(IItem item)
+    {
+        inventory.Add(item);
+    }
+
+    public void Equip(IWeapon weapon)
+    {
+        if(weapon.Capacity + this.Capacity > 2)
+            Console.WriteLine("This weapon cannot be equipped. Free some space");
+        hands.Add(weapon);
+    }
 }

@@ -37,6 +37,9 @@ public class Game
                     case ConsoleKey.D:
                         player.Move(Direction.Right, this._room);
                         break;
+                    case ConsoleKey.E:
+                        //To do
+                        break;
                 }
                 Thread.Sleep(1); //Ensures smoothness
                 Console.Clear(); // Clear the screen before printing the new grid
