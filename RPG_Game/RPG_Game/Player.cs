@@ -25,7 +25,7 @@ public class Player
         Position = (1, 1);
     }
 
-    public (int,int)? IsMovable(Direction direction, Room room)
+    public (int, int) GetNewPosition(Direction direction)
     {
         (int x, int y) TempPos = this.Position;
         switch (direction)
@@ -43,6 +43,12 @@ public class Player
                 TempPos.y += 1;
                 break;
         }
+        return TempPos;
+    }
+
+    public (int,int)? IsMovable(Direction direction, Room room) // whether we can move in the following direction
+    {
+        (int x, int y) TempPos = GetNewPosition(direction);
 
         if (!room.IsPosAvailable(TempPos.x, TempPos.y))
             return null;
@@ -50,11 +56,16 @@ public class Player
         return TempPos;
     }
 
-    public bool PlayerMove(Direction direction, Room room)
+    public bool Move(Direction direction, Room room)
     {
-        if(IsMovable(direction, room) != null)
+        (int, int)? TempPos;
+        if((TempPos = IsMovable(direction, room)) != null)
         {
-
+            room.RemoveObject(CellType.Player, Position);
+            room.AddObject(CellType.Player, ((int, int)) TempPos);
+            this.Position = ((int, int))TempPos;
+            return true;
         }
+        return false;
     }
 }
