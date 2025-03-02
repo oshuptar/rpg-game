@@ -105,27 +105,15 @@ public class Room
 
     public void AddItem(IItem item, (int x, int y) position)
     {
-        if (!this.Grid[position.x, position.y].IsWalkable())
+        if (!this.IsPosAvailable(position.x, position.y))
             return;
 
         AddObject(CellType.Item, position);
 
         if (this.Items[position.x, position.y] == null)
-            this.Items[position.x, position.y] = new List<IItem>()
-                ;
+            this.Items[position.x, position.y] = new List<IItem>();
+                
         this.Items[position.x, position.y].Add(item);
-    }
-
-    public void DisplayTileItems((int x, int y) position)
-    {
-        string? output = null;
-        if (Items[position.x, position.y] != null)
-        {
-            // On each element of the sequence the lambda function is called
-            output = String.Join(',', Items[position.x, position.y].Select(item => item.Name)); 
-        }
-        // Displays none if output == null
-        Console.WriteLine($"Items: {output ?? "None"}"); 
     }
 
     //public IItem ChooseItem((int x, int y) position)

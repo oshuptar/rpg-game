@@ -84,6 +84,7 @@ public class Player
         Health = (Health - damage < 0) ? 0 : Health - damage;
     }
 
+    // Must decrease player's attrbutes when needed
     public void PickUp(IItem item)
     {
         inventory.Add(item);

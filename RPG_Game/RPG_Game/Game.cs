@@ -26,31 +26,44 @@ public class Game
  
                 var key = Console.ReadKey(true).Key; // Retrieves the key
 
+                //Improve displaying of current chosen object
                 switch (key)
                 {
                     case ConsoleKey.W:
                         player.Move(Direction.Up, this._room);
+                        ObjectDisplayer.ResetFocus();
                         break;
                     case ConsoleKey.S:
                         player.Move(Direction.Down, this._room);
+                        ObjectDisplayer.ResetFocus();
                         break;
                     case ConsoleKey.A:
                         player.Move(Direction.Left, this._room);
+                        ObjectDisplayer.ResetFocus();
                         break;
                     case ConsoleKey.D:
                         player.Move(Direction.Right, this._room);
+                        ObjectDisplayer.ResetFocus();
                         break;
                     case ConsoleKey.E:
                         //To do
                         // Items can be choosen by index
 
                         break;
+                    case ConsoleKey.RightArrow:
+                        ObjectDisplayer.IncreaseCurrentFocus(_room, player.Position);
+                        break;
+                    case ConsoleKey.LeftArrow:
+                        ObjectDisplayer.DecreaseCurrentFocus(_room, player.Position);
+                        break;
                 }
                 Thread.Sleep(1); //Ensures smoothness
+
                 Console.Clear(); // Clear the screen before printing the new grid
                 _room.PrintGrid(); // Print the grid
-                _room.DisplayTileItems(player.Position);
-
+                ObjectDisplayer.DisplayTileItems(_room, player.Position);
+                ObjectDisplayer.DisplayCurrent(_room, player.Position);
+                
             }
 
         }
