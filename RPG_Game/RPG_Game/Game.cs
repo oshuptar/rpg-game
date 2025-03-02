@@ -16,6 +16,9 @@ public class Game
 
         Player player = new Player();
 
+        Console.WriteLine("Moves in four directions are controlled by `W`, `S`, `A`, `D`");
+        Console.WriteLine("To Start the Game press any key");
+
         while (true) // How to make a smooth output?
         {
             if (Console.KeyAvailable)
@@ -39,6 +42,8 @@ public class Game
                         break;
                     case ConsoleKey.E:
                         //To do
+                        // Items can be choosen by index
+
                         break;
                 }
                 Thread.Sleep(1); //Ensures smoothness

@@ -19,11 +19,14 @@ public class Player
     private List<IItem> inventory = new List<IItem>();
     private List<IItem> hands = new List<IItem>();
     public const int MaxCapacity = 2; // MaxCapacity of Hands
-    public int Capacity { get; set; } = 0;
+    public int Capacity { get; private set; } = 0;
+    public int TotalMoneyValue { get; private set; } = 50; // 50 as a default value
+    public int CollectedCoins { get; private set; } = 0;
+    public int CollectedGold { get; private set; } = 0;
     public Player()
     {
         Strength = 0;
-        Dexterity = 0;
+        Dexterity = 2; // Probably will affect the rendering rate of the map, this value will likely represent the cooldown value
         Health = 100;
         Luck = 0;
         Aggresion = 0;
@@ -76,7 +79,7 @@ public class Player
 
     public void ReceiveDamage(int damage) // To implement
     {
-        Health = (Health - damage < 0) ? 0 : Health;
+        Health = (Health - damage < 0) ? 0 : Health - damage;
     }
 
     public void PickUp(IItem item)
@@ -86,8 +89,11 @@ public class Player
 
     public void Equip(IWeapon weapon)
     {
-        if(weapon.Capacity + this.Capacity > 2)
+        if (weapon.Capacity + this.Capacity > 2)
+        {
             Console.WriteLine("This weapon cannot be equipped. Free some space");
+            return;
+        }
         hands.Add(weapon);
     }
 }

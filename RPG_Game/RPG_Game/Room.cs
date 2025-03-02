@@ -98,4 +98,15 @@ public class Room
         Grid[position.x, position.y].CellType = Grid[position.x, position.y].CellType | cellType;
         return true;
     }
+
+    public void DisplayTileItems((int x, int y) position)
+    {
+        string output = String.Join(',', Items[position.x, position.y]);
+        Console.WriteLine($"Items: {output}");
+    }
+
+    public IItem ChooseItem((int x, int y) position)
+    {
+
+    }
 }
