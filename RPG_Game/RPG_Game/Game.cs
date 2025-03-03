@@ -18,6 +18,7 @@ public class Game
 
         Console.WriteLine("Moves in four directions are controlled by `W`, `S`, `A`, `D`");
         Console.WriteLine("To Start the Game press any key");
+        Console.WriteLine("Use arrows in order to change the desired item to pickup");
 
         while (true) // How to make a smooth output?
         {
@@ -48,7 +49,9 @@ public class Game
                     case ConsoleKey.E:
                         //To do
                         // Items can be choosen by index
-
+                        IItem? item = _room.RemoveItem(player.Position, ObjectDisplayer.CurrentFocus);
+                        item?.PickUp(player);
+                        ObjectDisplayer.ResetFocus();
                         break;
                     case ConsoleKey.RightArrow:
                         ObjectDisplayer.IncreaseCurrentFocus(_room, player.Position);
@@ -60,7 +63,8 @@ public class Game
                 Thread.Sleep(1); //Ensures smoothness
 
                 Console.Clear(); // Clear the screen before printing the new grid
-                _room.PrintGrid(); // Print the grid
+                //Console.SetCursorPosition(0, 0);
+                ObjectDisplayer.PrintGrid(_room); // Print the grid
                 ObjectDisplayer.DisplayTileItems(_room, player.Position);
                 ObjectDisplayer.DisplayCurrent(_room, player.Position);
                 

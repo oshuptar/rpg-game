@@ -10,7 +10,6 @@ namespace RPG_Game;
 public interface IItem
 {
     public string Name { get; }
-    public void PickUp(Player player) => player.PickUp(this);
-
+    public void PickUp(Player player) => player.PickUp(this); // default implementation
     public string ToString() => Name; // Why this does not override?
 }

@@ -17,14 +17,17 @@ public static class RoomGenerator
         new DexterityItemDecorator(new Gold()),
         new Gold(),
         new Coin(),
-        new DexterityItemDecorator( new PowerWeaponDecorator(new PowerWeaponDecorator(new Hammer())))
+        new DexterityItemDecorator( new PowerWeaponDecorator(new PowerWeaponDecorator(new Hammer()))),
+        new Key(),
+        new DexterityItemDecorator(new Key()),
+        new Note(),
+        new Lore()
     };
 
     public static void RandomRoomGeneration(Room room)
     {
         // const objects are implicitly static
-
-        //Let's say we would have 10% of obstacles of the total map size
+        //10% of obstacles of the total map size
         int widthPlayAreaSize = (Room._width - 2 * Room._frameSize);
         int heightPlayAreaSize = (Room._height - 2 * Room._frameSize);
         Random random = new Random();
