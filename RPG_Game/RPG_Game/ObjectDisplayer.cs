@@ -60,6 +60,22 @@ public static class ObjectDisplayer
     {
         CurrentFocus = 0;
     }
+
+
+    public static void DisplayInventory(Player player)
+    {
+        string? output = null;
+
+        if (player.inventory != null && player.inventory.Count != 0)
+            output = String.Join(',', player.inventory.Select(item => item.Name));
+
+        Console.WriteLine($"Inventory of the player: {output ?? "None"}");
+    }
+
+    public static void DisplayRoutine()
+    {
+
+    }
 }
 
 

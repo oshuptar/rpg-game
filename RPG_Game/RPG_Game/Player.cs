@@ -16,9 +16,9 @@ public class Player
 
     public (int x, int y) Position { get; private set; }
 
-    private List<IItem> inventory = new List<IItem>();
+    public List<IItem> inventory { get; } = new List<IItem>();
 
-    private List<IItem> hands = new List<IItem>();
+    public List<IItem> hands { get; } = new List<IItem>();
 
     public const int MaxCapacity = 2; // MaxCapacity of Hands
     public int Capacity { get; private set; } = 0;

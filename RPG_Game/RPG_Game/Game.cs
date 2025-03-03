@@ -67,6 +67,7 @@ public class Game
                 ObjectDisplayer.PrintGrid(_room); // Print the grid
                 ObjectDisplayer.DisplayTileItems(_room, player.Position);
                 ObjectDisplayer.DisplayCurrent(_room, player.Position);
+                ObjectDisplayer.DisplayInventory(player);
                 
             }
 
