@@ -108,7 +108,7 @@ public class Room
     // index denotes the index of the item from the list to be removed
     public IItem? RemoveItem((int x, int y) position, int index = 0)
     {
-        if (this.Items[position.x, position.y].Count == 0)
+        if (this.Items[position.x, position.y] == null || this.Items[position.x, position.y].Count == 0)
             return null;
 
         IItem tempItem = this.Items[position.x, position.y].ElementAt(index);

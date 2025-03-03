@@ -64,10 +64,7 @@ public class Game
 
                 Console.Clear(); // Clear the screen before printing the new grid
                 //Console.SetCursorPosition(0, 0);
-                ObjectDisplayer.PrintGrid(_room); // Print the grid
-                ObjectDisplayer.DisplayTileItems(_room, player.Position);
-                ObjectDisplayer.DisplayCurrent(_room, player.Position);
-                ObjectDisplayer.DisplayInventory(player);
+                ObjectDisplayer.DisplayRoutine(_room, player);
                 
             }
 
