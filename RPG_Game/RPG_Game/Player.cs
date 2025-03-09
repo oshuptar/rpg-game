@@ -102,16 +102,25 @@ public class Player : ICanMove, ICanReceiveDamage
         this.Capacity -= weapon.Capacity;
     }
 
-    public IItem? Drop(Room room, int index)
+    public IItem? Drop(Room room, int index, List<IItem> list)
     {
-        if (inventory.Count == 0)
+        if (list.Count == 0)
             return null;
 
-        IItem item = inventory.ElementAt(index);
-        inventory.RemoveAt(index);
+        IItem item = list.ElementAt(index);
+        list.RemoveAt(index);
         room.AddItem(item, (this.Position.x, this.Position.y));
         //item.Drop(this);
         return item;
+    }
+
+    public IItem? DropFromHands(Room room, int index)
+    {
+        return Drop(room, index, this.hands);
+    }
+    public IItem? DropFromInventory(Room room, int index)
+    {
+        return Drop(room, index, this.inventory);
     }
 
     public void AddCoin(ICurrency coin)

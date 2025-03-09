@@ -25,7 +25,7 @@ public class Game
         Console.WriteLine("To Start the Game press any key");
         Console.WriteLine("Have fun!");
 
-
+        IItem? item;
         while (true) // How to make a smooth output?
         {
             if (Console.KeyAvailable)
@@ -53,15 +53,18 @@ public class Game
                         ObjectDisplayer.ResetFocusIndex();
                         break;
                     case ConsoleKey.E:
-                        IItem? item = _room.RemoveItem(player.Position, ObjectDisplayer.CurrentFocus);
+                        item = _room.RemoveItem(player.Position, ObjectDisplayer.CurrentFocus);
                         item?.PickUp(player);
                         ObjectDisplayer.ResetFocusIndex();
                         break;
 
                     //Objects can be dropped from inventory and from hands
-                    case ConsoleKey.G when (ObjectDisplayer.FocusOn == FocusType.Inventory || ObjectDisplayer.FocusOn == FocusType.Hands):
-                        IItem? temp = player.Drop(this._room, ObjectDisplayer.CurrentFocus);
-                        //_room.AddItem(temp, player.Position);
+                    case ConsoleKey.G when (ObjectDisplayer.FocusOn == FocusType.Inventory):
+                        item = player.DropFromInventory(this._room, ObjectDisplayer.CurrentFocus);
+                        ObjectDisplayer.ResetFocusIndex();
+                        break;
+                    case ConsoleKey.G when (ObjectDisplayer.FocusOn == FocusType.Hands):
+                        item = player.DropFromHands(this._room, ObjectDisplayer.CurrentFocus);
                         ObjectDisplayer.ResetFocusIndex();
                         break;
                     case ConsoleKey.I:
