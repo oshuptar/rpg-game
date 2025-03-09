@@ -17,11 +17,13 @@ public class Game
         Player player = new Player();
 
         Console.WriteLine("Moves in four directions are controlled by `W`, `S`, `A`, `D`");
-        Console.WriteLine("To drop an item press 'G'");
+        Console.WriteLine("To pick up an item - press `E`");
+        Console.WriteLine("To drop an item - press `G`");
+        Console.WriteLine("To Equip an item - press `Q`. You can equip an item from inventory or from staying on the item, depending on your focus");
         Console.WriteLine("Use arrows to navigate through inventory, map items or eqquiped items");
-        Console.WriteLine("To enter the inventory scope - press 'I', then use arrows to change the object");
-        Console.WriteLine("To enter hands scope - press 'H', then use arrows to change the object");
-        Console.WriteLine("To leave hands or inventory scope - press 'Escape'");
+        Console.WriteLine("To enter the inventory scope - press `I`, then use arrows to change the object");
+        Console.WriteLine("To enter hands scope - press `H`, then use arrows to change the object");
+        Console.WriteLine("To leave hands or inventory scope - press `Escape`");
         Console.WriteLine("To Start the Game press any key");
         Console.WriteLine("Have fun!");
 
@@ -54,7 +56,8 @@ public class Game
                         break;
                     case ConsoleKey.E:
                         item = _room.RemoveItem(player.Position, ObjectDisplayer.CurrentFocus);
-                        item?.PickUp(player);
+                        //item?.PickUp(player);
+                        player.PickUp(item);
                         ObjectDisplayer.ResetFocusIndex();
                         break;
 
@@ -76,6 +79,20 @@ public class Game
                         ObjectDisplayer.SetHandsFocus();
                         ObjectDisplayer.ResetFocusIndex();
                         break;
+                    case ConsoleKey.Q when (ObjectDisplayer.FocusOn == FocusType.Inventory):
+
+                        item = player.Retrieve(ObjectDisplayer.CurrentFocus, player.inventory);
+                        if(player.Equip(item as IWeapon)) // look for possible solution; 'is' is not alowed, but 'as' is allowed =)
+                            item = player.Remove(ObjectDisplayer.CurrentFocus, player.inventory);
+                        ObjectDisplayer.ResetFocusIndex();
+                        break;
+
+                    case ConsoleKey.Q when (ObjectDisplayer.FocusOn == FocusType.Room):
+                        item = _room.RemoveItem(player.Position, ObjectDisplayer.CurrentFocus);
+                        if (!player.Equip(item as IWeapon))
+                            _room.AddItem(item, player.Position);
+                        ObjectDisplayer.ResetFocusIndex();
+                        break;
                     case ConsoleKey.Escape:
                         ObjectDisplayer.ResetFocusType();
                         ObjectDisplayer.ResetFocusIndex();
@@ -88,9 +105,7 @@ public class Game
                         break;
                 }
                 Thread.Sleep(1); //Ensures smoothness
-
-                Console.Clear(); // Clear the screen before printing the new grid
-                //Console.SetCursorPosition(0, 0);
+                Console.Clear(); // Clear the screen before printing the new gri
                 ObjectDisplayer.DisplayRoutine(_room, player);
                 
             }

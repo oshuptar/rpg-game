@@ -12,14 +12,16 @@ public static class RoomGenerator
     private static List<IItem> ItemList = new List<IItem>()
     {
         new Hammer(),
+        new Sword(),
+        new LuckItemDecorator(new Sword()),
         new PowerWeaponDecorator(new Hammer()),
         new PowerWeaponDecorator(new PowerWeaponDecorator(new Hammer())),
-        new LucktemDecorator(new Gold()),
+        new LuckItemDecorator(new Gold()),
         new Gold(),
         new Coin(),
-        new LucktemDecorator( new PowerWeaponDecorator(new PowerWeaponDecorator(new Hammer()))),
+        new LuckItemDecorator( new PowerWeaponDecorator(new PowerWeaponDecorator(new Hammer()))),
         new Key(),
-        new LucktemDecorator(new Key()),
+        new LuckItemDecorator(new Key()),
         new Note(),
         new Lore()
     };

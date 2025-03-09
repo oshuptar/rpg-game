@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace RPG_Game;
 
-public class LucktemDecorator : ItemDecorator
+public class LuckItemDecorator : ItemDecorator
 {
-    public LucktemDecorator(IItem item) : base(item) { }
+    public LuckItemDecorator(IItem item) : base(item) { }
     public override string Name => item.Name + "(Increased Luck)";
 }
+
+//Issue with capaciity retrievall for weapons

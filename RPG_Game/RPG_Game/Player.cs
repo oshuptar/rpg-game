@@ -9,9 +9,10 @@ namespace RPG_Game;
 
 public class Player : ICanMove, ICanReceiveDamage
 {
+    // Add separate classes for inventory responsibiillitiies and hands responisiblities
     public (int x, int y) Position { get; private set; }
     public List<IItem> inventory { get; } = new List<IItem>();
-    public List<IItem> hands { get; } = new List<IItem>();
+    public List<IItem> hands { get; } = new List<IItem>(); // technically llater on we can equip something ike eixir to drink it, hence handsmust keep IItem
 
     public const int MaxCapacity = 2; // MaxCapacity of Hands
     public int Capacity { get; private set; } = 0;
@@ -80,19 +81,20 @@ public class Player : ICanMove, ICanReceiveDamage
     }
 
     // Must change player's attrbutes when needed
-    public void PickUp(IItem item)
+    public void PickUp(IItem? item)
     {
+        if (item == null)
+            return;
         inventory.Add(item);
     }
 
-    public void Equip(IWeapon weapon)
+    public bool Equip(IWeapon? weapon)
     {
-        if (weapon.Capacity + this.Capacity > 2)
-        {
-            Console.WriteLine("This weapon cannot be equipped. Free some space");
-            return;
-        }
+        if (weapon == null || weapon.Capacity + this.Capacity > MaxCapacity)
+            return false;
         hands.Add(weapon);
+        this.Capacity += weapon.Capacity;
+        return true;
     }
 
     public void UnEquip(IWeapon weapon)
@@ -102,21 +104,40 @@ public class Player : ICanMove, ICanReceiveDamage
         this.Capacity -= weapon.Capacity;
     }
 
-    public IItem? Drop(Room room, int index, List<IItem> list)
+    public IItem? Retrieve(int index, List<IItem> list)
     {
         if (list.Count == 0)
             return null;
-
         IItem item = list.ElementAt(index);
-        list.RemoveAt(index);
-        room.AddItem(item, (this.Position.x, this.Position.y));
+        return item;
+    }
+
+    public IItem? Remove(int index, List<IItem> list)
+    {
+        IItem? item = Retrieve(index, list);
+        if(item != null)
+            list.RemoveAt(index);
+        return item;
+    }
+
+    public IItem? Drop(Room room, int index, List<IItem> list)
+    {
+        IItem? item = Remove(index, list);
+        if(item != null)
+            room.AddItem(item, (this.Position.x, this.Position.y));
         //item.Drop(this);
         return item;
     }
 
     public IItem? DropFromHands(Room room, int index)
     {
-        return Drop(room, index, this.hands);
+        IItem? item = Drop(room, index, this.hands);
+        IWeapon? weapon = item as IWeapon; // look for a change
+
+        if(weapon != null)
+            this.Capacity -= weapon.Capacity;
+        return weapon;
+
     }
     public IItem? DropFromInventory(Room room, int index)
     {

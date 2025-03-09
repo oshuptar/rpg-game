@@ -10,9 +10,9 @@ namespace RPG_Game;
 
 public static class ObjectDisplayer
 {
-    public static int CurrentFocus = 0;
-    public static FocusType FocusOn = FocusType.Room;
-
+    public static int CurrentFocus { get; private set; } = 0;
+    public static FocusType FocusOn { get; private set; } = FocusType.Room;
+    private static (int left, int top) CursorPosition;
     public static void DisplayItemList(List<IItem> list, string name)
     {
         string? output = null;
