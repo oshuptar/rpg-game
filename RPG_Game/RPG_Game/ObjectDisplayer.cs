@@ -85,14 +85,8 @@ public static class ObjectDisplayer
         }
     }
 
-    //public static void ShiftFocusLeft(List<IItem> list)
-    //{
-    //    CurrentFocus = ((CurrentFocus - 1) >= 0) ? CurrentFocus - 1 : CurrentFocus;
-    //}
     public static void ShiftCurrentFocus(Room room, Player player, Direction direction)
     {
-        //if (room.Items[position.x, position.y] is not null)
-        //    CurrentFocus = (CurrentFocus + 1 <= room.Items[position.x, position.y].Count - 1) ? CurrentFocus + 1 : CurrentFocus;
         switch(FocusOn)
         {
             case FocusType.Inventory:
@@ -106,25 +100,6 @@ public static class ObjectDisplayer
                 break;
         }
     }
-    //public static void DecreaseCurrentFocus(Room room, Player player)
-    //{
-    //    switch (FocusOn)
-    //    {
-    //        case FocusType.Inventory:
-    //            ShiftFocusLeft(player.inventory);
-    //            break;
-    //        case FocusType.Hands:
-    //            ShiftFocusLeft(player.hands);
-    //            break;
-    //        case FocusType.Room:
-    //            ShiftFocusLeft(room.Items[player.Position.x, player.Position.y]);
-    //            break;
-    //    }
-
-
-    //    //if (room.Items[position.x, position.y] is not null)
-    //    //    CurrentFocus = ((CurrentFocus - 1) >= 0) ? CurrentFocus - 1 : CurrentFocus;
-    //}
     public static void DisplayInventory(Player player)
     {
         DisplayItemList(player.inventory, "Inventory");
@@ -163,16 +138,3 @@ public static class ObjectDisplayer
         Console.SetCursorPosition(oldPosition.X, oldPosition.Y);
     }
 }
-
-
-//public void PrintGrid(Room room)
-//{
-//    for (int i = 0; i < Room._height; i++)
-//    {
-//        for (int j = 0; j < Room._width; j++)
-//        {
-//            room.Grid[j, i].PrintCell();
-//        }
-//        Console.WriteLine();
-//    }
-//}
