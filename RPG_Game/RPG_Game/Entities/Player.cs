@@ -70,9 +70,7 @@ public class Player : ICanMove, ICanReceiveDamage
         return false;
     }
 
-    public void ReceiveDamage(int damage) // To implement
-    {
-    }
+    public void ReceiveDamage(int damage) { }// To implement
 
     // Must change player's attrbutes when needed
     public void PickUp(IItem? item)
@@ -83,21 +81,26 @@ public class Player : ICanMove, ICanReceiveDamage
         item.ApplyChanges(this);
     }
 
-    public bool Equip(IItem? item)
+    public bool Equip(IItem? item, bool isInInventory = true)
     {
         if (item == null || item.Capacity + Capacity > MaxCapacity)
             return false;
+
         hands.Add(item);
         Capacity += item.Capacity;
+
+        if(!isInInventory)
+            item.ApplyChanges(this);
+
         return true;
     }
 
     public void UnEquip(int index)
     {
-        IItem? weapon = hands.ElementAt(index);
-        hands.Remove(weapon);
-        inventory.Add(weapon);
-        Capacity -= weapon.Capacity;
+        IItem? item = hands.ElementAt(index);
+        hands.Remove(item);
+        inventory.Add(item);
+        Capacity -= item.Capacity;
     }
 
     public IItem? Retrieve(int index, List<IItem> list)

@@ -15,7 +15,6 @@ public class Room
     public class Cell // do we need to use decorator pattern for a cell?
     {
         public CellType CellType { get; set; } = CellType.Empty;
-
         public void PrintCell()
         {
             switch (CellType)
@@ -36,7 +35,6 @@ public class Room
 
             }
         }
-
         public bool IsWalkable()
         {
             if (CellType == CellType.Wall) return false;

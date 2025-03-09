@@ -15,5 +15,4 @@ public interface IItem
     public int Capacity => 1; // default capacity for every item
     public void ApplyChanges(Player player) { }
     public void RevertChanges(Player player) { }
-   // public string ToString() => Name; // Why this does not override?
 }

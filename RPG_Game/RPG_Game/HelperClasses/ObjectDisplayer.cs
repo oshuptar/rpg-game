@@ -1,6 +1,7 @@
 ﻿using RPG_Game.Entiities;
 using RPG_Game.Enums;
 using RPG_Game.Interfaces;
+using RPG_Game.UnusableItems;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +16,8 @@ public static class ObjectDisplayer
 {
     public static int CurrentFocus { get; private set; } = 0;
     public static FocusType FocusOn { get; private set; } = FocusType.Room;
-    private static (int left, int top) CursorPosition;
+
+    private static (int left, int top) CursorPosition { get; set; }
     public static void DisplayItemList(List<IItem> list, string name)
     {
         string? output = null;
@@ -113,6 +115,16 @@ public static class ObjectDisplayer
         DisplayItemList(player.hands, "Equipped");
     }
 
+    public static void DisplayPlayerAttributes(Player player)
+    {
+        foreach(var key in player.PlayerStats.Attributes.Keys)
+        {
+            Console.Write($"{key}: {player.PlayerStats.Attributes[key]}");
+            CursorPosition = (CursorPosition.left, CursorPosition.top + 1);
+            Console.SetCursorPosition(CursorPosition.left, CursorPosition.top);
+        }
+    }
+
     public static void ResetFocusIndex() => CurrentFocus = 0;
     public static void SetInventoryFocus() => FocusOn = FocusType.Inventory;
     public static void SetHandsFocus() => FocusOn = FocusType.Hands;
@@ -137,6 +149,10 @@ public static class ObjectDisplayer
         DisplayInventory(player);
         Console.SetCursorPosition(horizontalPosition, verticalPosition + 3);
         DisplayCurrentItem(_room, player);
+
+        CursorPosition = (horizontalPosition, verticalPosition + 3 + Room._height / 16);
+        Console.SetCursorPosition(CursorPosition.left,CursorPosition.top);
+        DisplayPlayerAttributes(player);
 
         Console.SetCursorPosition(oldPosition.X, oldPosition.Y);
     }

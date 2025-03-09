@@ -92,7 +92,7 @@ public class Game
 
                     case ConsoleKey.Q when ObjectDisplayer.FocusOn == FocusType.Room:
                         item = _room.RemoveItem(player.Position, ObjectDisplayer.CurrentFocus);
-                        if (!player.Equip(item))
+                        if (!player.Equip(item, false))
                             _room.AddItem(item, player.Position);
                         ObjectDisplayer.ResetFocusIndex();
                         break;

@@ -1,6 +1,9 @@
 ﻿using RPG_Game.Entiities;
 using RPG_Game.Enums;
 using RPG_Game.Interfaces;
+using RPG_Game.Weapons;
+using RPG_Game.Currencies;
+using RPG_Game.UnusableItems;
 using System;
 using System.Collections.Generic;
 using System.Linq;

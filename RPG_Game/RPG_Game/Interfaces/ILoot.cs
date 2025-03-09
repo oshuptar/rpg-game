@@ -8,5 +8,5 @@ namespace RPG_Game.Interfaces;
 
 public interface ILoot : IItem
 {
-    void Inspect(); // Describes the item when checked in inventory
+   void Inspect(); // Describes the item when checked in inventory
 }

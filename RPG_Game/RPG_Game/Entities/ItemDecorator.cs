@@ -11,8 +11,15 @@ public class ItemDecorator : IItem
 {
     protected IItem item;
     public virtual string Name => item.Name;
-    public int Capacity => item.Capacity; //reccursively callls this function until it reaches some concrete object
-    //public override string ToString() => item.ToString();
+    public virtual int Capacity => item.Capacity; //reccursively callls this function until it reaches some concrete object
+    public virtual void ApplyChanges(Player player)
+    {
+        item.ApplyChanges(player);
+    }
+    public virtual void RevertChanges(Player player)
+    {
+        item.RevertChanges(player);
+    }
     public ItemDecorator(IItem item)
     {
         this.item = item;
