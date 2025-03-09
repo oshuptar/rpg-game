@@ -12,7 +12,7 @@ public class Player : ICanMove, ICanReceiveDamage
     // Add separate classes for inventory responsibiillitiies and hands responisiblities
     public (int x, int y) Position { get; private set; }
     public List<IItem> inventory { get; } = new List<IItem>();
-    public List<IItem> hands { get; } = new List<IItem>(); // technically llater on we can equip something ike eixir to drink it, hence handsmust keep IItem
+    public List<IItem> hands { get; } = new List<IItem>(); //technicaly we cn equip any item to use it later on like elixir
 
     public const int MaxCapacity = 2; // MaxCapacity of Hands
     public int Capacity { get; private set; } = 0;
@@ -88,17 +88,18 @@ public class Player : ICanMove, ICanReceiveDamage
         inventory.Add(item);
     }
 
-    public bool Equip(IWeapon? weapon)
+    public bool Equip(IItem? item)
     {
-        if (weapon == null || weapon.Capacity + this.Capacity > MaxCapacity)
+        if (item == null || item.Capacity + this.Capacity > MaxCapacity)
             return false;
-        hands.Add(weapon);
-        this.Capacity += weapon.Capacity;
+        hands.Add(item);
+        this.Capacity += item.Capacity;
         return true;
     }
 
-    public void UnEquip(IWeapon weapon)
+    public void UnEquip(int index)
     {
+        IItem? weapon = hands.ElementAt(index);
         hands.Remove(weapon);
         inventory.Add(weapon);
         this.Capacity -= weapon.Capacity;
@@ -132,11 +133,10 @@ public class Player : ICanMove, ICanReceiveDamage
     public IItem? DropFromHands(Room room, int index)
     {
         IItem? item = Drop(room, index, this.hands);
-        IWeapon? weapon = item as IWeapon; // look for a change
 
-        if(weapon != null)
-            this.Capacity -= weapon.Capacity;
-        return weapon;
+        if(item != null)
+            this.Capacity -= item.Capacity;
+        return item;
 
     }
     public IItem? DropFromInventory(Room room, int index)

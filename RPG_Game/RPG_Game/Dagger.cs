@@ -11,6 +11,5 @@ public class Dagger : IWeapon
     public int Damage => 5;
     public string Name => "Dagger";
     //public override string ToString() => Name;
-    public int Capacity => 1;
 
 }

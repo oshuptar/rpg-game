@@ -10,7 +10,6 @@ namespace RPG_Game;
 public interface IWeapon : IItem
 {
     public int Damage { get; }
-    public int Capacity { get; }
 
     //Default implementations
     public void Attack(Player player)

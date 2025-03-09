@@ -19,7 +19,7 @@ public class Game
         Console.WriteLine("Moves in four directions are controlled by `W`, `S`, `A`, `D`");
         Console.WriteLine("To pick up an item - press `E`");
         Console.WriteLine("To drop an item - press `G`");
-        Console.WriteLine("To Equip an item - press `Q`. You can equip an item from inventory or from staying on the item, depending on your focus");
+        Console.WriteLine("To Equip/Unequip an item - press `Q`. You can equip an item from inventory or from staying on the item, depending on your focus");
         Console.WriteLine("Use arrows to navigate through inventory, map items or eqquiped items");
         Console.WriteLine("To enter the inventory scope - press `I`, then use arrows to change the object");
         Console.WriteLine("To enter hands scope - press `H`, then use arrows to change the object");
@@ -82,16 +82,19 @@ public class Game
                     case ConsoleKey.Q when (ObjectDisplayer.FocusOn == FocusType.Inventory):
 
                         item = player.Retrieve(ObjectDisplayer.CurrentFocus, player.inventory);
-                        if(player.Equip(item as IWeapon)) // look for possible solution; 'is' is not alowed, but 'as' is allowed =)
+                        if(player.Equip(item)) 
                             item = player.Remove(ObjectDisplayer.CurrentFocus, player.inventory);
                         ObjectDisplayer.ResetFocusIndex();
                         break;
 
                     case ConsoleKey.Q when (ObjectDisplayer.FocusOn == FocusType.Room):
                         item = _room.RemoveItem(player.Position, ObjectDisplayer.CurrentFocus);
-                        if (!player.Equip(item as IWeapon))
+                        if (!player.Equip(item))
                             _room.AddItem(item, player.Position);
                         ObjectDisplayer.ResetFocusIndex();
+                        break;
+                    case ConsoleKey.Q when (ObjectDisplayer.FocusOn == FocusType.Hands):
+                        player.UnEquip(ObjectDisplayer.CurrentFocus);
                         break;
                     case ConsoleKey.Escape:
                         ObjectDisplayer.ResetFocusType();

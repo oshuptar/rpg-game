@@ -14,6 +14,8 @@ public static class RoomGenerator
         new Hammer(),
         new Sword(),
         new LuckItemDecorator(new Sword()),
+        new Dagger(),
+        //new PowerWeaponDecorator(new LuckItemDecorator(new Dagger())), - think what to do with something like that
         new PowerWeaponDecorator(new Hammer()),
         new PowerWeaponDecorator(new PowerWeaponDecorator(new Hammer())),
         new LuckItemDecorator(new Gold()),

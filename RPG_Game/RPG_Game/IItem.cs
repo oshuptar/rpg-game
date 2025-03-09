@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,9 +11,8 @@ namespace RPG_Game;
 public interface IItem
 {
     public string Name { get; }
-    public void PickUp(Player player) => player.PickUp(this);
-    public void Drop(Player player){ }
-    //public void ApplyChanges(Player player) { }
-    //public void RevertChanges(Player player) { }
-    public string ToString() => Name; // Why this does not override?
+    public int Capacity => 1; // default capacity for every item
+    public void ApplyChanges(Player player) { }
+    public void RevertChanges(Player player) { }
+   // public string ToString() => Name; // Why this does not override?
 }

@@ -6,9 +6,7 @@ using System.Threading.Tasks;
 
 namespace RPG_Game;
 
-// Concrete Component
-public class Sword : IWeapon
+public class Inventory
 {
-    public int Damage => 7;
-    public string Name => "Sword";
+    public List<IItem> inventory { get; } = new List<IItem>();
 }
