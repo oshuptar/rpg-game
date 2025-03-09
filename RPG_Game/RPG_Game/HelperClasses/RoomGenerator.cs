@@ -1,10 +1,13 @@
-﻿using System;
+﻿using RPG_Game.Entiities;
+using RPG_Game.Enums;
+using RPG_Game.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RPG_Game;
+namespace RPG_Game.HelperClasses;
 
 public static class RoomGenerator
 {
@@ -32,8 +35,8 @@ public static class RoomGenerator
     {
         // const objects are implicitly static
         //10% of obstacles of the total map size
-        int widthPlayAreaSize = (Room._width - 2 * Room._frameSize);
-        int heightPlayAreaSize = (Room._height - 2 * Room._frameSize);
+        int widthPlayAreaSize = Room._width - 2 * Room._frameSize;
+        int heightPlayAreaSize = Room._height - 2 * Room._frameSize;
         Random random = new Random();
         for (int i = 0; i < widthPlayAreaSize * heightPlayAreaSize / 10; i++)
         {

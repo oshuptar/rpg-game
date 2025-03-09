@@ -1,4 +1,6 @@
-﻿namespace RPG_Game;
+﻿using RPG_Game.Entiities;
+
+namespace RPG_Game;
 
 internal class Program
 {

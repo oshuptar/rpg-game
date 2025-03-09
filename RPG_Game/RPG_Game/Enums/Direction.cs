@@ -4,11 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RPG_Game;
+namespace RPG_Game.Enums;
 
-public enum FocusType
+public enum Direction
 {
-    Room,
-    Inventory,
-    Hands,
+    Left,
+    Right,
+    Up,
+    Down
 };

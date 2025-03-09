@@ -1,4 +1,7 @@
-﻿using System;
+﻿using RPG_Game.Entiities;
+using RPG_Game.Enums;
+using RPG_Game.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -6,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
 
-namespace RPG_Game;
+namespace RPG_Game.HelperClasses;
 
 public static class ObjectDisplayer
 {
@@ -19,7 +22,7 @@ public static class ObjectDisplayer
         if (list != null && list.Count != 0)
         {
             // On each element of the sequence the lambda function is called
-            output = String.Join(", ", list.Select(item => item.Name));
+            output = string.Join(", ", list.Select(item => item.Name));
         }
         // Displays none if output == null
         Console.Write($"{name}: {output ?? "None"}\n");
@@ -77,10 +80,10 @@ public static class ObjectDisplayer
         switch(direction)
         {
             case Direction.Left:
-                CurrentFocus = ((CurrentFocus - 1) >= 0) ? CurrentFocus - 1 : CurrentFocus;
+                CurrentFocus = CurrentFocus - 1 >= 0 ? CurrentFocus - 1 : CurrentFocus;
                 break;
             case Direction.Right:
-                CurrentFocus = (CurrentFocus + 1 <= list!.Count - 1) ? CurrentFocus + 1 : CurrentFocus;
+                CurrentFocus = CurrentFocus + 1 <= list!.Count - 1 ? CurrentFocus + 1 : CurrentFocus;
                 break;
         }
     }
@@ -118,7 +121,7 @@ public static class ObjectDisplayer
     public static void DisplayRoutine(Room _room, Player player)
     {
 
-        ObjectDisplayer.PrintGrid(_room); // Print the grid
+        PrintGrid(_room); // Print the grid
 
         int spaceSize = 10;
         int horizontalPosition = Room._width + spaceSize;
@@ -127,13 +130,13 @@ public static class ObjectDisplayer
         (int X, int Y) oldPosition = Console.GetCursorPosition();
         //Fix Output; Consider doing it with events
         Console.SetCursorPosition(horizontalPosition, verticalPosition);
-        ObjectDisplayer.DisplayTileItems(_room, player.Position);
+        DisplayTileItems(_room, player.Position);
         Console.SetCursorPosition(horizontalPosition, verticalPosition + 1);
-        ObjectDisplayer.DisplayEquipped(player);
+        DisplayEquipped(player);
         Console.SetCursorPosition(horizontalPosition, verticalPosition + 2);
-        ObjectDisplayer.DisplayInventory(player);
+        DisplayInventory(player);
         Console.SetCursorPosition(horizontalPosition, verticalPosition + 3);
-        ObjectDisplayer.DisplayCurrentItem(_room, player);
+        DisplayCurrentItem(_room, player);
 
         Console.SetCursorPosition(oldPosition.X, oldPosition.Y);
     }

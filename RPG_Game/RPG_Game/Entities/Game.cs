@@ -1,11 +1,14 @@
-﻿using System;
+﻿using RPG_Game.Enums;
+using RPG_Game.HelperClasses;
+using RPG_Game.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RPG_Game;
+namespace RPG_Game.Entiities;
 
 public class Game
 {
@@ -39,19 +42,19 @@ public class Game
                 switch (key)
                 {
                     case ConsoleKey.W:
-                        player.Move(Direction.Up, this._room);
+                        player.Move(Direction.Up, _room);
                         ObjectDisplayer.ResetFocusIndex();
                         break;
                     case ConsoleKey.S:
-                        player.Move(Direction.Down, this._room);
+                        player.Move(Direction.Down, _room);
                         ObjectDisplayer.ResetFocusIndex();
                         break;
                     case ConsoleKey.A:
-                        player.Move(Direction.Left, this._room);
+                        player.Move(Direction.Left, _room);
                         ObjectDisplayer.ResetFocusIndex();
                         break;
                     case ConsoleKey.D:
-                        player.Move(Direction.Right, this._room);
+                        player.Move(Direction.Right, _room);
                         ObjectDisplayer.ResetFocusIndex();
                         break;
                     case ConsoleKey.E:
@@ -62,12 +65,12 @@ public class Game
                         break;
 
                     //Objects can be dropped from inventory and from hands
-                    case ConsoleKey.G when (ObjectDisplayer.FocusOn == FocusType.Inventory):
-                        item = player.DropFromInventory(this._room, ObjectDisplayer.CurrentFocus);
+                    case ConsoleKey.G when ObjectDisplayer.FocusOn == FocusType.Inventory:
+                        item = player.DropFromInventory(_room, ObjectDisplayer.CurrentFocus);
                         ObjectDisplayer.ResetFocusIndex();
                         break;
-                    case ConsoleKey.G when (ObjectDisplayer.FocusOn == FocusType.Hands):
-                        item = player.DropFromHands(this._room, ObjectDisplayer.CurrentFocus);
+                    case ConsoleKey.G when ObjectDisplayer.FocusOn == FocusType.Hands:
+                        item = player.DropFromHands(_room, ObjectDisplayer.CurrentFocus);
                         ObjectDisplayer.ResetFocusIndex();
                         break;
                     case ConsoleKey.I:
@@ -79,7 +82,7 @@ public class Game
                         ObjectDisplayer.SetHandsFocus();
                         ObjectDisplayer.ResetFocusIndex();
                         break;
-                    case ConsoleKey.Q when (ObjectDisplayer.FocusOn == FocusType.Inventory):
+                    case ConsoleKey.Q when ObjectDisplayer.FocusOn == FocusType.Inventory:
 
                         item = player.Retrieve(ObjectDisplayer.CurrentFocus, player.inventory);
                         if(player.Equip(item)) 
@@ -87,13 +90,13 @@ public class Game
                         ObjectDisplayer.ResetFocusIndex();
                         break;
 
-                    case ConsoleKey.Q when (ObjectDisplayer.FocusOn == FocusType.Room):
+                    case ConsoleKey.Q when ObjectDisplayer.FocusOn == FocusType.Room:
                         item = _room.RemoveItem(player.Position, ObjectDisplayer.CurrentFocus);
                         if (!player.Equip(item))
                             _room.AddItem(item, player.Position);
                         ObjectDisplayer.ResetFocusIndex();
                         break;
-                    case ConsoleKey.Q when (ObjectDisplayer.FocusOn == FocusType.Hands):
+                    case ConsoleKey.Q when ObjectDisplayer.FocusOn == FocusType.Hands:
                         player.UnEquip(ObjectDisplayer.CurrentFocus);
                         break;
                     case ConsoleKey.Escape:

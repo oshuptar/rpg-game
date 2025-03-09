@@ -1,11 +1,12 @@
-﻿using System;
+﻿using RPG_Game.Entiities;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RPG_Game;
+namespace RPG_Game.Interfaces;
 
 // Do items need to contain attributes of a Player?
 public interface IItem

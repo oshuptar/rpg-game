@@ -1,11 +1,14 @@
-﻿using System;
+﻿using RPG_Game.Entities;
+using RPG_Game.Enums;
+using RPG_Game.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RPG_Game;
+namespace RPG_Game.Entiities;
 
 public class Player : ICanMove, ICanReceiveDamage
 {
@@ -16,24 +19,16 @@ public class Player : ICanMove, ICanReceiveDamage
 
     public const int MaxCapacity = 2; // MaxCapacity of Hands
     public int Capacity { get; private set; } = 0;
-    public int TotalMoneyValue { get; private set; } = 50; // 50 as a default value
-    public int CollectedCoins { get; private set; } = 0;
-    public int CollectedGold { get; private set; } = 0;
-    public Dictionary<string, int> Attributes { get; private set; } = new Dictionary<string, int>();
+    public PlayerStats PlayerStats { get; private set; }
     public Player()
     {
         Position = (1, 1);
-
-        Attributes.Add("Health", 100);
-        Attributes.Add("Strength", 0);
-        Attributes.Add("Luck", 0);
-        Attributes.Add("Aggression", 0);
-        Attributes.Add("Dexterity", 2);
+        PlayerStats = new PlayerStats();
     }
 
     public (int, int) GetNewPosition(Direction direction)
     {
-        (int x, int y) TempPos = this.Position;
+        (int x, int y) TempPos = Position;
         switch (direction)
         {
             case Direction.Left:
@@ -69,7 +64,7 @@ public class Player : ICanMove, ICanReceiveDamage
         {
             room.RemoveObject(CellType.Player, Position);
             room.AddObject(CellType.Player, ((int, int)) TempPos);
-            this.Position = ((int, int))TempPos;
+            Position = ((int, int))TempPos;
             return true;
         }
         return false;
@@ -77,7 +72,6 @@ public class Player : ICanMove, ICanReceiveDamage
 
     public void ReceiveDamage(int damage) // To implement
     {
-        Attributes["Health"] = (Attributes["Health"] - damage < 0) ? 0 : Attributes["Health"] - damage;
     }
 
     // Must change player's attrbutes when needed
@@ -86,14 +80,15 @@ public class Player : ICanMove, ICanReceiveDamage
         if (item == null)
             return;
         inventory.Add(item);
+        item.ApplyChanges(this);
     }
 
     public bool Equip(IItem? item)
     {
-        if (item == null || item.Capacity + this.Capacity > MaxCapacity)
+        if (item == null || item.Capacity + Capacity > MaxCapacity)
             return false;
         hands.Add(item);
-        this.Capacity += item.Capacity;
+        Capacity += item.Capacity;
         return true;
     }
 
@@ -102,7 +97,7 @@ public class Player : ICanMove, ICanReceiveDamage
         IItem? weapon = hands.ElementAt(index);
         hands.Remove(weapon);
         inventory.Add(weapon);
-        this.Capacity -= weapon.Capacity;
+        Capacity -= weapon.Capacity;
     }
 
     public IItem? Retrieve(int index, List<IItem> list)
@@ -124,34 +119,25 @@ public class Player : ICanMove, ICanReceiveDamage
     public IItem? Drop(Room room, int index, List<IItem> list)
     {
         IItem? item = Remove(index, list);
-        if(item != null)
-            room.AddItem(item, (this.Position.x, this.Position.y));
-        //item.Drop(this);
+        if (item != null)
+        {
+            room.AddItem(item, (Position.x, Position.y));
+            item.RevertChanges(this);
+        }
         return item;
     }
 
     public IItem? DropFromHands(Room room, int index)
     {
-        IItem? item = Drop(room, index, this.hands);
+        IItem? item = Drop(room, index, hands);
 
         if(item != null)
-            this.Capacity -= item.Capacity;
+            Capacity -= item.Capacity;
         return item;
 
     }
     public IItem? DropFromInventory(Room room, int index)
     {
-        return Drop(room, index, this.inventory);
-    }
-
-    public void AddCoin(ICurrency coin)
-    {
-        CollectedCoins++;
-        TotalMoneyValue += coin.Value;
-    }
-    public void AddGold(ICurrency gold)
-    {
-        CollectedGold++;
-        TotalMoneyValue += gold.Value;
+        return Drop(room, index, inventory);
     }
 }

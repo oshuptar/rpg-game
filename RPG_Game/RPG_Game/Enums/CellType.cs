@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RPG_Game;
+namespace RPG_Game.Enums;
 
 [Flags] // This allows combining the enum values using bitwise operators
 public enum CellType // what if two objects of the same kind are placed on the same cell?

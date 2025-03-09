@@ -1,10 +1,13 @@
-﻿using System;
+﻿using RPG_Game.Enums;
+using RPG_Game.HelperClasses;
+using RPG_Game.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RPG_Game;
+namespace RPG_Game.Entiities;
 
 public class Room
 {
@@ -15,7 +18,7 @@ public class Room
 
         public void PrintCell()
         {
-            switch (this.CellType)
+            switch (CellType)
             {
                 case CellType.Empty:
                     Console.Write(" ");
@@ -24,7 +27,7 @@ public class Room
                     Console.Write("█");
                     break;
                 //Ensures Player sign stays on top
-                case CellType cType when ((cType & CellType.Player) != 0): // Constant pattern matching
+                case CellType cType when (cType & CellType.Player) != 0: // Constant pattern matching
                     Console.Write("¶");
                     break;
                 default:
@@ -91,26 +94,26 @@ public class Room
     }
     public void AddItem(IItem? item, (int x, int y) position)
     {
-        if (!this.IsPosAvailable(position.x, position.y) || item == null)
+        if (!IsPosAvailable(position.x, position.y) || item == null)
             return;
 
         AddObject(CellType.Item, position);
 
-        if (this.Items[position.x, position.y] == null)
-            this.Items[position.x, position.y] = new List<IItem>();
+        if (Items[position.x, position.y] == null)
+            Items[position.x, position.y] = new List<IItem>();
                 
-        this.Items[position.x, position.y].Add(item);
+        Items[position.x, position.y].Add(item);
     }
 
     // index denotes the index of the item from the list to be removed
     public IItem? RemoveItem((int x, int y) position, int index = 0)
     {
-        if (this.Items[position.x, position.y] == null || this.Items[position.x, position.y].Count == 0)
+        if (Items[position.x, position.y] == null || Items[position.x, position.y].Count == 0)
             return null;
 
-        IItem tempItem = this.Items[position.x, position.y].ElementAt(index);
-        this.Items[position.x, position.y].RemoveAt(index);
-        this.RemoveObject(CellType.Item, position);
+        IItem tempItem = Items[position.x, position.y].ElementAt(index);
+        Items[position.x, position.y].RemoveAt(index);
+        RemoveObject(CellType.Item, position);
 
         return tempItem;
     }

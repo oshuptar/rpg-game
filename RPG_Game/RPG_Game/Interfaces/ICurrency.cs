@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RPG_Game;
+namespace RPG_Game.Interfaces;
 
 public interface ICurrency : IItem
 {
-    public int Value { get; }
+    public static int Value { get; }
     public string GetDescription() => $"A currency {Name} with value {Value}";
 }

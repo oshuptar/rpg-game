@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RPG_Game;
+namespace RPG_Game.Enums;
 
-public class Inventory
+public enum FocusType
 {
-    public List<IItem> inventory { get; } = new List<IItem>();
-}
+    Room,
+    Inventory,
+    Hands,
+};
