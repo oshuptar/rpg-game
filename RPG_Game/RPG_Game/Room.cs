@@ -36,7 +36,7 @@ public class Room
 
         public bool IsWalkable()
         {
-            if (CellType == CellType.Wall || CellType == CellType.Player) return false;
+            if (CellType == CellType.Wall) return false;
             return true;
         }
     };

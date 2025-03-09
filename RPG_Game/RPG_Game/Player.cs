@@ -102,14 +102,15 @@ public class Player : ICanMove, ICanReceiveDamage
         this.Capacity -= weapon.Capacity;
     }
 
-    public IItem? Drop(int index)
+    public IItem? Drop(Room room, int index)
     {
         if (inventory.Count == 0)
             return null;
 
         IItem item = inventory.ElementAt(index);
         inventory.RemoveAt(index);
-        item.Drop(this);
+        room.AddItem(item, (this.Position.x, this.Position.y));
+        //item.Drop(this);
         return item;
     }
 

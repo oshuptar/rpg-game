@@ -17,11 +17,12 @@ public class Game
         Player player = new Player();
 
         Console.WriteLine("Moves in four directions are controlled by `W`, `S`, `A`, `D`");
-        Console.WriteLine("To Start the Game press any key");
+        Console.WriteLine("To drop an item press 'G'");
         Console.WriteLine("Use arrows to navigate through inventory, map items or eqquiped items");
-        Console.WriteLine("To enter the inventory scope - press I, then use arrows to change the object");
-        Console.WriteLine("To enter hands scope - press H, then use arrows to change the object");
-        Console.WriteLine("To leave hands or inventory scope - press Escape");
+        Console.WriteLine("To enter the inventory scope - press 'I', then use arrows to change the object");
+        Console.WriteLine("To enter hands scope - press 'H', then use arrows to change the object");
+        Console.WriteLine("To leave hands or inventory scope - press 'Escape'");
+        Console.WriteLine("To Start the Game press any key");
         Console.WriteLine("Have fun!");
 
 
@@ -56,9 +57,12 @@ public class Game
                         item?.PickUp(player);
                         ObjectDisplayer.ResetFocusIndex();
                         break;
-                    case ConsoleKey.G:
-                        IItem? temp = player.Drop(ObjectDisplayer.CurrentFocus);
-                        _room.AddItem(temp, player.Position);
+
+                    //Objects can be dropped from inventory and from hands
+                    case ConsoleKey.G when (ObjectDisplayer.FocusOn == FocusType.Inventory || ObjectDisplayer.FocusOn == FocusType.Hands):
+                        IItem? temp = player.Drop(this._room, ObjectDisplayer.CurrentFocus);
+                        //_room.AddItem(temp, player.Position);
+                        ObjectDisplayer.ResetFocusIndex();
                         break;
                     case ConsoleKey.I:
                         // to Enter inventory; changes the behaviour of arrows
