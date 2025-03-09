@@ -1,23 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace RPG_Game;
 
-public class Player
+public class Player : ICanMove, ICanReceiveDamage
 {
-    public int Strength { get; set; }
-    public int Dexterity { get; set; }
-    public int Health { get; set; }
-    public int Luck { get; set; }
-    public int Aggresion { get; set; }
-
     public (int x, int y) Position { get; private set; }
-
     public List<IItem> inventory { get; } = new List<IItem>();
-
     public List<IItem> hands { get; } = new List<IItem>();
 
     public const int MaxCapacity = 2; // MaxCapacity of Hands
@@ -25,14 +18,16 @@ public class Player
     public int TotalMoneyValue { get; private set; } = 50; // 50 as a default value
     public int CollectedCoins { get; private set; } = 0;
     public int CollectedGold { get; private set; } = 0;
+    public Dictionary<string, int> Attributes { get; private set; } = new Dictionary<string, int>();
     public Player()
     {
-        Strength = 0;
-        Dexterity = 2; // Probably will affect the rendering rate of the map, this value will likely represent the cooldown value
-        Health = 100;
-        Luck = 0;
-        Aggresion = 0;
         Position = (1, 1);
+
+        Attributes.Add("Health", 100);
+        Attributes.Add("Strength", 0);
+        Attributes.Add("Luck", 0);
+        Attributes.Add("Aggression", 0);
+        Attributes.Add("Dexterity", 2);
     }
 
     public (int, int) GetNewPosition(Direction direction)
@@ -81,7 +76,7 @@ public class Player
 
     public void ReceiveDamage(int damage) // To implement
     {
-        Health = (Health - damage < 0) ? 0 : Health - damage;
+        Attributes["Health"] = (Attributes["Health"] - damage < 0) ? 0 : Attributes["Health"] - damage;
     }
 
     // Must change player's attrbutes when needed
@@ -98,6 +93,24 @@ public class Player
             return;
         }
         hands.Add(weapon);
+    }
+
+    public void UnEquip(IWeapon weapon)
+    {
+        hands.Remove(weapon);
+        inventory.Add(weapon);
+        this.Capacity -= weapon.Capacity;
+    }
+
+    public IItem? Drop(int index)
+    {
+        if (inventory.Count == 0)
+            return null;
+
+        IItem item = inventory.ElementAt(index);
+        inventory.RemoveAt(index);
+        item.Drop(this);
+        return item;
     }
 
     public void AddCoin(ICurrency coin)

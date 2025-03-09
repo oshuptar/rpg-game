@@ -14,12 +14,12 @@ public static class RoomGenerator
         new Hammer(),
         new PowerWeaponDecorator(new Hammer()),
         new PowerWeaponDecorator(new PowerWeaponDecorator(new Hammer())),
-        new DexterityItemDecorator(new Gold()),
+        new LucktemDecorator(new Gold()),
         new Gold(),
         new Coin(),
-        new DexterityItemDecorator( new PowerWeaponDecorator(new PowerWeaponDecorator(new Hammer()))),
+        new LucktemDecorator( new PowerWeaponDecorator(new PowerWeaponDecorator(new Hammer()))),
         new Key(),
-        new DexterityItemDecorator(new Key()),
+        new LucktemDecorator(new Key()),
         new Note(),
         new Lore()
     };

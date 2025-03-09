@@ -18,13 +18,18 @@ public class Game
 
         Console.WriteLine("Moves in four directions are controlled by `W`, `S`, `A`, `D`");
         Console.WriteLine("To Start the Game press any key");
-        Console.WriteLine("Use arrows in order to change the desired item to pickup");
+        Console.WriteLine("Use arrows to navigate through inventory, map items or eqquiped items");
+        Console.WriteLine("To enter the inventory scope - press I, then use arrows to change the object");
+        Console.WriteLine("To enter hands scope - press H, then use arrows to change the object");
+        Console.WriteLine("To leave hands or inventory scope - press Escape");
+        Console.WriteLine("Have fun!");
+
 
         while (true) // How to make a smooth output?
         {
             if (Console.KeyAvailable)
             {
- 
+                  // aDD rOUTINES.cS do a routine for moving
                 var key = Console.ReadKey(true).Key; // Retrieves the key
 
                 //Improve displaying of current chosen object
@@ -32,32 +37,47 @@ public class Game
                 {
                     case ConsoleKey.W:
                         player.Move(Direction.Up, this._room);
-                        ObjectDisplayer.ResetFocus();
+                        ObjectDisplayer.ResetFocusIndex();
                         break;
                     case ConsoleKey.S:
                         player.Move(Direction.Down, this._room);
-                        ObjectDisplayer.ResetFocus();
+                        ObjectDisplayer.ResetFocusIndex();
                         break;
                     case ConsoleKey.A:
                         player.Move(Direction.Left, this._room);
-                        ObjectDisplayer.ResetFocus();
+                        ObjectDisplayer.ResetFocusIndex();
                         break;
                     case ConsoleKey.D:
                         player.Move(Direction.Right, this._room);
-                        ObjectDisplayer.ResetFocus();
+                        ObjectDisplayer.ResetFocusIndex();
                         break;
                     case ConsoleKey.E:
-                        //To do
-                        // Items can be choosen by index
                         IItem? item = _room.RemoveItem(player.Position, ObjectDisplayer.CurrentFocus);
                         item?.PickUp(player);
-                        ObjectDisplayer.ResetFocus();
+                        ObjectDisplayer.ResetFocusIndex();
+                        break;
+                    case ConsoleKey.G:
+                        IItem? temp = player.Drop(ObjectDisplayer.CurrentFocus);
+                        _room.AddItem(temp, player.Position);
+                        break;
+                    case ConsoleKey.I:
+                        // to Enter inventory; changes the behaviour of arrows
+                        ObjectDisplayer.SetInventoryFocus();
+                        ObjectDisplayer.ResetFocusIndex();
+                        break;
+                    case ConsoleKey.H:
+                        ObjectDisplayer.SetHandsFocus();
+                        ObjectDisplayer.ResetFocusIndex();
+                        break;
+                    case ConsoleKey.Escape:
+                        ObjectDisplayer.ResetFocusType();
+                        ObjectDisplayer.ResetFocusIndex();
                         break;
                     case ConsoleKey.RightArrow:
-                        ObjectDisplayer.IncreaseCurrentFocus(_room, player.Position);
+                        ObjectDisplayer.ShiftCurrentFocus(_room, player, Direction.Right);
                         break;
                     case ConsoleKey.LeftArrow:
-                        ObjectDisplayer.DecreaseCurrentFocus(_room, player.Position);
+                        ObjectDisplayer.ShiftCurrentFocus(_room, player, Direction.Left);
                         break;
                 }
                 Thread.Sleep(1); //Ensures smoothness

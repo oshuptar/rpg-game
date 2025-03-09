@@ -41,7 +41,6 @@ public class Room
         }
     };
 
-
     public const int _defaultWidth = 20;
     public const int _defaultHeight = 40;
     public const int _frameSize = 1;
@@ -65,7 +64,6 @@ public class Room
 
         RoomGenerator.RandomRoomGeneration(this);
     }
-
     public bool IsPosAvailable(int x, int y)
     {
         if (x < 0 || y < 0 || x > _width - 1 || y > _height - 1)
@@ -91,10 +89,9 @@ public class Room
 
         return true;
     }
-
-    public void AddItem(IItem item, (int x, int y) position)
+    public void AddItem(IItem? item, (int x, int y) position)
     {
-        if (!this.IsPosAvailable(position.x, position.y))
+        if (!this.IsPosAvailable(position.x, position.y) || item == null)
             return;
 
         AddObject(CellType.Item, position);
@@ -117,11 +114,6 @@ public class Room
 
         return tempItem;
     }
-
-    //public IItem ChooseItem((int x, int y) position)
-    //{
-
-    //}
 }
 
 
