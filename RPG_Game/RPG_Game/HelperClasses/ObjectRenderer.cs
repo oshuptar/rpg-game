@@ -70,7 +70,7 @@ public static class ObjectRenderer
         StringBuilder sb = new StringBuilder();
 
         (int left, int top) = Console.GetCursorPosition();
-        sb.Append("".PadRight(Console.WindowWidth - left - 1, ' '));
+        sb.Append("".PadRight(Console.WindowWidth - left - 1, ' ')); //??? check the behavior with empty spaces and underscores
         return sb;
     }
 }
