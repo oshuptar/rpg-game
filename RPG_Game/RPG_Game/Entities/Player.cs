@@ -4,6 +4,7 @@ using RPG_Game.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,14 +13,12 @@ namespace RPG_Game.Entiities;
 
 public class Player : ICanMove, ICanReceiveDamage
 {
-    // Add separate classes for inventory responsibiillitiies and hands responisiblities
     public (int x, int y) Position { get; private set; }
-    public List<IItem> inventory { get; } = new List<IItem>();
-    public List<IItem> hands { get; } = new List<IItem>(); //technicaly we cn equip any item to use it later on like elixir
+    public PlayerStats PlayerStats { get; private set; } = new PlayerStats();
 
-    public const int MaxCapacity = 2; // MaxCapacity of Hands
-    public int Capacity { get; private set; } = 0;
-    public PlayerStats PlayerStats { get; private set; }
+    private Hands Hands = new Hands();
+
+    private Inventory Inventory = new Inventory();
     public Player()
     {
         Position = (1, 1);
@@ -60,87 +59,44 @@ public class Player : ICanMove, ICanReceiveDamage
     public bool Move(Direction direction, Room room)
     {
         (int, int)? TempPos;
-        if((TempPos = IsMovable(direction, room)) != null)
+        if ((TempPos = IsMovable(direction, room)) != null)
         {
             room.RemoveObject(CellType.Player, Position);
-            room.AddObject(CellType.Player, ((int, int)) TempPos);
+            room.AddObject(CellType.Player, ((int, int))TempPos);
             Position = ((int, int))TempPos;
             return true;
         }
         return false;
     }
-
     public void ReceiveDamage(int damage) { }// To implement
-
     // Must change player's attrbutes when needed
-    public void PickUp(IItem? item)
-    {
-        if (item == null)
-            return;
-        inventory.Add(item);
-        item.ApplyChanges(this);
-    }
-
-    public bool Equip(IItem? item, bool isInInventory = true)
-    {
-        if (item == null || item.Capacity + Capacity > MaxCapacity)
-            return false;
-
-        hands.Add(item);
-        Capacity += item.Capacity;
-
-        if(!isInInventory)
-            item.ApplyChanges(this);
-
-        return true;
-    }
-
+    public void PickUp(IItem? item) => Inventory.PickUp(item, this);
+    public bool Equip(IItem? item, bool isInInventory = true) => Hands.Equip(item, this, isInInventory);
     public void UnEquip(int index)
     {
-        IItem? item = hands.ElementAt(index);
-        hands.Remove(item);
-        inventory.Add(item);
-        Capacity -= item.Capacity;
-    }
-
-    public IItem? Retrieve(int index, List<IItem> list)
-    {
-        if (list.Count == 0)
-            return null;
-        IItem item = list.ElementAt(index);
-        return item;
-    }
-
-    public IItem? Remove(int index, List<IItem> list)
-    {
-        IItem? item = Retrieve(index, list);
+        IItem? item = Hands.UnEquip(index);
         if(item != null)
-            list.RemoveAt(index);
-        return item;
+            Inventory.inventory.Add(item);
     }
-
-    public IItem? Drop(Room room, int index, List<IItem> list)
+    public IItem? Retrieve(int index, bool fromInventory)
     {
-        IItem? item = Remove(index, list);
-        if (item != null)
-        {
-            room.AddItem(item, (Position.x, Position.y));
-            item.RevertChanges(this);
-        }
-        return item;
+        if (fromInventory)
+            return Inventory.Retrieve(index, Inventory.inventory);
+        return Hands.Retrieve(index, Hands.hands);
     }
-
-    public IItem? DropFromHands(Room room, int index)
+    public IItem? Remove(int index, bool fromInventory)
     {
-        IItem? item = Drop(room, index, hands);
-
-        if(item != null)
-            Capacity -= item.Capacity;
-        return item;
-
+        if (fromInventory)
+            return Inventory.Remove(index, Inventory.inventory);
+        return Hands.Remove(index, Hands.hands);
     }
-    public IItem? DropFromInventory(Room room, int index)
+    public IItem? Drop(Room room, int index, bool fromInventory)
     {
-        return Drop(room, index, inventory);
+        if (fromInventory)
+            return Inventory.DropFromInventory(room, index, this);
+        return Hands.DropFromHands(room, index, this);
     }
+    public List<IItem> RetrieveHands() => this.Hands.hands;
+    public List<IItem> RetrieveInventory() => this.Inventory.inventory;
+
 }

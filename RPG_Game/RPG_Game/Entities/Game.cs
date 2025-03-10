@@ -18,16 +18,8 @@ public class Game
     {
 
         Player player = new Player();
-
-        Console.WriteLine("Moves in four directions are controlled by `W`, `S`, `A`, `D`");
-        Console.WriteLine("To pick up an item - press `E`");
-        Console.WriteLine("To drop an item - press `G`");
-        Console.WriteLine("To Equip/Unequip an item - press `Q`. You can equip an item from inventory or from staying on the item, depending on your focus");
-        Console.WriteLine("Use arrows to navigate through inventory, map items or eqquiped items");
-        Console.WriteLine("To enter the inventory scope - press `I`, then use arrows to change the object");
-        Console.WriteLine("To enter hands scope - press `H`, then use arrows to change the object");
-        Console.WriteLine("To leave hands or inventory scope - press `Escape`");
-        Console.WriteLine("To Start the Game press any key");
+        ObjectDisplayer.DisplayControls();
+        Console.WriteLine(" - To Start the Game press any key");
         Console.WriteLine("Have fun!");
 
         IItem? item;
@@ -59,22 +51,18 @@ public class Game
                         break;
                     case ConsoleKey.E:
                         item = _room.RemoveItem(player.Position, ObjectDisplayer.CurrentFocus);
-                        //item?.PickUp(player);
                         player.PickUp(item);
                         ObjectDisplayer.ResetFocusIndex();
                         break;
-
-                    //Objects can be dropped from inventory and from hands
-                    case ConsoleKey.G when ObjectDisplayer.FocusOn == FocusType.Inventory:
-                        item = player.DropFromInventory(_room, ObjectDisplayer.CurrentFocus);
+                    case ConsoleKey.G when ObjectDisplayer.FocusOn == FocusType.Inventory: //Objects can be dropped from inventory and from hands
+                        item = player.Drop(_room, ObjectDisplayer.CurrentFocus, true);
                         ObjectDisplayer.ResetFocusIndex();
                         break;
                     case ConsoleKey.G when ObjectDisplayer.FocusOn == FocusType.Hands:
-                        item = player.DropFromHands(_room, ObjectDisplayer.CurrentFocus);
+                        item = player.Drop(_room, ObjectDisplayer.CurrentFocus, false);
                         ObjectDisplayer.ResetFocusIndex();
                         break;
-                    case ConsoleKey.I:
-                        // to Enter inventory; changes the behaviour of arrows
+                    case ConsoleKey.I: // to Enter inventory; changes the behaviour of arrows
                         ObjectDisplayer.SetInventoryFocus();
                         ObjectDisplayer.ResetFocusIndex();
                         break;
@@ -84,9 +72,9 @@ public class Game
                         break;
                     case ConsoleKey.Q when ObjectDisplayer.FocusOn == FocusType.Inventory:
 
-                        item = player.Retrieve(ObjectDisplayer.CurrentFocus, player.inventory);
+                        item = player.Retrieve(ObjectDisplayer.CurrentFocus, true);
                         if(player.Equip(item)) 
-                            item = player.Remove(ObjectDisplayer.CurrentFocus, player.inventory);
+                            item = player.Remove(ObjectDisplayer.CurrentFocus, true);
                         ObjectDisplayer.ResetFocusIndex();
                         break;
 
@@ -109,9 +97,12 @@ public class Game
                     case ConsoleKey.LeftArrow:
                         ObjectDisplayer.ShiftCurrentFocus(_room, player, Direction.Left);
                         break;
+                    case ConsoleKey.K:
+                        ObjectDisplayer.ChangeControlsVisibility();
+                        break;
                 }
                 Thread.Sleep(1); //Ensures smoothness
-                Console.Clear(); // Clear the screen before printing the new gri
+                Console.Clear(); 
                 ObjectDisplayer.DisplayRoutine(_room, player);
                 
             }

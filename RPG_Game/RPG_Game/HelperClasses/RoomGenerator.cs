@@ -21,7 +21,6 @@ public static class RoomGenerator
         new Sword(),
         new LuckItemDecorator(new Sword()),
         new Dagger(),
-        //new PowerWeaponDecorator(new LuckItemDecorator(new Dagger())), - think what to do with something like that
         new PowerWeaponDecorator(new Hammer()),
         new PowerWeaponDecorator(new PowerWeaponDecorator(new Hammer())),
         new LuckItemDecorator(new Gold()),
@@ -33,7 +32,7 @@ public static class RoomGenerator
         new Note(),
         new Lore()
     };
-
+    //new PowerWeaponDecorator(new LuckItemDecorator(new Dagger())), - think what to do with something like that
     public static void RandomRoomGeneration(Room room)
     {
         // const objects are implicitly static
@@ -60,12 +59,3 @@ public static class RoomGenerator
         }
     }
 }
-
-//IWeapon item1 = new Hammer();
-//IWeapon item2 = new PowerWeaponDecorator(item1);
-//IWeapon item3 = new PowerWeaponDecorator(item2);
-//IItem item4 = new DexterityItemDecorator(item3);
-//IItem item5 = new Coin();
-//IItem item6 = new Gold();
-
-//List<IItem> tempItems = new List<IItem> { item1, item2, item3, item4 };

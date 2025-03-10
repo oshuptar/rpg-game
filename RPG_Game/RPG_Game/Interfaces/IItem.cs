@@ -13,6 +13,6 @@ public interface IItem
 {
     public string Name { get; }
     public int Capacity => 1; // default capacity for every item
-    public void ApplyChanges(Player player) { }
+    public void ApplyChanges(PlayerStats player) { }
     public void RevertChanges(Player player) { }
 }

@@ -17,7 +17,6 @@ public class LuckItemDecorator : ItemDecorator
         player.PlayerStats.ModifyPlayerAttribute("Luck", 2);
         item.ApplyChanges(player);
     }
-
     public override void RevertChanges(Player player)
     {
         player.PlayerStats.ModifyPlayerAttribute("Luck", -2); // the name is hardcoded, think about the way to fix this
@@ -25,5 +24,3 @@ public class LuckItemDecorator : ItemDecorator
     }
 
 }
-
-//Issue with capaciity retrievall for weapons
