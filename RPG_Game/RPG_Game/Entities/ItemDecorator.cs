@@ -1,4 +1,5 @@
-﻿using RPG_Game.Interfaces;
+﻿using RPG_Game.Entities;
+using RPG_Game.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,14 +13,9 @@ public class ItemDecorator : IItem
     protected IItem item;
     public virtual string Name => item.Name;
     public virtual int Capacity => item.Capacity; //reccursively callls this function until it reaches some concrete object
-    public virtual void ApplyChanges(Player player)
-    {
-        item.ApplyChanges(player);
-    }
-    public virtual void RevertChanges(Player player)
-    {
-        item.RevertChanges(player);
-    }
+    public virtual void ApplyChanges(PlayerStats playerStats) => item.RevertChanges(playerStats);
+    public virtual void RevertChanges(PlayerStats playerStats) => item.RevertChanges(playerStats);
+   
     public ItemDecorator(IItem item)
     {
         this.item = item;

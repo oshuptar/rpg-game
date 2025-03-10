@@ -16,7 +16,7 @@ public abstract class StorageManager
         if (item != null)
         {
             room.AddItem(item, (player.Position.x, player.Position.y));
-            item.RevertChanges(player);
+            item.RevertChanges(player.RetrievePlayerStats());
         }
         return item;
     }

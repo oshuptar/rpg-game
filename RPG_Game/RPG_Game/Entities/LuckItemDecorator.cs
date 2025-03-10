@@ -12,15 +12,15 @@ public class LuckItemDecorator : ItemDecorator
 {
     public LuckItemDecorator(IItem item) : base(item) { }
     public override string Name => item.Name + "(Increased Luck)";
-    public override void ApplyChanges(Player player)
+    public override void ApplyChanges(PlayerStats playerStats)
     {
-        player.PlayerStats.ModifyPlayerAttribute("Luck", 2);
-        item.ApplyChanges(player);
+        playerStats.ModifyPlayerAttribute("Luck", 2);
+        item.ApplyChanges(playerStats);
     }
-    public override void RevertChanges(Player player)
+    public override void RevertChanges(PlayerStats playerStats)
     {
-        player.PlayerStats.ModifyPlayerAttribute("Luck", -2); // the name is hardcoded, think about the way to fix this
-        item.RevertChanges(player);
+        playerStats.ModifyPlayerAttribute("Luck", -2); // the name is hardcoded, think about the way to fix this
+        item.RevertChanges(playerStats);
     }
 
 }

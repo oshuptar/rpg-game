@@ -23,6 +23,6 @@ public class Inventory : StorageManager
         if (item == null)
             return;
         inventory.Add(item);
-        item.ApplyChanges(player);
+        item.ApplyChanges(player.RetrievePlayerStats());
     }
 }

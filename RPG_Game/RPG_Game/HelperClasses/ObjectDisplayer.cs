@@ -122,9 +122,9 @@ public static class ObjectDisplayer
 
     public static void DisplayPlayerAttributes(Player player)
     {
-        foreach(var key in player.PlayerStats.Attributes.Keys)
+        foreach(var key in player.RetrievePlayerStats().Attributes.Keys)
         {
-            Console.Write($"{key}: {player.PlayerStats.Attributes[key]}");
+            Console.Write($"{key}: {player.RetrievePlayerStats().Attributes[key]}");
             CursorPosition = (CursorPosition.left, CursorPosition.top + 1);
             Console.SetCursorPosition(CursorPosition.left, CursorPosition.top);
         }

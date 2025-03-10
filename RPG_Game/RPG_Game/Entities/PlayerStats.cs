@@ -49,25 +49,3 @@ public class PlayerStats
     }
 }
 
-
-//public void AddCoin()
-//{
-//    CollectedCoins++;
-//    TotalMoneyValue += Coin.Value;
-//}
-//public void AddGold()
-//{
-//    CollectedGold++;
-//    TotalMoneyValue += Gold.Value;
-//}
-//public void RemoveCoin()
-//{
-//    CollectedCoins--;
-//    TotalMoneyValue -= Coin.Value;
-//}
-
-//public void RemoveGold()
-//{
-//    Attributes--;
-//    TotalMoneyValue -= Gold.Value;
-//}

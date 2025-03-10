@@ -14,7 +14,8 @@ namespace RPG_Game.Entiities;
 public class Player : ICanMove, ICanReceiveDamage
 {
     public (int x, int y) Position { get; private set; }
-    public PlayerStats PlayerStats { get; private set; } = new PlayerStats();
+
+    private PlayerStats PlayerStats  = new PlayerStats();
 
     private Hands Hands = new Hands();
 
@@ -69,8 +70,7 @@ public class Player : ICanMove, ICanReceiveDamage
         return false;
     }
     public void ReceiveDamage(int damage) { }// To implement
-    // Must change player's attrbutes when needed
-    public void PickUp(IItem? item) => Inventory.PickUp(item, this);
+    public void PickUp(IItem? item) => Inventory.PickUp(item, this); //changes player's attrbutes when picked up
     public bool Equip(IItem? item, bool isInInventory = true) => Hands.Equip(item, this, isInInventory);
     public void UnEquip(int index)
     {
@@ -98,5 +98,6 @@ public class Player : ICanMove, ICanReceiveDamage
     }
     public List<IItem> RetrieveHands() => this.Hands.hands;
     public List<IItem> RetrieveInventory() => this.Inventory.inventory;
+    public PlayerStats RetrievePlayerStats() => this.PlayerStats;
 
 }
