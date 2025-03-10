@@ -11,7 +11,6 @@ namespace RPG_Game.Entities;
 
 public class PlayerStats
 {
-    // How to encapsuate objects inside
     public Dictionary<string, int> Attributes { get; private set; } = new Dictionary<string, int>();
     public PlayerStats()
     {

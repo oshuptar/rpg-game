@@ -13,7 +13,7 @@ public class Hands : StorageManager
 {
     public const int MaxCapacity = 2; // MaxCapacity of Hands
     public int Capacity { get; private set; } = 0;
-    public List<IItem> hands { get; } = new List<IItem>(); //technicaly we cn equip any item to use it later on like elixir
+    public List<IItem> hands { get; } = new List<IItem>(); //technicaly we can equip any item to use it later on like elixir
 
     public bool Equip(IItem? item, Player player ,bool isInInventory = true)
     {

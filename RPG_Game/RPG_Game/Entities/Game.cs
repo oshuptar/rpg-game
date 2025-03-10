@@ -16,7 +16,6 @@ public class Game
 
     public void StartGame()
     {
-
         Player player = new Player();
         ObjectDisplayer.DisplayControls();
         Console.WriteLine(" - To Start the Game press any key");
@@ -25,11 +24,11 @@ public class Game
         IItem? item;
 
         int i = 0;
-        while (true) // How to make a smooth output?
+        while (true)
         {
             if (Console.KeyAvailable)
             {
-                  // aDD rOUTINES.cS do a routine for moving
+                // Add routines for every key
                 var key = Console.ReadKey(true).Key; // Retrieves the key
 
                 if (i == 0)
@@ -105,12 +104,10 @@ public class Game
                         ObjectDisplayer.ChangeControlsVisibility();
                         break;
                 }
-                Thread.Sleep(1); //Ensures smoothness
-                //Console.Clear(); 
+                //Thread.Sleep(1); //Ensures smoothness
                 ObjectDisplayer.DisplayRoutine(_room, player);
 
                 i++;
-                
             }
 
         }

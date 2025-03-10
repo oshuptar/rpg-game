@@ -11,8 +11,7 @@ namespace RPG_Game.Entiities;
 
 public class Room
 {
-    //private class ensures encapsulation
-    public class Cell // do we need to use decorator pattern for a cell?
+    public class Cell 
     {
         public CellType CellType { get; set; } = CellType.Empty;
         public string PrintCell()
@@ -111,30 +110,3 @@ public class Room
         return tempItem;
     }
 }
-
-
-//if ((Grid[position.x, position.y].CellType & cellType) != 0) // we assume only one object of a type can be placed at the position; at least for now
-//    return false;
-
-// no need to check for a wall
-
-//public void PrintCell()
-//{
-//    switch (CellType)
-//    {
-//        case CellType.Empty:
-//            Console.Write(" ");
-//            break;
-//        case CellType.Wall:
-//            Console.Write("█");
-//            break;
-//        //Ensures Player sign stays on top
-//        case CellType cType when (cType & CellType.Player) != 0: // Constant pattern matching
-//            Console.Write("¶");
-//            break;
-//        default:
-//            Console.Write("I");
-//            break;
-
-//    }
-//}
