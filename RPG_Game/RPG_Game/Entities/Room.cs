@@ -15,24 +15,19 @@ public class Room
     public class Cell // do we need to use decorator pattern for a cell?
     {
         public CellType CellType { get; set; } = CellType.Empty;
-        public void PrintCell()
+        public string PrintCell()
         {
             switch (CellType)
             {
                 case CellType.Empty:
-                    Console.Write(" ");
-                    break;
+                    return " ";
                 case CellType.Wall:
-                    Console.Write("█");
-                    break;
+                    return "█";
                 //Ensures Player sign stays on top
                 case CellType cType when (cType & CellType.Player) != 0: // Constant pattern matching
-                    Console.Write("¶");
-                    break;
+                    return "¶";
                 default:
-                    Console.Write("I");
-                    break;
-
+                    return "I";
             }
         }
         public bool IsWalkable()
@@ -122,3 +117,24 @@ public class Room
 //    return false;
 
 // no need to check for a wall
+
+//public void PrintCell()
+//{
+//    switch (CellType)
+//    {
+//        case CellType.Empty:
+//            Console.Write(" ");
+//            break;
+//        case CellType.Wall:
+//            Console.Write("█");
+//            break;
+//        //Ensures Player sign stays on top
+//        case CellType cType when (cType & CellType.Player) != 0: // Constant pattern matching
+//            Console.Write("¶");
+//            break;
+//        default:
+//            Console.Write("I");
+//            break;
+
+//    }
+//}

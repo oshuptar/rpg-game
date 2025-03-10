@@ -23,6 +23,8 @@ public class Game
         Console.WriteLine("Have fun!");
 
         IItem? item;
+
+        int i = 0;
         while (true) // How to make a smooth output?
         {
             if (Console.KeyAvailable)
@@ -30,7 +32,9 @@ public class Game
                   // aDD rOUTINES.cS do a routine for moving
                 var key = Console.ReadKey(true).Key; // Retrieves the key
 
-                //Improve displaying of current chosen object
+                if (i == 0)
+                    Console.Clear();
+
                 switch (key)
                 {
                     case ConsoleKey.W:
@@ -102,8 +106,10 @@ public class Game
                         break;
                 }
                 Thread.Sleep(1); //Ensures smoothness
-                Console.Clear(); 
+                //Console.Clear(); 
                 ObjectDisplayer.DisplayRoutine(_room, player);
+
+                i++;
                 
             }
 

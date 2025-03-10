@@ -23,7 +23,6 @@ public class Player : ICanMove, ICanReceiveDamage
     public Player()
     {
         Position = (1, 1);
-        PlayerStats = new PlayerStats();
     }
 
     public (int, int) GetNewPosition(Direction direction)

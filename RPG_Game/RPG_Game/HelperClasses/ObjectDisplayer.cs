@@ -18,33 +18,17 @@ public static class ObjectDisplayer
     public static FocusType FocusOn { get; private set; } = FocusType.Room;
     private static (int left, int top) CursorPosition { get; set; }
     private static bool IsControlsVisible { get; set; } = true;
-    public static void DisplayItemList(List<IItem> list, string name)
-    {
-        string? output = null;
-        if (list != null && list.Count != 0)
-        {
-            // On each element of the sequence the lambda function is called
-            output = string.Join(", ", list.Select(item => item.Name));
-        }
-        // Displays none if output == null
-        Console.Write($"{name}: {output ?? "None"}\n");
-    }
 
-    public static void PrintGrid(Room room)
-    {
-        for (int i = 0; i < Room._height; i++)
-        {
-            for (int j = 0; j < Room._width; j++)
-            {
-                room.Grid[j, i].PrintCell();
-            }
-            Console.WriteLine();
-        }
-    }
-    public static void DisplayTileItems(Room room, (int x, int y) position)
-    {
-        DisplayItemList(room.Items[position.x, position.y], "Items");
-    }
+    public static void ResetFocusIndex() => CurrentFocus = 0;
+    public static void SetInventoryFocus() => FocusOn = FocusType.Inventory;
+    public static void SetHandsFocus() => FocusOn = FocusType.Hands;
+    public static void ResetFocusType() => FocusOn = FocusType.Room;
+    public static void DisplayControls(bool isControlsVisible = true) => Console.Write(ObjectRenderer.RenderControls(isControlsVisible));
+    public static StringBuilder DisplayInventory(Player player) => ObjectRenderer.RenderItemList(player.RetrieveInventory(), "Inventory");
+    public static StringBuilder DisplayEquipped(Player player) => ObjectRenderer.RenderItemList(player.RetrieveHands(), "Equipped");
+    public static StringBuilder DisplayTileItems(Room room, (int x, int y) position) => ObjectRenderer.RenderItemList(room.Items[position.x, position.y], "Items");
+    public static void ChangeControlsVisibility() => IsControlsVisible = !IsControlsVisible;
+    public static void FillLine() => Console.Write(ObjectRenderer.RenderEmptyLine());
 
     public static void DisplayCurrent(List<IItem>? list, string Object)
     {
@@ -57,7 +41,6 @@ public static class ObjectDisplayer
         Console.Write($"Current Focus (in {Object}): ");
         Console.ForegroundColor = ConsoleColor.Red;
         Console.Write($"{ output ?? "None"}");
-        Console.WriteLine();
         Console.ResetColor();
     }
 
@@ -78,23 +61,6 @@ public static class ObjectDisplayer
         }
     }
 
-    //Possibillity to navigate through inventory in 4 directions later on
-    public static void ShiftFocus(List<IItem>? list, Direction direction)
-    {
-        if (list is null)
-            return;
-
-        switch(direction)
-        {
-            case Direction.Left:
-                CurrentFocus = CurrentFocus - 1 >= 0 ? CurrentFocus - 1 : CurrentFocus;
-                break;
-            case Direction.Right:
-                CurrentFocus = CurrentFocus + 1 <= list!.Count - 1 ? CurrentFocus + 1 : CurrentFocus;
-                break;
-        }
-    }
-
     public static void ShiftCurrentFocus(Room room, Player player, Direction direction)
     {
         switch(FocusOn)
@@ -110,82 +76,72 @@ public static class ObjectDisplayer
                 break;
         }
     }
-    public static void DisplayInventory(Player player)
+    public static void ShiftFocus(List<IItem>? list, Direction direction)
     {
-        DisplayItemList(player.RetrieveInventory(), "Inventory");
-    }
+        if (list is null)
+            return;
 
-    public static void DisplayEquipped(Player player)
-    {
-        DisplayItemList(player.RetrieveHands(), "Equipped");
+        switch (direction)
+        {
+            case Direction.Left:
+                CurrentFocus = CurrentFocus - 1 >= 0 ? CurrentFocus - 1 : CurrentFocus;
+                break;
+            case Direction.Right:
+                CurrentFocus = CurrentFocus + 1 <= list!.Count - 1 ? CurrentFocus + 1 : CurrentFocus;
+                break;
+        }
     }
 
     public static void DisplayPlayerAttributes(Player player)
     {
-        foreach(var key in player.RetrievePlayerStats().Attributes.Keys)
-        {
+        foreach (var key in player.RetrievePlayerStats().Attributes.Keys)
+        { 
             Console.Write($"{key}: {player.RetrievePlayerStats().Attributes[key]}");
+            FillLine();
             CursorPosition = (CursorPosition.left, CursorPosition.top + 1);
             Console.SetCursorPosition(CursorPosition.left, CursorPosition.top);
         }
     }
 
-    public static void ResetFocusIndex() => CurrentFocus = 0;
-    public static void SetInventoryFocus() => FocusOn = FocusType.Inventory;
-    public static void SetHandsFocus() => FocusOn = FocusType.Hands;
-    public static void ResetFocusType() => FocusOn = FocusType.Room;
-
+    // Fix implementation
     public static void DisplayRoutine(Room _room, Player player)
     {
+        int noOfLists = 4;
+        int verticalSpaceSize = Room._height / 20;
+        int horizontalSpaceSize = 10;
 
-        PrintGrid(_room); // Print the grid
+        Console.SetCursorPosition(0, 0);
+        Console.Write(ObjectRenderer.RenderGrid(_room));
 
-        int spaceSize = 10;
-        int horizontalPosition = Room._width + spaceSize;
-        int verticalPosition = Room._height / 16;
+        int horizontalPosition = Room._width + horizontalSpaceSize;
+        int verticalPosition = verticalSpaceSize;
 
         (int X, int Y) oldPosition = Console.GetCursorPosition();
-        //Fix Output; Consider doing it with events
+
         Console.SetCursorPosition(horizontalPosition, verticalPosition);
-        DisplayTileItems(_room, player.Position);
+        Console.Write(DisplayTileItems(_room, player.Position));
+        FillLine();
+
         Console.SetCursorPosition(horizontalPosition, verticalPosition + 1);
-        DisplayEquipped(player);
+        Console.Write(DisplayEquipped(player));
+        FillLine();
+
         Console.SetCursorPosition(horizontalPosition, verticalPosition + 2);
-        DisplayInventory(player);
+        Console.Write(DisplayInventory(player));
+        FillLine(); 
+
         Console.SetCursorPosition(horizontalPosition, verticalPosition + 3);
         DisplayCurrentItem(_room, player);
+        FillLine();
 
-        CursorPosition = (horizontalPosition, verticalPosition + 3 + Room._height / 16);
-        Console.SetCursorPosition(CursorPosition.left,CursorPosition.top);
+        CursorPosition = (horizontalPosition, verticalPosition + noOfLists + verticalSpaceSize);
+        Console.SetCursorPosition(CursorPosition.left, CursorPosition.top);
         DisplayPlayerAttributes(player);
 
-        //CursorPosition = (horizontalPosition, verticalPosition + 3 + Room._height / 2);
-        //Console.SetCursorPosition(CursorPosition.left, CursorPosition.top);
-        Console.SetCursorPosition(oldPosition.X, oldPosition.Y + 2);
-        if (IsControlsVisible)
-            DisplayControls();
+        Console.SetCursorPosition(oldPosition.X, oldPosition.Y + verticalSpaceSize);
+        
+        DisplayControls(IsControlsVisible);
 
         Console.SetCursorPosition(oldPosition.X, oldPosition.Y);
     }
-
-    public static void DisplayControls()
-    {
-        Console.WriteLine("Controls:");
-        Console.WriteLine(" - To open/hide controls - press `K`");
-        Console.WriteLine(" - Moves in four directions are controlled by `W`, `S`, `A`, `D`");
-        Console.WriteLine(" - To pick up an item - press `E`");
-        Console.WriteLine(" - To drop an item - press `G`");
-        Console.WriteLine(" - To equip/unequip an item - press `Q`. You can equip an item from inventory or from staying on the item, depending on your focus");
-        Console.WriteLine(" - Use arrows to navigate through inventory, map items or eqquiped items");
-        Console.WriteLine(" - To enter the inventory scope - press `I`, then use arrows to change the object");
-        Console.WriteLine(" - To enter hands scope - press `H`, then use arrows to change the object");
-        Console.WriteLine(" - To leave hands or inventory scope - press `Escape`");
-    }
-
-    public static void ChangeControlsVisibility() => IsControlsVisible = !IsControlsVisible;
 }
-
-//Console.WriteLine($"Current Focus (in {Object}): {output ?? "None"}");
-//        Console.ForegroundColor = ConsoleColor.Red;
-//        Console.Write("{ output ?? "None"}");
-//        Console.ResetColor()
