@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static RPG_Game.Entiities.Room;
 
 namespace RPG_Game.HelperClasses;
 
@@ -28,11 +29,13 @@ public static class ObjectRenderer
     public static StringBuilder RenderGrid(Room room)
     {
         StringBuilder sb = new StringBuilder();
+        Cell[,] grid = room.RetrieveGrid();
+
         for (int i = 0; i < Room._height; i++)
         {
             for (int j = 0; j < Room._width; j++)
             {
-                sb.Append(room.Grid[j, i].PrintCell());
+                sb.Append(grid[j, i].PrintCell());
             }
             sb.Append('\n');
         }
