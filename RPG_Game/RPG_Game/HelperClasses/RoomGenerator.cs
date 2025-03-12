@@ -40,7 +40,7 @@ public static class RoomGenerator
         int widthPlayAreaSize = Room._width - 2 * Room._frameSize;
         int heightPlayAreaSize = Room._height - 2 * Room._frameSize;
         Random random = new Random();
-        for (int i = 0; i < widthPlayAreaSize * heightPlayAreaSize / 10; i++)
+        for (int i = 0; i < widthPlayAreaSize * heightPlayAreaSize / 5; i++)
         {
             int X = Room._frameSize + random.Next() % (widthPlayAreaSize - Room._frameSize);
             int Y = Room._frameSize + random.Next() % (heightPlayAreaSize - Room._frameSize);
@@ -49,7 +49,7 @@ public static class RoomGenerator
 
         int randomIndex;
         // %20 filled with different items
-        for (int i = 0; i < widthPlayAreaSize * heightPlayAreaSize / 5; i++)
+        for (int i = 0; i < widthPlayAreaSize * heightPlayAreaSize / 8; i++)
         {
             int X = Room._frameSize + random.Next() % (widthPlayAreaSize - Room._frameSize);
             int Y = Room._frameSize + random.Next() % (heightPlayAreaSize - Room._frameSize);
@@ -59,3 +59,6 @@ public static class RoomGenerator
         }
     }
 }
+
+// Randomize two points on the map and try to connect them to generate paths
+// The starting position does not need to be the 0,0 point
