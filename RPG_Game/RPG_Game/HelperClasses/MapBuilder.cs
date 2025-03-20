@@ -58,8 +58,8 @@ public class MapBuilder : IBuilder
     private const int _centralRoomWidth = Room._defaultWidth / 3;
     private const int _centralRoomHeight = Room._defaultHeight / 3;
 
-    private const int _spatialGridCellWidth = Room._defaultWidth / 6;
-    private const int _spatialGridCellHeight = Room._defaultHeight / 6;
+    private const int _spatialGridCellWidth = Room._defaultWidth / 10;
+    private const int _spatialGridCellHeight = Room._defaultHeight / 10;
 
     private int _maxRoomWidth = Math.Min(_centralRoomWidth - 1, _spatialGridCellWidth);
     private int _maxRoomHeight = Math.Min(_centralRoomHeight - 1, _spatialGridCellHeight);
