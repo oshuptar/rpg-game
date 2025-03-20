@@ -16,6 +16,10 @@ public class Game
 
     public void StartGame()
     {
+        Console.SetWindowSize(Console.LargestWindowWidth - 50, Console.LargestWindowHeight - 10);
+        Console.WindowLeft = 0;
+        Console.WindowTop = 0;
+
         Player player = new Player();
         ObjectDisplayer.DisplayControls();
         MapBuilder map = new MapBuilder();
