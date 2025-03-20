@@ -24,9 +24,15 @@ public class Game
         map.FillDungeon();
         map.AddCentralRoom();
         map.AddChambers();
-        map.AddPaths();
+        map.AddPaths(); // Paths do not make any sense w/o chambers and central room
+        map.PlaceItems();
+        map.PlaceDecoratedWeapons();
+        map.PlaceDecoratedItems();
+        map.PlaceDecoratedItems();
+        map.SpawnPlayer(player);
 
         _room = map.GetResult();
+
         Console.WriteLine(" - To Start the Game press any key");
         Console.WriteLine("Have fun!");
 

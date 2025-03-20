@@ -22,7 +22,7 @@ public class Player : ICanMove, ICanReceiveDamage
     private Inventory Inventory = new Inventory();
     public Player()
     {
-        Position = (1, 1);
+        Position = (Room._width/2, Room._height/2);
     }
 
     public (int, int) GetNewPosition(Direction direction)
@@ -68,6 +68,8 @@ public class Player : ICanMove, ICanReceiveDamage
         }
         return false;
     }
+
+    public void PlacePlayer(Room room) => room.RetrieveGrid()[Position.x, Position.y].CellType = CellType.Player;
     public void ReceiveDamage(int damage) { }// To implement
     public void PickUp(IItem? item) => Inventory.PickUp(item, this); //changes player's attrbutes when picked up
     public bool Equip(IItem? item, bool isInInventory = true) => Hands.Equip(item, this, isInInventory);

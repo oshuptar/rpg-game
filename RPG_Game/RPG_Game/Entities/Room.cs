@@ -36,8 +36,8 @@ public class Room
         }
     };
 
-    public const int _defaultWidth = 40;
-    public const int _defaultHeight = 20;
+    public const int _defaultWidth = 60;
+    public const int _defaultHeight = 30;
     public const int _frameSize = 1;
     public const int _width = _defaultWidth + 2 * _frameSize; // additional 2 accounts for a wall as an outer frame
     public const int _height = _defaultHeight + 2 * _frameSize; 

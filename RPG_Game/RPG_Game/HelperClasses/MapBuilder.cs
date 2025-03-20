@@ -19,23 +19,14 @@ public class MapBuilder : IBuilder
 {
     private static List<IItem> ItemList = new List<IItem>()
     {
-        new Hammer(),
-        new Sword(),
-        new LuckItemDecorator(new Sword()),
-        new Dagger(),
-        new PowerWeaponDecorator(new Hammer()),
-        new PowerWeaponDecorator(new PowerWeaponDecorator(new Hammer())),
-        new LuckItemDecorator(new Gold()),
         new Gold(),
         new Coin(),
-        new LuckItemDecorator( new PowerWeaponDecorator(new PowerWeaponDecorator(new Hammer()))),
         new Key(),
-        new LuckItemDecorator(new Key()),
         new Note(),
         new Lore()
     };
 
-    private static List<IItem> DecoratedItems = new List<IItem>()
+    private static List<IItem> DecoratedItemList = new List<IItem>()
     {
         new LuckItemDecorator(new Key()),
         new LuckItemDecorator(new Gold()),
@@ -44,12 +35,31 @@ public class MapBuilder : IBuilder
         new LuckItemDecorator(new LuckItemDecorator (new Coin())),
     };
 
-    private Room _room;
-    private const int _centralRoomWidth = Room._defaultWidth / 4;
-    private const int _centralRoomHeight = Room._defaultHeight / 4;
+    private static List<IItem> WeaponList = new List<IItem>()
+    {
+        new Hammer(),
+        new Sword(),
+        new Dagger(),
+    };
 
-    private const int _spatialGridCellWidth = Room._defaultWidth / 5;
-    private const int _spatialGridCellHeight = Room._defaultHeight / 5;
+    private static List<IItem> DecoratedWeaponList = new List<IItem>()
+    {
+        new LuckItemDecorator(new Sword()),
+        new PowerWeaponDecorator(new Hammer()),
+        new PowerWeaponDecorator(new PowerWeaponDecorator(new Hammer())),
+        new LuckItemDecorator( new PowerWeaponDecorator(new PowerWeaponDecorator(new Hammer()))),
+        new Hammer(),
+        new Sword(),
+        new Dagger(),
+        new PowerWeaponDecorator(new Dagger())
+    };
+
+    private Room _room;
+    private const int _centralRoomWidth = Room._defaultWidth / 3;
+    private const int _centralRoomHeight = Room._defaultHeight / 3;
+
+    private const int _spatialGridCellWidth = Room._defaultWidth / 6;
+    private const int _spatialGridCellHeight = Room._defaultHeight / 6;
 
     private int _maxRoomWidth = Math.Min(_centralRoomWidth - 1, _spatialGridCellWidth);
     private int _maxRoomHeight = Math.Min(_centralRoomHeight - 1, _spatialGridCellHeight);
@@ -60,6 +70,13 @@ public class MapBuilder : IBuilder
     public MapBuilder() => this.ResetMapConfiguration();
 
     public void ResetMapConfiguration() => this._room = new Room();
+
+    public Room GetResult()
+    {
+        Room temp = this._room;
+        this.ResetMapConfiguration();
+        return temp;
+    }
 
     public void CreateEmptyDungeon()
     {
@@ -90,28 +107,24 @@ public class MapBuilder : IBuilder
         {
             if (random.Next(0, 2) == 1 || y1 == y2)
             {
-                if (x1 < x2)
-                    x1++;
-                else if (x1 > x2)
-                    x1--;
+                if (x1 < x2) x1++;
+                else if (x1 > x2) x1--;
             }
             else
             {
-                if (y1 < y2)
-                    y1++;
-                else if (y1 > y2)
-                    y1--;
+                if (y1 < y2) y1++;
+                else if (y1 > y2) y1--;
             }
-
             _room.RetrieveGrid()[x1, y1].CellType &= ~CellType.Wall;
         }
     }
-
     // Adding paths is possible once the chambers and the central room is generated
     public void AddPaths()
     {
         for (int i = 0; i < _roomVertices.Count; i++)
             ConnectRooms(_roomVertices[i], _centralRoom);
+
+
     }
     public void AddChambers()
     {
@@ -147,22 +160,25 @@ public class MapBuilder : IBuilder
 
         _centralRoom = new RoomVertex(left, top, MapBuilder._centralRoomWidth, MapBuilder._centralRoomHeight);
     }
-    public void PlaceItems()
-    {
 
-    }
-    public void PlaceDecoratedItems()
+    public void RandomizeItemsPlacement(List<IItem> items)
     {
+        Random random = new Random();
+        for (int i = 0; i < Room._defaultWidth * Room._defaultHeight / 8; i++)
+        {
+            int X = Room._frameSize + random.Next() % (Room._defaultWidth - Room._frameSize);
+            int Y = Room._frameSize + random.Next() % (Room._defaultHeight - Room._frameSize);
 
+            int randomIndex = random.Next() % items.Count;
+            _room.AddItem(items[randomIndex], (X, Y));
+        }
     }
-    public void PlaceWeapons()
-    {
 
-    }
-    public void PlaceDecoratedWeapons()
-    {
-
-    }
+    public void SpawnPlayer(Player player) => player.PlacePlayer(_room);
+    public void PlaceItems() => RandomizeItemsPlacement(ItemList);
+    public void PlaceDecoratedItems() => RandomizeItemsPlacement(DecoratedItemList);
+    public void PlaceWeapons() => RandomizeItemsPlacement(WeaponList);
+    public void PlaceDecoratedWeapons() => RandomizeItemsPlacement(DecoratedWeaponList);
     public void PlacePotions()
     {
 
@@ -170,12 +186,5 @@ public class MapBuilder : IBuilder
     public void PlaceEnemies()
     {
 
-    }
-
-    public Room GetResult()
-    {
-        Room temp = this._room;
-        this.ResetMapConfiguration();
-        return temp;
     }
 }
