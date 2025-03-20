@@ -36,29 +36,15 @@ public class Room
         }
     };
 
-    public const int _defaultWidth = 20;
-    public const int _defaultHeight = 40;
+    public const int _defaultWidth = 40;
+    public const int _defaultHeight = 20;
     public const int _frameSize = 1;
     public const int _width = _defaultWidth + 2 * _frameSize; // additional 2 accounts for a wall as an outer frame
     public const int _height = _defaultHeight + 2 * _frameSize; 
     private Cell[,] Grid = new Cell[_width, _height]; //Array of references
     public List<IItem>[,] Items { get; } = new List<IItem>[_width, _height]; // Will be used to store items on each of the tile of the room
     public Cell[,] RetrieveGrid() => Grid;
-    public Room()
-    {
-        for (int i = 0; i < _width; i++)
-        {
-            for (int j = 0; j < _height; j++)
-            {
-                Grid[i, j] = new Cell();
-                if (i == 0 || j == 0 || i == _width - 1 || j == _height - 1)
-                    Grid[i, j].CellType = CellType.Wall;
-            }
-        }
-        Grid[1, 1].CellType = CellType.Player;
-
-        RoomGenerator.RandomRoomGeneration(this);
-    }
+    public Room() { }
     public bool IsPosAvailable(int x, int y)
     {
         if (x < 0 || y < 0 || x > _width - 1 || y > _height - 1)

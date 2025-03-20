@@ -11,6 +11,7 @@ namespace RPG_Game.Entities;
 
 public class Inventory : StorageManager
 {
+    // implement inventory as dictionary
     public List<IItem> inventory { get; } = new List<IItem>();
 
     public IItem? DropFromInventory(Room room, int index, Player player)

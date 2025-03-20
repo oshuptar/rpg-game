@@ -18,6 +18,15 @@ public class Game
     {
         Player player = new Player();
         ObjectDisplayer.DisplayControls();
+        MapBuilder map = new MapBuilder();
+
+        map.CreateEmptyDungeon();
+        map.FillDungeon();
+        map.AddCentralRoom();
+        map.AddChambers();
+        map.AddPaths();
+
+        _room = map.GetResult();
         Console.WriteLine(" - To Start the Game press any key");
         Console.WriteLine("Have fun!");
 
