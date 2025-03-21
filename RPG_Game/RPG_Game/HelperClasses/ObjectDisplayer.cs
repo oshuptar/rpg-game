@@ -4,6 +4,7 @@ using RPG_Game.Interfaces;
 using RPG_Game.UnusableItems;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -12,25 +13,41 @@ using System.Transactions;
 
 namespace RPG_Game.HelperClasses;
 
-public static class ObjectDisplayer
+public class ObjectDisplayer
 {
+    private static ObjectDisplayer? _objectDisplayerInstance;
+
+    private ObjectDisplayer()
+    {
+        CurrentFocus = 0;
+        FocusOn = FocusType.Room;
+        IsControlsVisible = true;
+    }
+
+    public static ObjectDisplayer GetInstance()
+    {
+        if (_objectDisplayerInstance == null)
+            ObjectDisplayer._objectDisplayerInstance = new ObjectDisplayer();
+        return _objectDisplayerInstance;
+    }
+
     public static int CurrentFocus { get; private set; } = 0;
     public static FocusType FocusOn { get; private set; } = FocusType.Room;
     private static (int left, int top) CursorPosition { get; set; }
     private static bool IsControlsVisible { get; set; } = true;
 
-    public static void ResetFocusIndex() => CurrentFocus = 0;
-    public static void SetInventoryFocus() => FocusOn = FocusType.Inventory;
-    public static void SetHandsFocus() => FocusOn = FocusType.Hands;
-    public static void ResetFocusType() => FocusOn = FocusType.Room;
-    public static void DisplayControls(bool isControlsVisible = true) => Console.Write(ObjectRenderer.RenderControls(isControlsVisible));
-    public static StringBuilder DisplayInventory(Player player) => ObjectRenderer.RenderItemList(player.RetrieveInventory(), "Inventory");
-    public static StringBuilder DisplayEquipped(Player player) => ObjectRenderer.RenderItemList(player.RetrieveHands(), "Equipped");
-    public static StringBuilder DisplayTileItems(Room room, (int x, int y) position) => ObjectRenderer.RenderItemList(room.Items[position.x, position.y], "Items");
-    public static void ChangeControlsVisibility() => IsControlsVisible = !IsControlsVisible;
-    public static void FillLine() => Console.Write(ObjectRenderer.RenderEmptyLine());
+    public void ResetFocusIndex() => CurrentFocus = 0;
+    public void SetInventoryFocus() => FocusOn = FocusType.Inventory;
+    public void SetHandsFocus() => FocusOn = FocusType.Hands;
+    public void ResetFocusType() => FocusOn = FocusType.Room;
+    public  void DisplayControls(bool isControlsVisible = true) => Console.Write(ObjectRenderer.RenderControls(isControlsVisible));
+    public StringBuilder DisplayInventory(Player player) => ObjectRenderer.RenderItemList(player.RetrieveInventory(), "Inventory");
+    public StringBuilder DisplayEquipped(Player player) => ObjectRenderer.RenderItemList(player.RetrieveHands(), "Equipped");
+    public StringBuilder DisplayTileItems(Room room, (int x, int y) position) => ObjectRenderer.RenderItemList(room.Items[position.x, position.y], "Items");
+    public void ChangeControlsVisibility() => IsControlsVisible = !IsControlsVisible;
+    public void FillLine() => Console.Write(ObjectRenderer.RenderEmptyLine());
 
-    public static void DisplayCurrent(List<IItem>? list, string Object)
+    public void DisplayCurrent(List<IItem>? list, string Object)
     {
         string? output = null;
         if (list != null && list.Count != 0)
@@ -44,7 +61,7 @@ public static class ObjectDisplayer
         Console.ResetColor();
     }
 
-    public static void DisplayCurrentItem(Room room, Player player)
+    public void DisplayCurrentItem(Room room, Player player)
     {
 
         switch (FocusOn)
@@ -61,7 +78,7 @@ public static class ObjectDisplayer
         }
     }
 
-    public static void ShiftCurrentFocus(Room room, Player player, Direction direction)
+    public void ShiftCurrentFocus(Room room, Player player, Direction direction)
     {
         switch(FocusOn)
         {
@@ -76,7 +93,7 @@ public static class ObjectDisplayer
                 break;
         }
     }
-    public static void ShiftFocus(List<IItem>? list, Direction direction)
+    public void ShiftFocus(List<IItem>? list, Direction direction)
     {
         if (list is null)
             return;
@@ -92,7 +109,7 @@ public static class ObjectDisplayer
         }
     }
 
-    public static void DisplayPlayerAttributes(Player player)
+    public void DisplayPlayerAttributes(Player player)
     {
         foreach (var key in player.RetrievePlayerStats().Attributes.Keys)
         { 
@@ -103,8 +120,15 @@ public static class ObjectDisplayer
         }
     }
 
+    public void WelcomeRoutine()
+    {
+        this.DisplayControls();
+        Console.WriteLine(" - To Start the Game press any key");
+        Console.WriteLine("Have fun!");
+    }
+
     // Fix implementation
-    public static void DisplayRoutine(Room _room, Player player)
+    public void DisplayRoutine(Room _room, Player player)
     {
         int noOfLists = 4;
         int verticalSpaceSize = Room._height / 20;

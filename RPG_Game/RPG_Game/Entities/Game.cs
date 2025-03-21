@@ -21,24 +21,22 @@ public class Game
         Console.WindowTop = 0;
 
         Player player = new Player();
-        ObjectDisplayer.DisplayControls();
+        ObjectDisplayer displayer = ObjectDisplayer.GetInstance();
         MapBuilder map = new MapBuilder();
 
         map.CreateEmptyDungeon();
         map.FillDungeon();
         map.AddCentralRoom();
-        map.AddChambers();
+        //map.AddChambers();
         map.AddPaths(); // Paths do not make any sense w/o chambers and central room
         map.PlaceItems();
         map.PlaceDecoratedWeapons();
         map.PlaceDecoratedItems();
         map.PlaceDecoratedItems();
         map.SpawnPlayer(player);
-
         _room = map.GetResult();
 
-        Console.WriteLine(" - To Start the Game press any key");
-        Console.WriteLine("Have fun!");
+        displayer.WelcomeRoutine();
 
         IItem? item;
 
@@ -57,75 +55,73 @@ public class Game
                 {
                     case ConsoleKey.W:
                         player.Move(Direction.Up, _room);
-                        ObjectDisplayer.ResetFocusIndex();
+                        displayer.ResetFocusIndex();
                         break;
                     case ConsoleKey.S:
                         player.Move(Direction.Down, _room);
-                        ObjectDisplayer.ResetFocusIndex();
+                        displayer.ResetFocusIndex();
                         break;
                     case ConsoleKey.A:
                         player.Move(Direction.Left, _room);
-                        ObjectDisplayer.ResetFocusIndex();
+                        displayer.ResetFocusIndex();
                         break;
                     case ConsoleKey.D:
                         player.Move(Direction.Right, _room);
-                        ObjectDisplayer.ResetFocusIndex();
+                        displayer.ResetFocusIndex();
                         break;
                     case ConsoleKey.E:
                         item = _room.RemoveItem(player.Position, ObjectDisplayer.CurrentFocus);
                         player.PickUp(item);
-                        ObjectDisplayer.ResetFocusIndex();
+                        displayer.ResetFocusIndex();
                         break;
                     case ConsoleKey.G when ObjectDisplayer.FocusOn == FocusType.Inventory: //Objects can be dropped from inventory and from hands
                         item = player.Drop(_room, ObjectDisplayer.CurrentFocus, true);
-                        ObjectDisplayer.ResetFocusIndex();
+                        displayer.ResetFocusIndex();
                         break;
                     case ConsoleKey.G when ObjectDisplayer.FocusOn == FocusType.Hands:
                         item = player.Drop(_room, ObjectDisplayer.CurrentFocus, false);
-                        ObjectDisplayer.ResetFocusIndex();
+                        displayer.ResetFocusIndex();
                         break;
                     case ConsoleKey.I: // to Enter inventory; changes the behaviour of arrows
-                        ObjectDisplayer.SetInventoryFocus();
-                        ObjectDisplayer.ResetFocusIndex();
+                        displayer.SetInventoryFocus();
+                        displayer.ResetFocusIndex();
                         break;
                     case ConsoleKey.H:
-                        ObjectDisplayer.SetHandsFocus();
-                        ObjectDisplayer.ResetFocusIndex();
+                        displayer.SetHandsFocus();
+                        displayer.ResetFocusIndex();
                         break;
                     case ConsoleKey.Q when ObjectDisplayer.FocusOn == FocusType.Inventory:
 
                         item = player.Retrieve(ObjectDisplayer.CurrentFocus, true);
                         if(player.Equip(item)) 
                             item = player.Remove(ObjectDisplayer.CurrentFocus, true);
-                        ObjectDisplayer.ResetFocusIndex();
+                        displayer.ResetFocusIndex();
                         break;
 
                     case ConsoleKey.Q when ObjectDisplayer.FocusOn == FocusType.Room:
                         item = _room.RemoveItem(player.Position, ObjectDisplayer.CurrentFocus);
                         if (!player.Equip(item, false))
                             _room.AddItem(item, player.Position);
-                        ObjectDisplayer.ResetFocusIndex();
+                        displayer.ResetFocusIndex();
                         break;
                     case ConsoleKey.Q when ObjectDisplayer.FocusOn == FocusType.Hands:
                         player.UnEquip(ObjectDisplayer.CurrentFocus);
                         break;
                     case ConsoleKey.Escape:
-                        ObjectDisplayer.ResetFocusType();
-                        ObjectDisplayer.ResetFocusIndex();
+                        displayer.ResetFocusType();
+                        displayer.ResetFocusIndex();
                         break;
                     case ConsoleKey.RightArrow:
-                        ObjectDisplayer.ShiftCurrentFocus(_room, player, Direction.Right);
+                        displayer.ShiftCurrentFocus(_room, player, Direction.Right);
                         break;
                     case ConsoleKey.LeftArrow:
-                        ObjectDisplayer.ShiftCurrentFocus(_room, player, Direction.Left);
+                        displayer.ShiftCurrentFocus(_room, player, Direction.Left);
                         break;
                     case ConsoleKey.K:
-                        ObjectDisplayer.ChangeControlsVisibility();
+                        displayer.ChangeControlsVisibility();
                         break;
                 }
-                //Thread.Sleep(1); //Ensures smoothness
-                ObjectDisplayer.DisplayRoutine(_room, player);
-
+                displayer.DisplayRoutine(_room, player);
                 i++;
             }
 

@@ -22,7 +22,7 @@ public class Player : ICanMove, ICanReceiveDamage
     private Inventory Inventory = new Inventory();
     public Player()
     {
-        Position = (Room._width/2, Room._height/2);
+        Position = (1, 1);
     }
 
     public (int, int) GetNewPosition(Direction direction)

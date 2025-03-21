@@ -18,56 +18,18 @@ namespace RPG_Game.HelperClasses;
 
 public class MapBuilder : IBuilder
 {
-    private static List<IItem> ItemList = new List<IItem>()
-    {
-        new Gold(),
-        new Coin(),
-        new Key(),
-        new Note(),
-        new Lore()
-    };
-
-    private static List<IItem> DecoratedItemList = new List<IItem>()
-    {
-        new LuckItemDecorator(new Key()),
-        new LuckItemDecorator(new Gold()),
-        new LuckItemDecorator(new Coin()),
-        new LuckItemDecorator(new LuckItemDecorator(new Lore())),
-        new LuckItemDecorator(new LuckItemDecorator (new Coin())),
-    };
-
-    private static List<IItem> WeaponList = new List<IItem>()
-    {
-        new Hammer(),
-        new Sword(),
-        new Dagger(),
-    };
-
-    private static List<IItem> DecoratedWeaponList = new List<IItem>()
-    {
-        new LuckItemDecorator(new Sword()),
-        new PowerWeaponDecorator(new Hammer()),
-        new PowerWeaponDecorator(new PowerWeaponDecorator(new Hammer())),
-        new LuckItemDecorator( new PowerWeaponDecorator(new PowerWeaponDecorator(new Hammer()))),
-        new Hammer(),
-        new Sword(),
-        new Dagger(),
-        new PowerWeaponDecorator(new Dagger())
-    };
-
     private Room _room;
-    private const int _centralRoomWidth = Room._defaultWidth / 8;
-    private const int _centralRoomHeight = Room._defaultHeight / 8;
+    private ItemLists _items = ItemLists.GetInstance();
 
-    private const int _spatialGridCellWidth = Room._defaultWidth / 7;
-    private const int _spatialGridCellHeight = Room._defaultHeight / 7;
+    private const int _centralRoomWidth = Room._defaultWidth / 5;
+    private const int _centralRoomHeight = Room._defaultHeight / 5;
 
-    private int _maxRoomWidth = Math.Min(_centralRoomWidth - 1, _spatialGridCellWidth);
-    private int _maxRoomHeight = Math.Min(_centralRoomHeight - 1, _spatialGridCellHeight);
+    private const int _spatialGridCellWidth = Room._defaultWidth / 5;
+    private const int _spatialGridCellHeight = Room._defaultHeight / 5;
 
-    private List<RoomVertex> _roomVertices = new List<RoomVertex>();
+    private int _maxRoomWidth = Math.Min(_centralRoomWidth / 2, _spatialGridCellWidth);
+    private int _maxRoomHeight = Math.Min(_centralRoomHeight / 2, _spatialGridCellHeight);
 
-    private RoomVertex _centralRoom;
     public MapBuilder() => this.ResetMapConfiguration();
 
     public void ResetMapConfiguration() => this._room = new Room();
@@ -96,34 +58,9 @@ public class MapBuilder : IBuilder
                 _room.AddObject(CellType.Wall, (i, j));
     }
 
-    void ConnectRooms(RoomVertex room1, RoomVertex room2)
-    {
-        Random random = new Random();
-        (int x1, int y1) = (room1.left + random.Next(0, room1.width), room1.top + random.Next(0, room1.height));
-
-        (int x2, int y2) = (room2.left + random.Next(room2.width/2 - 1, room2.width/2), room2.top + random.Next(room2.height/2, room2.height/2 + 1));
-
-        // We connect any two points inside the room
-        while (x1 != x2 || y1 != y2)
-        {
-            if (random.Next(0, 2) == 1 || y1 == y2)
-            {
-                if (x1 < x2 && random.Next(0, 2) == 1) x1++;
-                else if (x1 > x2) x1--;
-            }
-            else
-            {
-                if (y1 < y2 && random.Next(0, 2) == 1) y1++;
-                else if (y1 > y2) y1--;
-            }
-            _room.RetrieveGrid()[x1, y1].CellType &= ~CellType.Wall;
-        }
-    }
     // Adding paths is possible once the chambers and the central room is generated
     public void AddPaths()
     {
-        //for (int i = 0; i < _roomVertices.Count; i++)
-        //    ConnectRooms(_roomVertices[i], _centralRoom);
         Random random = new Random();
         int startX = 2 * random.Next(0, Room._width / 2) + 1;
         int startY = 2 * random.Next(0, Room._height / 2) + 1;
@@ -141,6 +78,7 @@ public class MapBuilder : IBuilder
         _room.RetrieveGrid()[startX, startY].CellType &= ~CellType.Wall;
 
         List<(int x, int y)> directions = new List<(int, int)> { (-2, 0), (2, 0), (0, -2), (0, 2) };
+
         // Shuffles a list
         for (int i = directions.Count - 1; i >= 0; i--)
         {
@@ -159,13 +97,12 @@ public class MapBuilder : IBuilder
                 DFS(newPosition.x, newPosition.y, visited, random);
             }
         }
-        
     }
 
     public bool IsInRange((int x, int y)position)
     {
         if (position.x >= Room._frameSize && position.x < Room._width - Room._frameSize
-            && position.y >= Room._frameSize & position.y < Room._height - Room._frameSize)
+            && position.y >= Room._frameSize && position.y < Room._height - Room._frameSize)
             return true;
         return false;
     }
@@ -176,11 +113,11 @@ public class MapBuilder : IBuilder
         {
             for (int j = 0; j < _defaultHeight / _spatialGridCellHeight; j++)
             {
-                int x = random.Next(i * _spatialGridCellWidth + 1, (i + 1) * _spatialGridCellWidth + 1);
-                int y = random.Next(j * _spatialGridCellHeight + 1, (j + 1) * _spatialGridCellHeight + 1);
+                int x = random.Next(1 + i * _spatialGridCellWidth, (i + 1) * _spatialGridCellWidth);
+                int y = random.Next(1 + j * _spatialGridCellHeight, (j + 1) * _spatialGridCellHeight);
 
-                int width = random.Next(2, _maxRoomWidth + 1);
-                int height = random.Next(2, _maxRoomHeight + 1);
+                int width = random.Next(2, _maxRoomWidth);
+                int height = random.Next(2, _maxRoomHeight);
 
                 if (x + width >= Room._width || y + height >= Room._height) continue;
 
@@ -188,26 +125,27 @@ public class MapBuilder : IBuilder
                     for (int m = y; m < y + height; m++)
                         _room.RetrieveGrid()[k, m].CellType &= ~CellType.Wall;
 
-                _roomVertices.Add(new RoomVertex(x, y, width, height));
+                //_roomVertices.Add(new RoomVertex(x, y, width, height));
             }
         }
     }
     public void AddCentralRoom()
     {
-        int left = Room._defaultWidth / 2 - MapBuilder._centralRoomWidth / 2;
-        int top = Room._defaultHeight / 2 - MapBuilder._centralRoomHeight / 2;
+        // + 1 ensures better positioning due to inetegr division
+        int left = Room._defaultWidth / 2 - MapBuilder._centralRoomWidth / 2 + 1;
+        int top = Room._defaultHeight / 2 - MapBuilder._centralRoomHeight / 2 + 1;
 
         for (int i = left; i < left + MapBuilder._centralRoomWidth; i++)
             for (int j = top; j < top + MapBuilder._centralRoomHeight; j++)
                 _room.RetrieveGrid()[i, j].CellType &= ~CellType.Wall;
 
-        _centralRoom = new RoomVertex(left, top, MapBuilder._centralRoomWidth, MapBuilder._centralRoomHeight);
+        //_centralRoom = new RoomVertex(left, top, MapBuilder._centralRoomWidth, MapBuilder._centralRoomHeight);
     }
 
     public void RandomizeItemsPlacement(List<IItem> items)
     {
         Random random = new Random();
-        for (int i = 0; i < Room._defaultWidth * Room._defaultHeight / 8; i++)
+        for (int i = 0; i < Room._defaultWidth * Room._defaultHeight / 10; i++)
         {
             int X = Room._frameSize + random.Next() % (Room._defaultWidth - Room._frameSize);
             int Y = Room._frameSize + random.Next() % (Room._defaultHeight - Room._frameSize);
@@ -218,10 +156,10 @@ public class MapBuilder : IBuilder
     }
 
     public void SpawnPlayer(Player player) => player.PlacePlayer(_room);
-    public void PlaceItems() => RandomizeItemsPlacement(ItemList);
-    public void PlaceDecoratedItems() => RandomizeItemsPlacement(DecoratedItemList);
-    public void PlaceWeapons() => RandomizeItemsPlacement(WeaponList);
-    public void PlaceDecoratedWeapons() => RandomizeItemsPlacement(DecoratedWeaponList);
+    public void PlaceItems() => RandomizeItemsPlacement(_items.ItemList);
+    public void PlaceDecoratedItems() => RandomizeItemsPlacement(_items.DecoratedItemList);
+    public void PlaceWeapons() => RandomizeItemsPlacement(_items.WeaponList);
+    public void PlaceDecoratedWeapons() => RandomizeItemsPlacement(_items.DecoratedWeaponList);
     public void PlacePotions()
     {
 
@@ -231,3 +169,34 @@ public class MapBuilder : IBuilder
 
     }
 }
+
+
+//for (int i = 0; i < _roomVertices.Count; i++)
+//    ConnectRooms(_roomVertices[i], _centralRoom);
+
+//void ConnectRooms(RoomVertex room1, RoomVertex room2)
+//{
+//    Random random = new Random();
+//    (int x1, int y1) = (room1.left + random.Next(0, room1.width), room1.top + random.Next(0, room1.height));
+
+//    (int x2, int y2) = (room2.left + random.Next(room2.width/2 - 1, room2.width/2), room2.top + random.Next(room2.height/2, room2.height/2 + 1));
+
+//    // We connect any two points inside the room
+//    while (x1 != x2 || y1 != y2)
+//    {
+//        if (random.Next(0, 2) == 1 || y1 == y2)
+//        {
+//            if (x1 < x2 && random.Next(0, 2) == 1) x1++;
+//            else if (x1 > x2) x1--;
+//        }
+//        else
+//        {
+//            if (y1 < y2 && random.Next(0, 2) == 1) y1++;
+//            else if (y1 > y2) y1--;
+//        }
+//        _room.RetrieveGrid()[x1, y1].CellType &= ~CellType.Wall;
+//    }
+//}
+
+//private List<RoomVertex> _roomVertices = new List<RoomVertex>();
+//private RoomVertex _centralRoom;

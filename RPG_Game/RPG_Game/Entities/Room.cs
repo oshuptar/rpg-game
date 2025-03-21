@@ -20,9 +20,8 @@ public class Room
             {
                 case CellType.Empty:
                     return " ";
-                case CellType.Wall:
+                case CellType cType when (cType & CellType.Wall) != 0:
                     return "█";
-                //Ensures Player sign stays on top
                 case CellType cType when (cType & CellType.Player) != 0: // Constant pattern matching
                     return "¶";
                 default:
@@ -56,7 +55,7 @@ public class Room
     // this method is called after the check or from active position
     public bool AddObject(CellType cellType, (int x, int y) position)
     {
-        Grid[position.x, position.y].CellType = Grid[position.x, position.y].CellType | cellType;
+        Grid[position.x, position.y].CellType |= cellType;
         return true;
     }
 
