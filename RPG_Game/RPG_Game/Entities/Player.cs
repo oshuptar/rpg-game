@@ -69,7 +69,7 @@ public class Player : ICanMove, ICanReceiveDamage
         return false;
     }
 
-    public void PlacePlayer(Room room) => room.RetrieveGrid()[Position.x, Position.y].CellType = CellType.Player;
+    public void PlacePlayer(Room room) => room.RetrieveGrid()[Position.x, Position.y].CellType |= CellType.Player;
     public void ReceiveDamage(int damage) { }// To implement
     public void PickUp(IItem? item) => Inventory.PickUp(item, this); //changes player's attrbutes when picked up
     public bool Equip(IItem? item, bool isInInventory = true) => Hands.Equip(item, this, isInInventory);
