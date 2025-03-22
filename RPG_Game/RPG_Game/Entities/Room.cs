@@ -20,10 +20,12 @@ public class Room
             {
                 case CellType.Empty:
                     return " ";
-                case CellType cType when (cType & CellType.Wall) != 0:
+                case CellType.Wall:
                     return "█";
                 case CellType cType when (cType & CellType.Player) != 0: // Constant pattern matching
                     return "¶";
+                //case CellType cType when (cType & CellType.Enemy) != 0:
+                //    return "E";
                 default:
                     return "I";
             }

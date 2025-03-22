@@ -1,5 +1,6 @@
 ﻿using RPG_Game.Entities;
 using RPG_Game.Enums;
+using RPG_Game.HelperClasses;
 using RPG_Game.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -30,16 +31,16 @@ public class Player : ICanMove, ICanReceiveDamage
         (int x, int y) TempPos = Position;
         switch (direction)
         {
-            case Direction.Left:
+            case Direction.West:
                 TempPos.x -= 1;
                 break;
-            case Direction.Right:
+            case Direction.East:
                 TempPos.x += 1;
                 break;
-            case Direction.Up:
+            case Direction.North:
                 TempPos.y -= 1;
                 break;
-            case Direction.Down:
+            case Direction.South:
                 TempPos.y += 1;
                 break;
         }
@@ -64,6 +65,7 @@ public class Player : ICanMove, ICanReceiveDamage
             room.RemoveObject(CellType.Player, Position);
             room.AddObject(CellType.Player, ((int, int))TempPos);
             Position = ((int, int))TempPos;
+            ObjectDisplayer.GetInstance().LogMessage($"You moved to the {direction}");
             return true;
         }
         return false;
@@ -71,13 +73,27 @@ public class Player : ICanMove, ICanReceiveDamage
 
     public void PlacePlayer(Room room) => room.RetrieveGrid()[Position.x, Position.y].CellType |= CellType.Player;
     public void ReceiveDamage(int damage) { }// To implement
-    public void PickUp(IItem? item) => Inventory.PickUp(item, this); //changes player's attrbutes when picked up
-    public bool Equip(IItem? item, bool isInInventory = true) => Hands.Equip(item, this, isInInventory);
+    public void PickUp(IItem? item)
+    {
+        Inventory.PickUp(item, this); //changes player's attrbutes when picked up
+        if(item != null)
+            ObjectDisplayer.GetInstance().LogMessage($"You picked up {item.Name}");
+    }
+    public bool Equip(IItem? item, bool isInInventory = true)
+    {
+        bool isEquipped =  Hands.Equip(item, this, isInInventory);
+        if(isEquipped)
+            ObjectDisplayer.GetInstance().LogMessage($"You equipped {item.Name}");
+        return isEquipped;
+    }
     public void UnEquip(int index)
     {
         IItem? item = Hands.UnEquip(index);
-        if(item != null)
+        if (item != null)
+        {
             Inventory.inventory.Add(item);
+            ObjectDisplayer.GetInstance().LogMessage($"You unequipped {item?.Name}");
+        }
     }
     public IItem? Retrieve(int index, bool fromInventory)
     {
@@ -93,9 +109,15 @@ public class Player : ICanMove, ICanReceiveDamage
     }
     public IItem? Drop(Room room, int index, bool fromInventory)
     {
+        IItem? item;
         if (fromInventory)
-            return Inventory.DropFromInventory(room, index, this);
-        return Hands.DropFromHands(room, index, this);
+            item = Inventory.DropFromInventory(room, index, this);
+        item = Hands.DropFromHands(room, index, this);
+
+        if(item != null)
+            ObjectDisplayer.GetInstance().LogMessage($"You dropped {item.Name}");
+
+        return item;
     }
     public List<IItem> RetrieveHands() => this.Hands.hands;
     public List<IItem> RetrieveInventory() => this.Inventory.inventory;

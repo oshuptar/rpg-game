@@ -13,5 +13,6 @@ public enum CellType // what if two objects of the same kind are placed on the s
     Wall = 1, // We cannot place items where the wall is placed, add validation
     Player = 2,
     Item = 4,
+    Enemy = 8,
 }
 

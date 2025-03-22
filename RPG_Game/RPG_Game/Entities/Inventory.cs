@@ -16,7 +16,8 @@ public class Inventory : StorageManager
 
     public IItem? DropFromInventory(Room room, int index, Player player)
     {
-        return Drop(room, index, inventory, player);
+        IItem? item = Drop(room, index, inventory, player);
+        return item;
     }
 
     public void PickUp(IItem? item, Player player)

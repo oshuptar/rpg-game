@@ -73,7 +73,7 @@ public class MapInstructionConfigurator : IConfigurator
 
     public void PlaceDecoratedItems()
     {
-        if (!ItemControls)
+        if (!ItemControls && MoveControls)
         {
             AddItemControls();
             ItemControls = true;
@@ -82,13 +82,16 @@ public class MapInstructionConfigurator : IConfigurator
 
     public void PlaceDecoratedWeapons()
     {
-        if (!ItemControls)
+        if (!ItemControls && MoveControls)
         {
             AddItemControls();
             ItemControls = true;
         }
-        _sb.Append(" - Decorated items can change player's attributes once picked up\n");
-        ObjectRenderer.GetInstance().noOfControlsLines += 1;
+        else if (MoveControls)
+        {
+            _sb.Append(" - Decorated items can change player's attributes once picked up\n");
+            ObjectRenderer.GetInstance().noOfControlsLines += 1;
+        }
     }
 
     public void PlaceEnemies()
@@ -98,7 +101,7 @@ public class MapInstructionConfigurator : IConfigurator
 
     public void PlaceItems()
     {
-        if (!ItemControls)
+        if (!ItemControls && MoveControls)
         {
             AddItemControls();
             ItemControls = true;
@@ -107,17 +110,21 @@ public class MapInstructionConfigurator : IConfigurator
 
     public void PlacePotions()
     {
-        if (!ItemControls)
+        if (!ItemControls && MoveControls)
         {
             AddItemControls();
             ItemControls = true;
         }
-        _sb.Append(" - Potions can affect player's attributes\n");
+        else if (MoveControls)
+        {
+            _sb.Append(" - Potions can affect player's attributes\n");
+            ObjectRenderer.GetInstance().noOfControlsLines++;
+        }
     }
 
     public void PlaceWeapons()
     {
-        if (!ItemControls)
+        if (!ItemControls && MoveControls)
         {
             AddItemControls();
             ItemControls = true;

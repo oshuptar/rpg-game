@@ -16,7 +16,12 @@ namespace RPG_Game.HelperClasses;
 public class ObjectDisplayer
 {
     private static ObjectDisplayer? _objectDisplayerInstance;
+    private const int _verticalSpaceSize = Room._height / 20;
+    private const int _horizontalSpaceSize = Room._width / 10;
     private Room _room = new Room();
+
+    //private (int left, int top) GridPosition = (0, 0);
+    //private (int left, int top)
 
     public int CurrentFocus { get; private set; }
     public FocusType FocusOn { get; private set; }
@@ -101,12 +106,13 @@ public class ObjectDisplayer
         if (list is null)
             return;
 
+        // Fix this enum
         switch (direction)
         {
-            case Direction.Left:
+            case Direction.West:
                 CurrentFocus = CurrentFocus - 1 >= 0 ? CurrentFocus - 1 : CurrentFocus;
                 break;
-            case Direction.Right:
+            case Direction.East:
                 CurrentFocus = CurrentFocus + 1 <= list!.Count - 1 ? CurrentFocus + 1 : CurrentFocus;
                 break;
         }
@@ -130,18 +136,23 @@ public class ObjectDisplayer
         Console.WriteLine("Have fun!");
     }
 
+    public void LogMessage(string message)
+    {
+        Console.SetCursorPosition(CursorPosition.left, CursorPosition.top);
+        Console.Write($"\"{message}\"");
+        FillLine();
+    }
+
     // Fix implementation
     public void DisplayRoutine(Player player)
     {
         int noOfLists = 4;
-        int verticalSpaceSize = Room._height / 20;
-        int horizontalSpaceSize = 10;
 
         Console.SetCursorPosition(0, 0);
         Console.Write(ObjectRenderer.GetInstance().RenderGrid(_room));
 
-        int horizontalPosition = Room._width + horizontalSpaceSize;
-        int verticalPosition = verticalSpaceSize;
+        int horizontalPosition = Room._width + _horizontalSpaceSize;
+        int verticalPosition = _verticalSpaceSize;
 
         (int X, int Y) oldPosition = Console.GetCursorPosition();
 
@@ -161,14 +172,16 @@ public class ObjectDisplayer
         DisplayCurrentItem(player);
         FillLine();
 
-        CursorPosition = (horizontalPosition, verticalPosition + noOfLists + verticalSpaceSize);
+        CursorPosition = (horizontalPosition, verticalPosition + noOfLists + _verticalSpaceSize);
         Console.SetCursorPosition(CursorPosition.left, CursorPosition.top);
         DisplayPlayerAttributes(player);
 
-        Console.SetCursorPosition(oldPosition.X, oldPosition.Y + verticalSpaceSize);
+        CursorPosition = (horizontalPosition, Console.GetCursorPosition().Top + _verticalSpaceSize);
+
+        Console.SetCursorPosition(oldPosition.X, oldPosition.Y + _verticalSpaceSize);
         
         DisplayControls(IsControlsVisible);
 
-        Console.SetCursorPosition(oldPosition.X, oldPosition.Y);
+        //Console.SetCursorPosition(oldPosition.X, oldPosition.Y);
     }
 }

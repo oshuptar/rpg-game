@@ -21,6 +21,10 @@ public class Game
         ObjectDisplayer.GetInstance().SetRoom(_room);
     }
 
+    public Game()
+    {
+    }
+
     public void StartGame()
     {
         Console.SetWindowSize(Console.LargestWindowWidth - 50, Console.LargestWindowHeight - 10);
@@ -35,7 +39,7 @@ public class Game
         map.CreateEmptyDungeon();
         map.FillDungeon();
         map.AddCentralRoom();
-        //map.AddChambers();
+        map.AddChambers();
         map.AddPaths(); // Paths do not make any sense w/o chambers and central room
         map.PlaceItems();
         map.PlaceDecoratedWeapons();
@@ -60,22 +64,36 @@ public class Game
                 if (i == 0)
                     Console.Clear();
 
+                // This is just to showcase that we can change map configuration during runtime
+                //if (i == 10)
+                //{
+                //    MapConfigurator map2 = new MapConfigurator();
+                //    map2.CreateEmptyDungeon();
+                //    map2.FillDungeon();
+                //    map2.AddCentralRoom();
+                //    map2.AddPaths(); // Paths do not make any sense w/o chambers and central room
+                //    map2.PlaceItems();
+                //    map2.PlaceDecoratedWeapons();
+                //    map2.SpawnPlayer(player);
+                //    this.SetMapConfiguration(map2);
+                //}
+
                 switch (key)
                 {
                     case ConsoleKey.W:
-                        player.Move(Direction.Up, _room);
+                        player.Move(Direction.North, _room);
                         displayer.ResetFocusIndex();
                         break;
                     case ConsoleKey.S:
-                        player.Move(Direction.Down, _room);
+                        player.Move(Direction.South, _room);
                         displayer.ResetFocusIndex();
                         break;
                     case ConsoleKey.A:
-                        player.Move(Direction.Left, _room);
+                        player.Move(Direction.West, _room);
                         displayer.ResetFocusIndex();
                         break;
                     case ConsoleKey.D:
-                        player.Move(Direction.Right, _room);
+                        player.Move(Direction.East, _room);
                         displayer.ResetFocusIndex();
                         break;
                     case ConsoleKey.E:
@@ -121,13 +139,15 @@ public class Game
                         displayer.ResetFocusIndex();
                         break;
                     case ConsoleKey.RightArrow:
-                        displayer.ShiftCurrentFocus(player, Direction.Right);
+                        displayer.ShiftCurrentFocus(player, Direction.East);
                         break;
                     case ConsoleKey.LeftArrow:
-                        displayer.ShiftCurrentFocus(player, Direction.Left);
+                        displayer.ShiftCurrentFocus(player, Direction.West);
                         break;
                     case ConsoleKey.K:
                         displayer.ChangeControlsVisibility();
+                        break;
+                    default:
                         break;
                 }
                 displayer.DisplayRoutine(player);
