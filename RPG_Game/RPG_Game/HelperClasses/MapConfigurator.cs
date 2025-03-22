@@ -16,9 +16,11 @@ using static RPG_Game.Entiities.Room;
 
 namespace RPG_Game.HelperClasses;
 
-public class MapBuilder : IBuilder
-{
+public class MapConfigurator : IConfigurator
+{ 
     private Room _room;
+    private MapInstructionConfigurator _instructionConfigurator;
+
     private ItemLists _items = ItemLists.GetInstance();
 
     private const int _centralRoomWidth = Room._defaultWidth / 5;
@@ -30,25 +32,27 @@ public class MapBuilder : IBuilder
     private int _maxRoomWidth = Math.Min(_centralRoomWidth / 2, _spatialGridCellWidth);
     private int _maxRoomHeight = Math.Min(_centralRoomHeight / 2, _spatialGridCellHeight);
 
-    public MapBuilder() => this.ResetMapConfiguration();
-
-    public void ResetMapConfiguration() => this._room = new Room();
-
-    public Room GetResult()
+    public MapConfigurator() => this.ResetMapConfiguration();
+  
+    public void ResetMapConfiguration()
     {
-        Room temp = this._room;
-        this.ResetMapConfiguration();
-        return temp;
+        this._room = new Room();
+        this._instructionConfigurator = new MapInstructionConfigurator();
     }
+
+    public Room GetResult() => this._room;
+    public MapInstructionConfigurator GetInstructionConfiguration() => this._instructionConfigurator;
 
     public void CreateEmptyDungeon()
     {
+
         for (int i = 0; i < Room._width; i++)
             for (int j = 0; j < Room._height; j++)
             {
                 _room.RetrieveGrid()[i, j] = new Cell();
                 _room.RetrieveGrid()[i, j].CellType = _room.RetrieveGrid()[i, j].CellType | CellType.Empty & ~CellType.Wall;
             }
+        this._instructionConfigurator.CreateEmptyDungeon();
     }
 
     public void FillDungeon()
@@ -56,6 +60,7 @@ public class MapBuilder : IBuilder
         for (int i = 0; i < Room._width; i++)
             for (int j = 0; j < Room._height; j++)
                 _room.AddObject(CellType.Wall, (i, j));
+        this._instructionConfigurator.FillDungeon();
     }
 
     // Adding paths is possible once the chambers and the central room is generated
@@ -70,6 +75,8 @@ public class MapBuilder : IBuilder
                 visited[i, j] = false;
 
         DFS(startX, startY, visited, random);
+
+        this._instructionConfigurator.AddPaths();
     }
 
     public void DFS(int startX, int startY, bool[,] visited, Random random)
@@ -128,18 +135,20 @@ public class MapBuilder : IBuilder
                 //_roomVertices.Add(new RoomVertex(x, y, width, height));
             }
         }
+        this._instructionConfigurator.AddChambers();
     }
     public void AddCentralRoom()
     {
         // + 1 ensures better positioning due to inetegr division
-        int left = Room._defaultWidth / 2 - MapBuilder._centralRoomWidth / 2 + 1;
-        int top = Room._defaultHeight / 2 - MapBuilder._centralRoomHeight / 2 + 1;
+        int left = Room._defaultWidth / 2 - MapConfigurator._centralRoomWidth / 2 + 1;
+        int top = Room._defaultHeight / 2 - MapConfigurator._centralRoomHeight / 2 + 1;
 
-        for (int i = left; i < left + MapBuilder._centralRoomWidth; i++)
-            for (int j = top; j < top + MapBuilder._centralRoomHeight; j++)
+        for (int i = left; i < left + MapConfigurator._centralRoomWidth; i++)
+            for (int j = top; j < top + MapConfigurator._centralRoomHeight; j++)
                 _room.RetrieveGrid()[i, j].CellType &= ~CellType.Wall;
 
         //_centralRoom = new RoomVertex(left, top, MapBuilder._centralRoomWidth, MapBuilder._centralRoomHeight);
+        this._instructionConfigurator.AddCentralRoom();
     }
 
     public void RandomizeItemsPlacement(List<IItem> items)
@@ -156,13 +165,29 @@ public class MapBuilder : IBuilder
     }
 
     public void SpawnPlayer(Player player) => player.PlacePlayer(_room);
-    public void PlaceItems() => RandomizeItemsPlacement(_items.ItemList);
-    public void PlaceDecoratedItems() => RandomizeItemsPlacement(_items.DecoratedItemList);
-    public void PlaceWeapons() => RandomizeItemsPlacement(_items.WeaponList);
-    public void PlaceDecoratedWeapons() => RandomizeItemsPlacement(_items.DecoratedWeaponList);
+    public void PlaceItems()
+    {
+        RandomizeItemsPlacement(_items.ItemList);
+        this._instructionConfigurator.PlaceItems();
+    }
+    public void PlaceDecoratedItems()
+    {
+        RandomizeItemsPlacement(_items.DecoratedItemList);
+        this._instructionConfigurator.PlaceDecoratedItems();
+    }
+    public void PlaceWeapons()
+    {
+        RandomizeItemsPlacement(_items.WeaponList);
+        this._instructionConfigurator.PlaceWeapons();
+    }
+    public void PlaceDecoratedWeapons()
+    {
+        RandomizeItemsPlacement(_items.DecoratedWeaponList);
+        this._instructionConfigurator.PlaceDecoratedWeapons();
+    }
     public void PlacePotions()
     {
-
+        
     }
     public void PlaceEnemies()
     {

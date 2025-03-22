@@ -65,7 +65,7 @@ public class Room
             return false;
         // This if-statement needs a better handling
         if (Items[position.x, position.y]?.Count == 0 || (cellType & CellType.Item) == 0)
-            Grid[position.x, position.y].CellType = Grid[position.x, position.y].CellType & ~cellType;
+            Grid[position.x, position.y].CellType &= ~cellType;
 
         return true;
     }
@@ -80,6 +80,11 @@ public class Room
             Items[position.x, position.y] = new List<IItem>();
                 
         Items[position.x, position.y].Add(item);
+    }
+
+    public void PlaceObject(IItem? item)
+    {
+
     }
 
     // index denotes the index of the item from the list to be removed

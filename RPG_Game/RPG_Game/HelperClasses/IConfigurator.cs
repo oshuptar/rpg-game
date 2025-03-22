@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace RPG_Game.HelperClasses;
 
-public interface IBuilder
+public interface IConfigurator
 {
     void ResetMapConfiguration();
     void CreateEmptyDungeon();

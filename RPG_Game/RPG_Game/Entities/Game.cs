@@ -14,6 +14,13 @@ public class Game
 {
     private Room _room = new Room();
 
+    private void SetMapConfiguration(MapConfigurator mapConfigurator)
+    {
+        _room = mapConfigurator.GetResult();
+        ObjectRenderer.SetMapInstructionConfigurator(mapConfigurator.GetInstructionConfiguration());
+        ObjectDisplayer.GetInstance().SetRoom(_room);
+    }
+
     public void StartGame()
     {
         Console.SetWindowSize(Console.LargestWindowWidth - 50, Console.LargestWindowHeight - 10);
@@ -22,7 +29,7 @@ public class Game
 
         Player player = new Player();
         ObjectDisplayer displayer = ObjectDisplayer.GetInstance();
-        MapBuilder map = new MapBuilder();
+        MapConfigurator map = new MapConfigurator();
 
         map.CreateEmptyDungeon();
         map.FillDungeon();
@@ -34,7 +41,7 @@ public class Game
         map.PlaceDecoratedItems();
         map.PlaceDecoratedItems();
         map.SpawnPlayer(player);
-        _room = map.GetResult();
+        SetMapConfiguration(map);
 
         displayer.WelcomeRoutine();
 
@@ -70,16 +77,16 @@ public class Game
                         displayer.ResetFocusIndex();
                         break;
                     case ConsoleKey.E:
-                        item = _room.RemoveItem(player.Position, ObjectDisplayer.CurrentFocus);
+                        item = _room.RemoveItem(player.Position, displayer.CurrentFocus);
                         player.PickUp(item);
                         displayer.ResetFocusIndex();
                         break;
-                    case ConsoleKey.G when ObjectDisplayer.FocusOn == FocusType.Inventory: //Objects can be dropped from inventory and from hands
-                        item = player.Drop(_room, ObjectDisplayer.CurrentFocus, true);
+                    case ConsoleKey.G when displayer.FocusOn == FocusType.Inventory: //Objects can be dropped from inventory and from hands
+                        item = player.Drop(_room, displayer.CurrentFocus, true);
                         displayer.ResetFocusIndex();
                         break;
-                    case ConsoleKey.G when ObjectDisplayer.FocusOn == FocusType.Hands:
-                        item = player.Drop(_room, ObjectDisplayer.CurrentFocus, false);
+                    case ConsoleKey.G when displayer.FocusOn == FocusType.Hands:
+                        item = player.Drop(_room, displayer.CurrentFocus, false);
                         displayer.ResetFocusIndex();
                         break;
                     case ConsoleKey.I: // to Enter inventory; changes the behaviour of arrows
@@ -90,22 +97,22 @@ public class Game
                         displayer.SetHandsFocus();
                         displayer.ResetFocusIndex();
                         break;
-                    case ConsoleKey.Q when ObjectDisplayer.FocusOn == FocusType.Inventory:
+                    case ConsoleKey.Q when displayer.FocusOn == FocusType.Inventory:
 
-                        item = player.Retrieve(ObjectDisplayer.CurrentFocus, true);
+                        item = player.Retrieve(displayer.CurrentFocus, true);
                         if(player.Equip(item)) 
-                            item = player.Remove(ObjectDisplayer.CurrentFocus, true);
+                            item = player.Remove(displayer.CurrentFocus, true);
                         displayer.ResetFocusIndex();
                         break;
 
-                    case ConsoleKey.Q when ObjectDisplayer.FocusOn == FocusType.Room:
-                        item = _room.RemoveItem(player.Position, ObjectDisplayer.CurrentFocus);
+                    case ConsoleKey.Q when displayer.FocusOn == FocusType.Room:
+                        item = _room.RemoveItem(player.Position, displayer.CurrentFocus);
                         if (!player.Equip(item, false))
                             _room.AddItem(item, player.Position);
                         displayer.ResetFocusIndex();
                         break;
-                    case ConsoleKey.Q when ObjectDisplayer.FocusOn == FocusType.Hands:
-                        player.UnEquip(ObjectDisplayer.CurrentFocus);
+                    case ConsoleKey.Q when displayer.FocusOn == FocusType.Hands:
+                        player.UnEquip(displayer.CurrentFocus);
                         break;
                     case ConsoleKey.Escape:
                         displayer.ResetFocusType();

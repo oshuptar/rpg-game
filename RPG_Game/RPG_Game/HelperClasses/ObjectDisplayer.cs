@@ -16,6 +16,12 @@ namespace RPG_Game.HelperClasses;
 public class ObjectDisplayer
 {
     private static ObjectDisplayer? _objectDisplayerInstance;
+    private Room _room = new Room();
+
+    public int CurrentFocus { get; private set; }
+    public FocusType FocusOn { get; private set; }
+    private (int left, int top) CursorPosition { get; set; }
+    private bool IsControlsVisible { get; set; }
 
     private ObjectDisplayer()
     {
@@ -24,17 +30,14 @@ public class ObjectDisplayer
         IsControlsVisible = true;
     }
 
+    public void SetRoom(Room room) => _room = room;
+
     public static ObjectDisplayer GetInstance()
     {
         if (_objectDisplayerInstance == null)
             ObjectDisplayer._objectDisplayerInstance = new ObjectDisplayer();
         return _objectDisplayerInstance;
     }
-
-    public static int CurrentFocus { get; private set; } = 0;
-    public static FocusType FocusOn { get; private set; } = FocusType.Room;
-    private static (int left, int top) CursorPosition { get; set; }
-    private static bool IsControlsVisible { get; set; } = true;
 
     public void ResetFocusIndex() => CurrentFocus = 0;
     public void SetInventoryFocus() => FocusOn = FocusType.Inventory;

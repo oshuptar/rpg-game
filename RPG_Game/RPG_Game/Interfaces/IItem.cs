@@ -16,4 +16,6 @@ public interface IItem
     public int Capacity => 1; // default capacity for every item
     public void ApplyChanges(PlayerStats playerStats) { }
     public void RevertChanges(PlayerStats playerStats) { }
+
+    public void Use() { }
 }
