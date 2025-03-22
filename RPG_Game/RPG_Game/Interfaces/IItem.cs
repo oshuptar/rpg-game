@@ -17,4 +17,6 @@ public interface IItem : IUsable
     public void ApplyChanges(PlayerStats playerStats) { }
     public void RevertChanges(PlayerStats playerStats) { }
 
+    public string Description { get; }
+
 }

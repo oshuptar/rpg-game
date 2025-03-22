@@ -14,4 +14,6 @@ public class Hammer : IWeapon
     public string Name => "Hammer";
     //public override string ToString() => Name;
     public int Capacity => 2;
+
+    public string Description => $"(Damage: {Damage}; Two-Handed)";
 }

@@ -136,6 +136,7 @@ public class Game
                         break;
                     case ConsoleKey.Q when displayer.FocusOn == FocusType.Hands:
                         player.UnEquip(displayer.CurrentFocus);
+                        displayer.ResetFocusIndex();
                         break;
                     case ConsoleKey.Escape:
                         displayer.ResetFocusType();

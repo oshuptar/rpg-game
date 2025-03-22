@@ -14,14 +14,16 @@ public class HealPotion : IPotion
     public string Name => "Healing Potion";
 
     public int HP = 5;
-    public void ApplyChanges(PlayerStats playerStats)
+    private void ApplyChanges(PlayerStats playerStats)
     {
         playerStats.ModifyPlayerAttribute("Health", HP);
     }
-    public void RevertChanges(PlayerStats playerStats)
+    private void RevertChanges(PlayerStats playerStats)
     {
         playerStats.ModifyPlayerAttribute("Health", -HP);
     }
+
+    public string Description => $"(Adds {HP} HP)";
 
     public void Use(Player? player)
     {

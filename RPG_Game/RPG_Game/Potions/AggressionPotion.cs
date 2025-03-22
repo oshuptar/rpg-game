@@ -15,22 +15,25 @@ public class AggressionPotion : IPotion
     public string Name => "Aggresion Potion";
 
     public int Aggression = 5;
-    public void ApplyChanges(PlayerStats playerStats) 
+    private void ApplyChanges(PlayerStats playerStats) 
     {
         playerStats.ModifyPlayerAttribute("Aggression", Aggression);
     }
-    public void RevertChanges(PlayerStats playerStats)
+    //Made it private, so only possible to apply when used
+    private void RevertChanges(PlayerStats playerStats)
     {
         playerStats.ModifyPlayerAttribute("Health", -Aggression);
     }
 
+    public string Description => $"(Adds {Aggression} Aggression)";
+
     public void Use(Player? player)
     {
-        ApplyChanges(player?.RetrievePlayerStats());
+        ApplyChanges(player?.RetrievePlayerStats()!);
     }
 
     public void Dispose(Player? player)
     {
-        RevertChanges(player?.RetrievePlayerStats());
+        RevertChanges(player?.RetrievePlayerStats()!);
     }
 }

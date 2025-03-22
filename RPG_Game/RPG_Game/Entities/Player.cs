@@ -79,13 +79,13 @@ public class Player : ICanMove, ICanReceiveDamage
     {
         Inventory.PickUp(item, this); //changes player's attrbutes when picked up
         if(item != null)
-            ObjectDisplayer.GetInstance().LogMessage($"{Name} picked up {item.Name}");
+            ObjectDisplayer.GetInstance().LogMessage($"{Name} picked up {item.Name} {item.Description}");
     }
     public bool Equip(IItem? item, bool isInInventory = true)
     {
         bool isEquipped =  Hands.Equip(item, this, isInInventory);
         if(isEquipped)
-            ObjectDisplayer.GetInstance().LogMessage($"{Name} equipped {item!.Name}");
+            ObjectDisplayer.GetInstance().LogMessage($"{Name} equipped {item!.Name} {item.Description}");
         return isEquipped;
     }
     public void UnEquip(int index)

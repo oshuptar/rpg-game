@@ -1,4 +1,5 @@
-﻿using RPG_Game.Interfaces;
+﻿using RPG_Game.Entiities;
+using RPG_Game.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,5 +12,7 @@ namespace RPG_Game.UnusableItems;
 public class Key : ILoot
 {
     public string Name => "Key";
-    public void Inspect() => Console.WriteLine("This is a old rusty key. Maybe it opens a chest...?");
+    public void Use(Player? player = null) { }
+
+    public string Description => $"(This is a old rusty key. Maybe it opens a chest...?)";
 }

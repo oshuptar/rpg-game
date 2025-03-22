@@ -12,4 +12,5 @@ public class Sword : IWeapon
 {
     public int Damage => 7;
     public string Name => "Sword";
+    public string Description => $"(Damage: {Damage}; One-Handed)";
 }

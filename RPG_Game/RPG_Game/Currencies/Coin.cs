@@ -15,4 +15,6 @@ public class Coin : ICurrency
     public static int Value => 10;
     public void ApplyChanges(PlayerStats playerStats) => playerStats.ModifyPlayerAttribute("Coins", 1);
     public void RevertChanges(PlayerStats playerStats) => playerStats.ModifyPlayerAttribute("Coins", -1);
+
+    public string Description => "";
 }

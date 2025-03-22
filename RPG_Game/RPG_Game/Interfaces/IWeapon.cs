@@ -16,6 +16,4 @@ public interface IWeapon : IItem
     //{
     //    player.ReceiveDamage(Damage); // Access the damage value from the implementing class
     //}
-    public string GetDescription() => $"{Name} with default damage : ${Damage}";
-
 }

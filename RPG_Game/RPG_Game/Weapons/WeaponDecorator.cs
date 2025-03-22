@@ -15,6 +15,8 @@ public class WeaponDecorator : IWeapon
     public virtual int Damage => weapon.Damage;
     public virtual string Name => weapon.Name;
 
+    public virtual string Description => weapon.Description;
+
     public WeaponDecorator(IWeapon weapon)
     {
         this.weapon = weapon;

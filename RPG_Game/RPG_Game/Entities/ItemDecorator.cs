@@ -15,6 +15,8 @@ public class ItemDecorator : IItem
     public virtual int Capacity => item.Capacity; //reccursively callls this function until it reaches some concrete object
     public virtual void ApplyChanges(PlayerStats playerStats) => item.RevertChanges(playerStats);
     public virtual void RevertChanges(PlayerStats playerStats) => item.RevertChanges(playerStats);
+
+    public virtual string Description => item.Description;
    
     public ItemDecorator(IItem item)
     {

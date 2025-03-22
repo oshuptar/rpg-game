@@ -11,7 +11,7 @@ namespace RPG_Game.Entiities;
 public class LuckItemDecorator : ItemDecorator
 {
     public LuckItemDecorator(IItem item) : base(item) { }
-    public override string Name => item.Name + "(Increased Luck)";
+    public override string Name => "(Lucky) " + item.Name;
     public override void ApplyChanges(PlayerStats playerStats)
     {
         playerStats.ModifyPlayerAttribute("Luck", 2);
