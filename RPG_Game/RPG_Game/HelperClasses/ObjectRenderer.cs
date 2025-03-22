@@ -26,7 +26,7 @@ public class ObjectRenderer
 
     private ObjectRenderer() { }
     public void SetMapInstructionConfigurator(MapInstructionConfigurator mapIstructions) => _mapInstructionConfigurator = mapIstructions;
-    public StringBuilder RenderItemList(List<IItem> list, string name)
+    public StringBuilder RenderItemList(List<IItem>? list, string name)
     {
         StringBuilder sb = new StringBuilder();
 

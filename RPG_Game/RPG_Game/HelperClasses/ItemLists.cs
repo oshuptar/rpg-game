@@ -1,6 +1,8 @@
 ﻿using RPG_Game.Currencies;
 using RPG_Game.Entiities;
+using RPG_Game.Entities;
 using RPG_Game.Interfaces;
+using RPG_Game.Potions;
 using RPG_Game.UnusableItems;
 using RPG_Game.Weapons;
 using System;
@@ -49,6 +51,19 @@ public class ItemLists
         new Dagger(),
         new PowerWeaponDecorator(new Dagger())
     };
+
+    public List<IEnemy> EnemyList = new List<IEnemy>()
+    {
+        new Goblin(),
+        new Orc(),
+    };
+
+    public List<IPotion> PotionList = new List<IPotion>()
+    {
+        new HealPotion(),
+        new AggressionPotion(),
+    };
+
 
     private static ItemLists? _itemListInstance;
 

@@ -14,6 +14,10 @@ public class Room
     public class Cell 
     {
         public CellType CellType { get; set; } = CellType.Empty;
+
+        public IEnemy? Enemy { get; set; }
+
+        public List<IItem>? Items;
         public string PrintCell()
         {
             switch (CellType)
@@ -24,8 +28,8 @@ public class Room
                     return "█";
                 case CellType cType when (cType & CellType.Player) != 0: // Constant pattern matching
                     return "¶";
-                //case CellType cType when (cType & CellType.Enemy) != 0:
-                //    return "E";
+                case CellType cType when (cType & CellType.Enemy) != 0:
+                    return "E";
                 default:
                     return "I";
             }
@@ -43,7 +47,7 @@ public class Room
     public const int _width = _defaultWidth + 2 * _frameSize; // additional 2 accounts for a wall as an outer frame
     public const int _height = _defaultHeight + 2 * _frameSize; 
     private Cell[,] Grid = new Cell[_width, _height]; //Array of references
-    public List<IItem>[,] Items { get; } = new List<IItem>[_width, _height]; // Will be used to store items on each of the tile of the room
+
     public Cell[,] RetrieveGrid() => Grid;
     public Room() { }
     public bool IsPosAvailable(int x, int y)
@@ -61,12 +65,24 @@ public class Room
         return true;
     }
 
+    public void AddEnemy(IEnemy enemy, (int x, int y) position)
+    {
+        if (!IsPosAvailable(position.x, position.y) || Grid[position.x, position.y].CellType == CellType.Player)
+            return;
+
+        if (Grid[position.x, position.y].Enemy != null)
+            return;
+
+        AddObject(CellType.Enemy, (position.x , position.y));
+        Grid[position.x, position.y].Enemy = enemy.Clone(); // this ensures a deep copy of enemy attributes
+    }
+
     public bool RemoveObject(CellType cellType, (int x, int y) position) //assuming the position is the position of the player
     {
         if ((Grid[position.x, position.y].CellType & cellType) == 0)
             return false;
         // This if-statement needs a better handling
-        if (Items[position.x, position.y]?.Count == 0 || (cellType & CellType.Item) == 0)
+        if (Grid[position.x, position.y].Items?.Count == 0 || (cellType & CellType.Item) == 0)
             Grid[position.x, position.y].CellType &= ~cellType;
 
         return true;
@@ -78,25 +94,20 @@ public class Room
 
         AddObject(CellType.Item, position);
 
-        if (Items[position.x, position.y] == null)
-            Items[position.x, position.y] = new List<IItem>();
-                
-        Items[position.x, position.y].Add(item);
-    }
+        if (Grid[position.x, position.y].Items == null)
+            Grid[position.x, position.y].Items = new List<IItem>();
 
-    public void PlaceObject(IItem? item)
-    {
-
+        Grid[position.x, position.y].Items!.Add(item);
     }
 
     // index denotes the index of the item from the list to be removed
     public IItem? RemoveItem((int x, int y) position, int index = 0)
     {
-        if (Items[position.x, position.y] == null || Items[position.x, position.y].Count == 0)
+        if (Grid[position.x, position.y].Items == null || Grid[position.x, position.y].Items?.Count == 0)
             return null;
 
-        IItem tempItem = Items[position.x, position.y].ElementAt(index);
-        Items[position.x, position.y].RemoveAt(index);
+        IItem tempItem = Grid[position.x, position.y].Items!.ElementAt(index);
+        Grid[position.x, position.y].Items!.RemoveAt(index);
         RemoveObject(CellType.Item, position);
 
         return tempItem;

@@ -96,7 +96,11 @@ public class MapInstructionConfigurator : IConfigurator
 
     public void PlaceEnemies()
     {
-        // Some info about enemies
+        if(MoveControls)
+        {
+            _sb.Append(" - There are enemies, which protect treasures. Watch out!");
+            ObjectRenderer.GetInstance().noOfControlsLines++;
+        }
     }
 
     public void PlaceItems()

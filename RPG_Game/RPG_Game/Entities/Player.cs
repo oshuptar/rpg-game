@@ -16,6 +16,8 @@ public class Player : ICanMove, ICanReceiveDamage
 {
     public (int x, int y) Position { get; private set; }
 
+    public string Name = "Raikuro Takeda";
+
     private PlayerStats PlayerStats  = new PlayerStats();
 
     private Hands Hands = new Hands();
@@ -65,7 +67,7 @@ public class Player : ICanMove, ICanReceiveDamage
             room.RemoveObject(CellType.Player, Position);
             room.AddObject(CellType.Player, ((int, int))TempPos);
             Position = ((int, int))TempPos;
-            ObjectDisplayer.GetInstance().LogMessage($"You moved to the {direction}");
+            ObjectDisplayer.GetInstance().LogMessage($"{Name} moved to the {direction}");
             return true;
         }
         return false;
@@ -77,13 +79,13 @@ public class Player : ICanMove, ICanReceiveDamage
     {
         Inventory.PickUp(item, this); //changes player's attrbutes when picked up
         if(item != null)
-            ObjectDisplayer.GetInstance().LogMessage($"You picked up {item.Name}");
+            ObjectDisplayer.GetInstance().LogMessage($"{Name} picked up {item.Name}");
     }
     public bool Equip(IItem? item, bool isInInventory = true)
     {
         bool isEquipped =  Hands.Equip(item, this, isInInventory);
         if(isEquipped)
-            ObjectDisplayer.GetInstance().LogMessage($"You equipped {item.Name}");
+            ObjectDisplayer.GetInstance().LogMessage($"{Name} equipped {item!.Name}");
         return isEquipped;
     }
     public void UnEquip(int index)
@@ -92,7 +94,7 @@ public class Player : ICanMove, ICanReceiveDamage
         if (item != null)
         {
             Inventory.inventory.Add(item);
-            ObjectDisplayer.GetInstance().LogMessage($"You unequipped {item?.Name}");
+            ObjectDisplayer.GetInstance().LogMessage($"{Name} unequipped {item?.Name}");
         }
     }
     public IItem? Retrieve(int index, bool fromInventory)
@@ -115,7 +117,7 @@ public class Player : ICanMove, ICanReceiveDamage
         item = Hands.DropFromHands(room, index, this);
 
         if(item != null)
-            ObjectDisplayer.GetInstance().LogMessage($"You dropped {item.Name}");
+            ObjectDisplayer.GetInstance().LogMessage($"{Name} dropped {item.Name}");
 
         return item;
     }

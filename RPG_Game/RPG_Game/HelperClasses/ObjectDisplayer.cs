@@ -15,17 +15,16 @@ namespace RPG_Game.HelperClasses;
 
 public class ObjectDisplayer
 {
+    // Divide the console output
+
     private static ObjectDisplayer? _objectDisplayerInstance;
     private const int _verticalSpaceSize = Room._height / 20;
     private const int _horizontalSpaceSize = Room._width / 10;
     private Room _room = new Room();
 
-    //private (int left, int top) GridPosition = (0, 0);
-    //private (int left, int top)
-
     public int CurrentFocus { get; private set; }
     public FocusType FocusOn { get; private set; }
-    private (int left, int top) CursorPosition { get; set; }
+    private (int left, int top) CursorPosition { get; set; } = (0, 0);
     private bool IsControlsVisible { get; set; }
 
     private ObjectDisplayer()
@@ -51,7 +50,7 @@ public class ObjectDisplayer
     public  void DisplayControls(bool isControlsVisible = true) => Console.Write(ObjectRenderer.GetInstance().RenderControls(isControlsVisible));
     public StringBuilder DisplayInventory(Player player) => ObjectRenderer.GetInstance().RenderItemList(player.RetrieveInventory(), "Inventory");
     public StringBuilder DisplayEquipped(Player player) => ObjectRenderer.GetInstance().RenderItemList(player.RetrieveHands(), "Equipped");
-    public StringBuilder DisplayTileItems((int x, int y) position) => ObjectRenderer.GetInstance().RenderItemList(_room.Items[position.x, position.y], "Items");
+    public StringBuilder DisplayTileItems((int x, int y) position) => ObjectRenderer.GetInstance().RenderItemList(_room.RetrieveGrid()[position.x, position.y].Items, "Items");
     public void ChangeControlsVisibility() => IsControlsVisible = !IsControlsVisible;
     public void FillLine() => Console.Write(ObjectRenderer.GetInstance().RenderEmptyLine());
 
@@ -81,7 +80,7 @@ public class ObjectDisplayer
                 DisplayCurrent(player.RetrieveHands(), "Hands");
                 break;
             case FocusType.Room:
-                DisplayCurrent(_room.Items[player.Position.x, player.Position.y], "Room");
+                DisplayCurrent(_room.RetrieveGrid()[player.Position.x, player.Position.y].Items, "Room");
                 break;
         }
     }
@@ -97,7 +96,7 @@ public class ObjectDisplayer
                 ShiftFocus(player.RetrieveHands(), direction);
                 break;
             case FocusType.Room:
-                ShiftFocus(_room.Items[player.Position.x, player.Position.y], direction);
+                ShiftFocus(_room.RetrieveGrid()[player.Position.x, player.Position.y].Items, direction);
                 break;
         }
     }
@@ -138,23 +137,43 @@ public class ObjectDisplayer
 
     public void LogMessage(string message)
     {
-        Console.SetCursorPosition(CursorPosition.left, CursorPosition.top);
+        Console.SetCursorPosition(Room._width + _horizontalSpaceSize, _verticalSpaceSize + 15); // this value is hardcoded, change it
         Console.Write($"\"{message}\"");
         FillLine();
+    }
+
+    // We are overriding previous contents on Enemy type cells
+    public void DisplayEnemies()
+    {
+        Console.ForegroundColor = ConsoleColor.DarkRed;
+        for (int i = 0; i < Room._width; i++)
+        {
+            for (int j = 0; j < Room._height; j++)
+            {
+                if ((_room.RetrieveGrid()[i, j].CellType & CellType.Enemy) != 0)
+                {
+                    Console.SetCursorPosition(i, j);
+                    Console.Write(_room.RetrieveGrid()[i, j].PrintCell());
+                }
+            }
+        }
+        Console.ForegroundColor = ConsoleColor.White;
     }
 
     // Fix implementation
     public void DisplayRoutine(Player player)
     {
-        int noOfLists = 4;
+         int noOfLists = 4; // denoted the number of lists displayed
 
         Console.SetCursorPosition(0, 0);
         Console.Write(ObjectRenderer.GetInstance().RenderGrid(_room));
 
+        (int X, int Y) oldPosition = Console.GetCursorPosition();
+
+        DisplayEnemies();
+
         int horizontalPosition = Room._width + _horizontalSpaceSize;
         int verticalPosition = _verticalSpaceSize;
-
-        (int X, int Y) oldPosition = Console.GetCursorPosition();
 
         Console.SetCursorPosition(horizontalPosition, verticalPosition);
         Console.Write(DisplayTileItems(player.Position));
@@ -182,6 +201,6 @@ public class ObjectDisplayer
         
         DisplayControls(IsControlsVisible);
 
-        //Console.SetCursorPosition(oldPosition.X, oldPosition.Y);
+        Console.SetCursorPosition(oldPosition.X, oldPosition.Y);
     }
 }

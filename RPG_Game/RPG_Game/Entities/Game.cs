@@ -46,6 +46,9 @@ public class Game
         map.PlaceDecoratedItems();
         map.PlaceDecoratedItems();
         map.SpawnPlayer(player);
+        map.PlaceEnemies();
+
+        map.PlacePotions();
 
         SetMapConfiguration(map);
 

@@ -151,47 +151,60 @@ public class MapConfigurator : IConfigurator
         this._instructionConfigurator.AddCentralRoom();
     }
 
-    public void RandomizeItemsPlacement(List<IItem> items)
+    // Must work because of covariance
+    public void RandomizeItemsPlacement(IEnumerable<IItem> items, int factor)
     {
         Random random = new Random();
-        for (int i = 0; i < Room._defaultWidth * Room._defaultHeight / 10; i++)
+        List<IItem> itemList = items.ToList();
+        for (int i = 0; i < Room._defaultWidth * Room._defaultHeight / factor; i++)
         {
             int X = Room._frameSize + random.Next() % (Room._defaultWidth - Room._frameSize);
             int Y = Room._frameSize + random.Next() % (Room._defaultHeight - Room._frameSize);
 
-            int randomIndex = random.Next() % items.Count;
-            _room.AddItem(items[randomIndex], (X, Y));
+            int randomIndex = random.Next() % itemList.Count;
+            _room.AddItem(itemList[randomIndex], (X, Y));
         }
     }
 
     public void SpawnPlayer(Player player) => player.PlacePlayer(_room);
     public void PlaceItems()
     {
-        RandomizeItemsPlacement(_items.ItemList);
+        RandomizeItemsPlacement(_items.ItemList, 15);
         this._instructionConfigurator.PlaceItems();
     }
     public void PlaceDecoratedItems()
     {
-        RandomizeItemsPlacement(_items.DecoratedItemList);
+        RandomizeItemsPlacement(_items.DecoratedItemList, 20);
         this._instructionConfigurator.PlaceDecoratedItems();
     }
     public void PlaceWeapons()
     {
-        RandomizeItemsPlacement(_items.WeaponList);
+        RandomizeItemsPlacement(_items.WeaponList, 10);
         this._instructionConfigurator.PlaceWeapons();
     }
     public void PlaceDecoratedWeapons()
     {
-        RandomizeItemsPlacement(_items.DecoratedWeaponList);
+        RandomizeItemsPlacement(_items.DecoratedWeaponList, 20);
         this._instructionConfigurator.PlaceDecoratedWeapons();
     }
     public void PlacePotions()
     {
-        
+        RandomizeItemsPlacement(_items.PotionList, 10);
+        this._instructionConfigurator.PlacePotions();
     }
     public void PlaceEnemies()
     {
+        Random random = new Random();
+        for(int i = 0; i < Room._defaultWidth * Room._defaultHeight / 20; i++)
+        {
+            int X = Room._frameSize + random.Next(0, Room._defaultWidth);
+            int Y = Room._frameSize + random.Next(0, Room._defaultHeight);
 
+            int randomIndex = random.Next(0, _items.EnemyList.Count);
+            _room.AddEnemy(_items.EnemyList[randomIndex], (X, Y));
+        }
+
+        this._instructionConfigurator.PlaceEnemies();
     }
 }
 

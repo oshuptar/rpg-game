@@ -10,12 +10,11 @@ using System.Threading.Tasks;
 namespace RPG_Game.Interfaces;
 
 // Do items need to contain attributes of a Player?
-public interface IItem
+public interface IItem : IUsable
 {
     public string Name { get; }
     public int Capacity => 1; // default capacity for every item
     public void ApplyChanges(PlayerStats playerStats) { }
     public void RevertChanges(PlayerStats playerStats) { }
 
-    public void Use() { }
 }
