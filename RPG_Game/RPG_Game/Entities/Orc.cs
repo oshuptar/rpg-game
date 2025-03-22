@@ -11,6 +11,8 @@ namespace RPG_Game.Entities;
 
 public class Orc : IEnemy
 {
+    public (int x, int y) Position { get; set; }
+
     public bool Move(Direction direction, Room room)
     {
         throw new NotImplementedException();
@@ -32,4 +34,6 @@ public class Orc : IEnemy
     {
         return new Orc(this);
     }
+
+    public override string ToString() => "Orc";
 }

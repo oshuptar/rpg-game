@@ -18,7 +18,7 @@ public class ObjectDisplayer
     // Divide the console output
 
     private static ObjectDisplayer? _objectDisplayerInstance;
-    private const int _verticalSpaceSize = Room._height / 20;
+    private const int _verticalSpaceSize = Room._height / 10;
     private const int _horizontalSpaceSize = Room._width / 10;
     private Room _room = new Room();
 
@@ -139,6 +139,15 @@ public class ObjectDisplayer
     {
         Console.SetCursorPosition(Room._width + _horizontalSpaceSize, _verticalSpaceSize + 15); // this value is hardcoded, change it
         Console.Write($"\"{message}\"");
+        FillLine();
+    }
+
+    public void LogWarning(string message)
+    {
+        Console.SetCursorPosition(Room._width + _horizontalSpaceSize, _verticalSpaceSize + 15 + _verticalSpaceSize);
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.Write($"\"{message}\"");
+        Console.ForegroundColor = ConsoleColor.White;
         FillLine();
     }
 

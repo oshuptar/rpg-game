@@ -9,4 +9,6 @@ namespace RPG_Game.Interfaces;
 public interface IEnemy : ICanMove, ICanReceiveDamage
 {
     public IEnemy Clone();
+
+    public (int x, int y) Position { get; set; }
 }

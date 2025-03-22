@@ -59,6 +59,8 @@ public class Player : ICanMove, ICanReceiveDamage
         return TempPos;
     }
 
+    //By default the order in LINQ is ascending
+
     public bool Move(Direction direction, Room room)
     {
         (int, int)? TempPos;
@@ -68,6 +70,9 @@ public class Player : ICanMove, ICanReceiveDamage
             room.AddObject(CellType.Player, ((int, int))TempPos);
             Position = ((int, int))TempPos;
             ObjectDisplayer.GetInstance().LogMessage($"{Name} moved to the {direction}");
+            //Extract the enemy which is closest to the player given the cartesian product distance
+            IEnemy? enemy = room.Enemies.MinBy((enemy) => Math.Sqrt(Math.Pow(this.Position.x - enemy.Position.x, 2) + Math.Pow(this.Position.y -  enemy.Position.y, 2)));
+            ObjectDisplayer.GetInstance().LogWarning($"Enemy Warning: {enemy} at x:{enemy?.Position.x}, y:{enemy?.Position.y}");
             return true;
         }
         return false;

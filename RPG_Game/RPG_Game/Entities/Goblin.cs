@@ -11,6 +11,7 @@ namespace RPG_Game.Entities;
 
 public class Goblin : IEnemy
 {
+    public (int x, int y) Position { get; set; }
     public bool Move(Direction direction, Room room)
     {
         throw new NotImplementedException();
@@ -32,4 +33,6 @@ public class Goblin : IEnemy
     {
         return new Goblin(this);
     }
+
+    public override string ToString() => "Goblin";
 }
