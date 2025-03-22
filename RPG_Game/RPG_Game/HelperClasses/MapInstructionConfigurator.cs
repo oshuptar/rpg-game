@@ -24,13 +24,13 @@ public class MapInstructionConfigurator : IConfigurator
         _sb.Append(" - To enter hands scope - press `H`, then use arrows to change the object\n");
         _sb.Append(" - To leave hands or inventory scope - press `Escape`\n");
 
-        ObjectRenderer.noOfControlsLines += 7;
+        ObjectRenderer.GetInstance().noOfControlsLines += 7;
     }
 
     public void AddMoveControls()
     {
         _sb.Append(" - Moves in four directions are controlled by `W`, `S`, `A`, `D`\n");
-        ObjectRenderer.noOfControlsLines += 1;
+        ObjectRenderer.GetInstance().noOfControlsLines += 1;
     }
 
     public void AddCentralRoom()
@@ -65,7 +65,7 @@ public class MapInstructionConfigurator : IConfigurator
         _sb.Append("Instructions:\n");
         _sb.Append(" - To open/hide controls - press `K`\n");
 
-        ObjectRenderer.noOfControlsLines += 2;
+        ObjectRenderer.GetInstance().noOfControlsLines += 2;
     }
 
     public void FillDungeon()
@@ -88,7 +88,7 @@ public class MapInstructionConfigurator : IConfigurator
             ItemControls = true;
         }
         _sb.Append(" - Decorated items can change player's attributes once picked up\n");
-        ObjectRenderer.noOfControlsLines += 1;
+        ObjectRenderer.GetInstance().noOfControlsLines += 1;
     }
 
     public void PlaceEnemies()

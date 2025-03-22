@@ -17,7 +17,7 @@ public class Game
     private void SetMapConfiguration(MapConfigurator mapConfigurator)
     {
         _room = mapConfigurator.GetResult();
-        ObjectRenderer.SetMapInstructionConfigurator(mapConfigurator.GetInstructionConfiguration());
+        ObjectRenderer.GetInstance().SetMapInstructionConfigurator(mapConfigurator.GetInstructionConfiguration());
         ObjectDisplayer.GetInstance().SetRoom(_room);
     }
 
@@ -31,6 +31,7 @@ public class Game
         ObjectDisplayer displayer = ObjectDisplayer.GetInstance();
         MapConfigurator map = new MapConfigurator();
 
+        // This will kind of allow to change the map configuration during runtime
         map.CreateEmptyDungeon();
         map.FillDungeon();
         map.AddCentralRoom();
@@ -41,6 +42,7 @@ public class Game
         map.PlaceDecoratedItems();
         map.PlaceDecoratedItems();
         map.SpawnPlayer(player);
+
         SetMapConfiguration(map);
 
         displayer.WelcomeRoutine();
@@ -119,16 +121,16 @@ public class Game
                         displayer.ResetFocusIndex();
                         break;
                     case ConsoleKey.RightArrow:
-                        displayer.ShiftCurrentFocus(_room, player, Direction.Right);
+                        displayer.ShiftCurrentFocus(player, Direction.Right);
                         break;
                     case ConsoleKey.LeftArrow:
-                        displayer.ShiftCurrentFocus(_room, player, Direction.Left);
+                        displayer.ShiftCurrentFocus(player, Direction.Left);
                         break;
                     case ConsoleKey.K:
                         displayer.ChangeControlsVisibility();
                         break;
                 }
-                displayer.DisplayRoutine(_room, player);
+                displayer.DisplayRoutine(player);
                 i++;
             }
 

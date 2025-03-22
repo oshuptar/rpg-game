@@ -9,12 +9,24 @@ using static RPG_Game.Entiities.Room;
 
 namespace RPG_Game.HelperClasses;
 
-public static class ObjectRenderer
+public class ObjectRenderer
 {
-    public static int noOfControlsLines = 0; // the number of lines to be printed in the Controls decription
-    private static MapInstructionConfigurator _mapInstructionConfigurator = new MapInstructionConfigurator();
-    public static void SetMapInstructionConfigurator(MapInstructionConfigurator mapIstructions) => _mapInstructionConfigurator = mapIstructions;
-    public static StringBuilder RenderItemList(List<IItem> list, string name)
+    public int noOfControlsLines = 0; // the number of lines to be printed in the Controls decription
+
+    private static ObjectRenderer? _objectRendererInstance;
+
+    private MapInstructionConfigurator _mapInstructionConfigurator = new MapInstructionConfigurator();
+
+    public static ObjectRenderer GetInstance()
+    {
+        if (_objectRendererInstance == null)
+            _objectRendererInstance = new ObjectRenderer();
+        return _objectRendererInstance;
+    }
+
+    private ObjectRenderer() { }
+    public void SetMapInstructionConfigurator(MapInstructionConfigurator mapIstructions) => _mapInstructionConfigurator = mapIstructions;
+    public StringBuilder RenderItemList(List<IItem> list, string name)
     {
         StringBuilder sb = new StringBuilder();
 
@@ -28,7 +40,7 @@ public static class ObjectRenderer
         return sb.Append(String.Format($"{name}: {output ?? "None"}"));
     }
 
-    public static StringBuilder RenderGrid(Room room)
+    public StringBuilder RenderGrid(Room room)
     {
         StringBuilder sb = new StringBuilder();
         Cell[,] grid = room.RetrieveGrid();
@@ -44,7 +56,7 @@ public static class ObjectRenderer
         return sb;
     }
 
-    public static StringBuilder RenderControls(bool isControlsVisible)
+    public StringBuilder RenderControls(bool isControlsVisible)
     {
         StringBuilder sb = new StringBuilder();
         if(isControlsVisible)
@@ -57,7 +69,7 @@ public static class ObjectRenderer
         return sb;
     }
 
-    public static StringBuilder RenderEmptyLine()
+    public StringBuilder RenderEmptyLine()
     {
         StringBuilder sb = new StringBuilder();
 

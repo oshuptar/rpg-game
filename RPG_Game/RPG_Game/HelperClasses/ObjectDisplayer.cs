@@ -43,12 +43,12 @@ public class ObjectDisplayer
     public void SetInventoryFocus() => FocusOn = FocusType.Inventory;
     public void SetHandsFocus() => FocusOn = FocusType.Hands;
     public void ResetFocusType() => FocusOn = FocusType.Room;
-    public  void DisplayControls(bool isControlsVisible = true) => Console.Write(ObjectRenderer.RenderControls(isControlsVisible));
-    public StringBuilder DisplayInventory(Player player) => ObjectRenderer.RenderItemList(player.RetrieveInventory(), "Inventory");
-    public StringBuilder DisplayEquipped(Player player) => ObjectRenderer.RenderItemList(player.RetrieveHands(), "Equipped");
-    public StringBuilder DisplayTileItems(Room room, (int x, int y) position) => ObjectRenderer.RenderItemList(room.Items[position.x, position.y], "Items");
+    public  void DisplayControls(bool isControlsVisible = true) => Console.Write(ObjectRenderer.GetInstance().RenderControls(isControlsVisible));
+    public StringBuilder DisplayInventory(Player player) => ObjectRenderer.GetInstance().RenderItemList(player.RetrieveInventory(), "Inventory");
+    public StringBuilder DisplayEquipped(Player player) => ObjectRenderer.GetInstance().RenderItemList(player.RetrieveHands(), "Equipped");
+    public StringBuilder DisplayTileItems((int x, int y) position) => ObjectRenderer.GetInstance().RenderItemList(_room.Items[position.x, position.y], "Items");
     public void ChangeControlsVisibility() => IsControlsVisible = !IsControlsVisible;
-    public void FillLine() => Console.Write(ObjectRenderer.RenderEmptyLine());
+    public void FillLine() => Console.Write(ObjectRenderer.GetInstance().RenderEmptyLine());
 
     public void DisplayCurrent(List<IItem>? list, string Object)
     {
@@ -64,7 +64,7 @@ public class ObjectDisplayer
         Console.ResetColor();
     }
 
-    public void DisplayCurrentItem(Room room, Player player)
+    public void DisplayCurrentItem(Player player)
     {
 
         switch (FocusOn)
@@ -76,12 +76,12 @@ public class ObjectDisplayer
                 DisplayCurrent(player.RetrieveHands(), "Hands");
                 break;
             case FocusType.Room:
-                DisplayCurrent(room.Items[player.Position.x, player.Position.y], "Room");
+                DisplayCurrent(_room.Items[player.Position.x, player.Position.y], "Room");
                 break;
         }
     }
 
-    public void ShiftCurrentFocus(Room room, Player player, Direction direction)
+    public void ShiftCurrentFocus(Player player, Direction direction)
     {
         switch(FocusOn)
         {
@@ -92,7 +92,7 @@ public class ObjectDisplayer
                 ShiftFocus(player.RetrieveHands(), direction);
                 break;
             case FocusType.Room:
-                ShiftFocus(room.Items[player.Position.x, player.Position.y], direction);
+                ShiftFocus(_room.Items[player.Position.x, player.Position.y], direction);
                 break;
         }
     }
@@ -131,14 +131,14 @@ public class ObjectDisplayer
     }
 
     // Fix implementation
-    public void DisplayRoutine(Room _room, Player player)
+    public void DisplayRoutine(Player player)
     {
         int noOfLists = 4;
         int verticalSpaceSize = Room._height / 20;
         int horizontalSpaceSize = 10;
 
         Console.SetCursorPosition(0, 0);
-        Console.Write(ObjectRenderer.RenderGrid(_room));
+        Console.Write(ObjectRenderer.GetInstance().RenderGrid(_room));
 
         int horizontalPosition = Room._width + horizontalSpaceSize;
         int verticalPosition = verticalSpaceSize;
@@ -146,7 +146,7 @@ public class ObjectDisplayer
         (int X, int Y) oldPosition = Console.GetCursorPosition();
 
         Console.SetCursorPosition(horizontalPosition, verticalPosition);
-        Console.Write(DisplayTileItems(_room, player.Position));
+        Console.Write(DisplayTileItems(player.Position));
         FillLine();
 
         Console.SetCursorPosition(horizontalPosition, verticalPosition + 1);
@@ -158,7 +158,7 @@ public class ObjectDisplayer
         FillLine(); 
 
         Console.SetCursorPosition(horizontalPosition, verticalPosition + 3);
-        DisplayCurrentItem(_room, player);
+        DisplayCurrentItem(player);
         FillLine();
 
         CursorPosition = (horizontalPosition, verticalPosition + noOfLists + verticalSpaceSize);
