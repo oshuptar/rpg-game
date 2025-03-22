@@ -22,6 +22,9 @@ public class ObjectDisplayer
     private const int _horizontalSpaceSize = Room._width / 10;
     private Room _room = new Room();
 
+    private int _noOfAttributes = 8; // hardcoded value; to change
+    private int _noOfLists = 4; // hardcoded value; to change
+
     public int CurrentFocus { get; private set; }
     public FocusType FocusOn { get; private set; }
     private (int left, int top) CursorPosition { get; set; } = (0, 0);
@@ -137,14 +140,14 @@ public class ObjectDisplayer
 
     public void LogMessage(string message)
     {
-        Console.SetCursorPosition(Room._width + _horizontalSpaceSize, _verticalSpaceSize + 15); // this value is hardcoded, change it
+        Console.SetCursorPosition(Room._width + _horizontalSpaceSize, _noOfLists + _noOfAttributes + 3*_verticalSpaceSize);
         Console.Write($"\"{message}\"");
         FillLine();
     }
 
     public void LogWarning(string message)
     {
-        Console.SetCursorPosition(Room._width + _horizontalSpaceSize, _verticalSpaceSize + 15 + _verticalSpaceSize);
+        Console.SetCursorPosition(Room._width + _horizontalSpaceSize, _noOfLists + _noOfAttributes + 4 * _verticalSpaceSize);
         Console.ForegroundColor = ConsoleColor.Red;
         Console.Write($"\"{message}\"");
         Console.ForegroundColor = ConsoleColor.White;
@@ -172,8 +175,6 @@ public class ObjectDisplayer
     // Fix implementation
     public void DisplayRoutine(Player player)
     {
-         int noOfLists = 4; // denoted the number of lists displayed
-
         Console.SetCursorPosition(0, 0);
         Console.Write(ObjectRenderer.GetInstance().RenderGrid(_room));
 
@@ -200,7 +201,7 @@ public class ObjectDisplayer
         DisplayCurrentItem(player);
         FillLine();
 
-        CursorPosition = (horizontalPosition, verticalPosition + noOfLists + _verticalSpaceSize);
+        CursorPosition = (horizontalPosition, verticalPosition + _noOfLists + _verticalSpaceSize);
         Console.SetCursorPosition(CursorPosition.left, CursorPosition.top);
         DisplayPlayerAttributes(player);
 
