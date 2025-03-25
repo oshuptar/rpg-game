@@ -1,6 +1,7 @@
 ﻿using RPG_Game.Entiities;
 using RPG_Game.Enums;
 using RPG_Game.Interfaces;
+using RPG_Game.LogMessages;
 using RPG_Game.UnusableItems;
 using System;
 using System.Collections.Generic;
@@ -10,14 +11,15 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
+using System.Xml.Linq;
 
 namespace RPG_Game.HelperClasses;
 
-public class ObjectDisplayer
+public class ConsoleObjectDisplayer
 {
     // Divide the console output
 
-    private static ObjectDisplayer? _objectDisplayerInstance;
+    private static ConsoleObjectDisplayer? _objectDisplayerInstance;
     private const int _verticalSpaceSize = Room._height / 10;
     private const int _horizontalSpaceSize = Room._width / 10;
     private Room _room = new Room();
@@ -30,7 +32,7 @@ public class ObjectDisplayer
     private (int left, int top) CursorPosition { get; set; } = (0, 0);
     private bool IsControlsVisible { get; set; }
 
-    private ObjectDisplayer()
+    private ConsoleObjectDisplayer()
     {
         CurrentFocus = 0;
         FocusOn = FocusType.Room;
@@ -39,10 +41,10 @@ public class ObjectDisplayer
 
     public void SetRoom(Room room) => _room = room;
 
-    public static ObjectDisplayer GetInstance()
+    public static ConsoleObjectDisplayer GetInstance()
     {
         if (_objectDisplayerInstance == null)
-            ObjectDisplayer._objectDisplayerInstance = new ObjectDisplayer();
+            ConsoleObjectDisplayer._objectDisplayerInstance = new ConsoleObjectDisplayer();
         return _objectDisplayerInstance;
     }
 
@@ -68,7 +70,7 @@ public class ObjectDisplayer
         Console.Write($"Current Focus (in {Object}): ");
         Console.ForegroundColor = ConsoleColor.Red;
         Console.Write($"{ output ?? "None"}");
-        Console.ResetColor();
+        Console.ForegroundColor = ConsoleColor.White;
     }
 
     public void DisplayCurrentItem(Player player)
@@ -138,20 +140,49 @@ public class ObjectDisplayer
         Console.WriteLine("Have fun!");
     }
 
-    public void LogMessage(string message)
+    private void LogMessage(string message)
     {
         Console.SetCursorPosition(Room._width + _horizontalSpaceSize, _noOfLists + _noOfAttributes + 3*_verticalSpaceSize);
         Console.Write($"\"{message}\"");
         FillLine();
     }
 
-    public void LogWarning(string message)
+    private void LogWarning(string message)
     {
         Console.SetCursorPosition(Room._width + _horizontalSpaceSize, _noOfLists + _noOfAttributes + 4 * _verticalSpaceSize);
         Console.ForegroundColor = ConsoleColor.Red;
         Console.Write($"\"{message}\"");
         Console.ForegroundColor = ConsoleColor.White;
         FillLine();
+    }
+    public void LogMessage(OnEnemyDetectionMessage messageInfo)
+    {
+        if(messageInfo.enemy != null)
+            LogWarning($"Enemy Warning: {messageInfo.enemy} at x:{messageInfo.enemy.Position.x}, y:{messageInfo.enemy.Position.y}");
+    }
+    public void LogMessage(OnMoveMessage messageInfo)
+    {
+        LogMessage($"{messageInfo.Name} moved to the {messageInfo.direction}");
+    }
+
+    public void LogMessage(OnItemUnequipMessage messageInfo)
+    {
+        LogMessage($"{messageInfo.Name} unequipped {messageInfo.Item.Name}");
+    }
+
+    public void LogMessage(OnItemEquipMessage messageInfo)
+    {
+        LogMessage($"{messageInfo.Name} equipped {messageInfo.Item.Name} {messageInfo.Item.Description}");
+    }
+
+    public void LogMessage(OnItemDropMessage messageInfo)
+    {
+        LogMessage($"{messageInfo.Name} dropped {messageInfo.Item.Name}");
+    }
+
+    public void LogMessage(OnItemPickUpMessage messageInfo)
+    {
+        LogMessage($"{messageInfo.Name} picked up {messageInfo.Item.Name} {messageInfo.Item.Description}");
     }
 
     // We are overriding previous contents on Enemy type cells

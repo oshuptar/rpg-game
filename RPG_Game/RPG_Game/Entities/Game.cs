@@ -18,7 +18,7 @@ public class Game
     {
         _room = mapConfigurator.GetResult();
         ObjectRenderer.GetInstance().SetMapInstructionConfigurator(mapConfigurator.GetInstructionConfiguration());
-        ObjectDisplayer.GetInstance().SetRoom(_room);
+        ConsoleObjectDisplayer.GetInstance().SetRoom(_room);
     }
 
     public Game()
@@ -32,7 +32,7 @@ public class Game
         Console.WindowTop = 0;
 
         Player player = new Player();
-        ObjectDisplayer displayer = ObjectDisplayer.GetInstance();
+        ConsoleObjectDisplayer displayer = ConsoleObjectDisplayer.GetInstance();
         MapConfigurator map = new MapConfigurator();
 
         // This will kind of allow to change the map configuration during runtime

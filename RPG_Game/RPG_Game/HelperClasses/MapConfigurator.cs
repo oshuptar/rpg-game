@@ -217,7 +217,7 @@ public class MapConfigurator : IConfigurator
 //    Random random = new Random();
 //    (int x1, int y1) = (room1.left + random.Next(0, room1.width), room1.top + random.Next(0, room1.height));
 
-//    (int x2, int y2) = (room2.left + random.Next(room2.width/2 - 1, room2.width/2), room2.top + random.Next(room2.height/2, room2.height/2 + 1));
+//    (int x2, int y2) = (room2.left + random.Next(room2.width / 2 - 1, room2.width / 2), room2.top + random.Next(room2.height / 2, room2.height / 2 + 1));
 
 //    // We connect any two points inside the room
 //    while (x1 != x2 || y1 != y2)

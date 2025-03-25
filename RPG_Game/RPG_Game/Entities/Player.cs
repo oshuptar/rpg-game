@@ -2,6 +2,7 @@
 using RPG_Game.Enums;
 using RPG_Game.HelperClasses;
 using RPG_Game.Interfaces;
+using RPG_Game.LogMessages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +17,7 @@ public class Player : ICanMove, ICanReceiveDamage
 {
     public (int x, int y) Position { get; private set; }
 
-    public string Name = "Raikuro Takeda";
+    public string Name = "Daymio Harutosi";
 
     private PlayerStats PlayerStats  = new PlayerStats();
 
@@ -60,7 +61,7 @@ public class Player : ICanMove, ICanReceiveDamage
     }
 
     //By default the order in LINQ is ascending
-
+    // implement via events
     public bool Move(Direction direction, Room room)
     {
         (int, int)? TempPos;
@@ -69,10 +70,10 @@ public class Player : ICanMove, ICanReceiveDamage
             room.RemoveObject(CellType.Player, Position);
             room.AddObject(CellType.Player, ((int, int))TempPos);
             Position = ((int, int))TempPos;
-            ObjectDisplayer.GetInstance().LogMessage($"{Name} moved to the {direction}");
             //Extract the enemy which is closest to the player given the cartesian product distance
             IEnemy? enemy = room.Enemies.MinBy((enemy) => Math.Sqrt(Math.Pow(this.Position.x - enemy.Position.x, 2) + Math.Pow(this.Position.y -  enemy.Position.y, 2)));
-            ObjectDisplayer.GetInstance().LogWarning($"Enemy Warning: {enemy} at x:{enemy?.Position.x}, y:{enemy?.Position.y}");
+            ConsoleObjectDisplayer.GetInstance().LogMessage(new OnEnemyDetectionMessage(enemy));
+            ConsoleObjectDisplayer.GetInstance().LogMessage(new OnMoveMessage(direction, this.Name));
             return true;
         }
         return false;
@@ -84,13 +85,13 @@ public class Player : ICanMove, ICanReceiveDamage
     {
         Inventory.PickUp(item, this); //changes player's attrbutes when picked up
         if(item != null)
-            ObjectDisplayer.GetInstance().LogMessage($"{Name} picked up {item.Name} {item.Description}");
+            ConsoleObjectDisplayer.GetInstance().LogMessage(new OnItemPickUpMessage(item, this.Name));
     }
     public bool Equip(IItem? item, bool isInInventory = true)
     {
-        bool isEquipped =  Hands.Equip(item, this, isInInventory);
+        bool isEquipped = Hands.Equip(item, this, isInInventory);
         if(isEquipped)
-            ObjectDisplayer.GetInstance().LogMessage($"{Name} equipped {item!.Name} {item.Description}");
+            ConsoleObjectDisplayer.GetInstance().LogMessage(new OnItemEquipMessage(item, this.Name));
         return isEquipped;
     }
     public void UnEquip(int index)
@@ -99,7 +100,7 @@ public class Player : ICanMove, ICanReceiveDamage
         if (item != null)
         {
             Inventory.inventory.Add(item);
-            ObjectDisplayer.GetInstance().LogMessage($"{Name} unequipped {item?.Name}");
+            ConsoleObjectDisplayer.GetInstance().LogMessage(new OnItemUnequipMessage(item, this.Name));
         }
     }
     public IItem? Retrieve(int index, bool fromInventory)
@@ -122,7 +123,7 @@ public class Player : ICanMove, ICanReceiveDamage
         item = Hands.DropFromHands(room, index, this);
 
         if(item != null)
-            ObjectDisplayer.GetInstance().LogMessage($"{Name} dropped {item.Name}");
+            ConsoleObjectDisplayer.GetInstance().LogMessage(new OnItemDropMessage(item, this.Name));
 
         return item;
     }

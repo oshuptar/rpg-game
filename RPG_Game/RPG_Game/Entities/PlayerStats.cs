@@ -14,6 +14,7 @@ public class PlayerStats
     public Dictionary<string, int> Attributes { get; private set; } = new Dictionary<string, int>();
     public PlayerStats()
     {
+        // provide enum key 
         Attributes.Add("Health", 100);
         Attributes.Add("Strength", 0);
         Attributes.Add("Luck", 0);

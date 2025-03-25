@@ -53,7 +53,7 @@ public class Room
     public Room() { }
     public bool IsPosAvailable(int x, int y)
     {
-        if (x < 0 || y < 0 || x > _width - 1 || y > _height - 1)
+        if (x < 0 || y < 0 || x > _width - _frameSize || y > _height - _frameSize)
             return false;
         return Grid[x, y].IsWalkable();
     }
