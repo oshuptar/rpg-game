@@ -61,7 +61,6 @@ public class Player : ICanMove, ICanReceiveDamage
     }
 
     //By default the order in LINQ is ascending
-    // implement via events
     public bool Move(Direction direction, Room room)
     {
         (int, int)? TempPos;

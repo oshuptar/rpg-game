@@ -1,6 +1,7 @@
 ﻿using RPG_Game.Entiities;
 using RPG_Game.Entities;
 using RPG_Game.Interfaces;
+using RPG_Game.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,8 +14,8 @@ public class Coin : ICurrency
 {
     public string Name => "Coin";
     public static int Value => 10;
-    public void ApplyChanges(PlayerStats playerStats) => playerStats.ModifyPlayerAttribute("Coins", 1);
-    public void RevertChanges(PlayerStats playerStats) => playerStats.ModifyPlayerAttribute("Coins", -1);
+    public void ApplyChanges(PlayerStats playerStats) => playerStats.ModifyPlayerAttribute(PlayerAttributes.Coins, 1);
+    public void RevertChanges(PlayerStats playerStats) => playerStats.ModifyPlayerAttribute(PlayerAttributes.Coins, -1);
 
     public string Description => "";
 }

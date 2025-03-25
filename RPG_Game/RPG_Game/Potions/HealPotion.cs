@@ -1,5 +1,6 @@
 ﻿using RPG_Game.Entiities;
 using RPG_Game.Entities;
+using RPG_Game.Enums;
 using RPG_Game.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -16,11 +17,11 @@ public class HealPotion : IPotion
     public int HP = 5;
     private void ApplyChanges(PlayerStats playerStats)
     {
-        playerStats.ModifyPlayerAttribute("Health", HP);
+        playerStats.ModifyPlayerAttribute(PlayerAttributes.Health, HP);
     }
     private void RevertChanges(PlayerStats playerStats)
     {
-        playerStats.ModifyPlayerAttribute("Health", -HP);
+        playerStats.ModifyPlayerAttribute(PlayerAttributes.Health, -HP);
     }
 
     public string Description => $"(Adds {HP} HP)";

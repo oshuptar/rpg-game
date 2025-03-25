@@ -1,5 +1,6 @@
 ﻿using RPG_Game.Entities;
 using RPG_Game.Interfaces;
+using RPG_Game.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,12 +15,12 @@ public class LuckItemDecorator : ItemDecorator
     public override string Name => "(Lucky) " + item.Name;
     public override void ApplyChanges(PlayerStats playerStats)
     {
-        playerStats.ModifyPlayerAttribute("Luck", 2);
+        playerStats.ModifyPlayerAttribute(PlayerAttributes.Luck, 2);
         item.ApplyChanges(playerStats);
     }
     public override void RevertChanges(PlayerStats playerStats)
     {
-        playerStats.ModifyPlayerAttribute("Luck", -2); // the name is hardcoded, think about the way to fix this
+        playerStats.ModifyPlayerAttribute(PlayerAttributes.Luck, -2); // the name is hardcoded, think about the way to fix this
         item.RevertChanges(playerStats);
     }
 

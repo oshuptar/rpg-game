@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using RPG_Game.Enums;
 
 namespace RPG_Game.Potions;
 
@@ -17,12 +18,12 @@ public class AggressionPotion : IPotion
     public int Aggression = 5;
     private void ApplyChanges(PlayerStats playerStats) 
     {
-        playerStats.ModifyPlayerAttribute("Aggression", Aggression);
+        playerStats.ModifyPlayerAttribute(PlayerAttributes.Aggression, Aggression);
     }
     //Made it private, so only possible to apply when used
     private void RevertChanges(PlayerStats playerStats)
     {
-        playerStats.ModifyPlayerAttribute("Health", -Aggression);
+        playerStats.ModifyPlayerAttribute(PlayerAttributes.Aggression, -Aggression);
     }
 
     public string Description => $"(Adds {Aggression} Aggression)";
