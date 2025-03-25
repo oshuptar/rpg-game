@@ -21,7 +21,7 @@ public class AggressionPotion : IPotion
         playerStats.ModifyPlayerAttribute(PlayerAttributes.Aggression, Aggression);
     }
     //Made it private, so only possible to apply when used
-    private void RevertChanges(PlayerStats playerStats)
+    private void RevertChanges(PlayerStats playerStats) // ask about this private accessor
     {
         playerStats.ModifyPlayerAttribute(PlayerAttributes.Aggression, -Aggression);
     }

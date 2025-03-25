@@ -10,9 +10,8 @@ using System.Threading.Tasks;
 
 namespace RPG_Game.Entities;
 
-public class PlayerStats
+public class PlayerStats : EntityStats
 {
-    public Dictionary<PlayerAttributes, int> Attributes { get; private set; } = new Dictionary<PlayerAttributes, int>();
     public PlayerStats()
     {
         // provide enum key 
@@ -27,26 +26,28 @@ public class PlayerStats
         OnMoneyChange();
     }
 
-    //Can we use reflections for retrieving the name of the attributes?
-    public void ModifyPlayerAttribute(PlayerAttributes attribute, int value)
-    {
-        if(Attributes.ContainsKey(attribute))
-            Attributes[attribute] += value;
-
-        if (attribute.Equals("Coins") || attribute.Equals("Gold"))
-            OnMoneyChange();
-    }
-
-    public void OnMoneyChange()
-    {
-        Attributes[PlayerAttributes.Money] = Attributes[PlayerAttributes.Coins] * Coin.Value + Attributes[PlayerAttributes.Gold] * Gold.Value;
-    }
-
-    public (PlayerAttributes attribute, int value)? RetrievePlayerAttribute(PlayerAttributes attribute)
-    {
-        if (!Attributes.ContainsKey(attribute))
-            return null;
-        return (attribute, Attributes[attribute]); 
-    }
 }
 
+//public Dictionary<PlayerAttributes, int> Attributes { get; set; } = new Dictionary<PlayerAttributes, int>();
+
+//Can we use reflections for retrieving the name of the attributes?
+//public void ModifyPlayerAttribute(PlayerAttributes attribute, int value)
+//{
+//    if(Attributes.ContainsKey(attribute))
+//        Attributes[attribute] += value;
+
+//    if (attribute.Equals("Coins") || attribute.Equals("Gold"))
+//        OnMoneyChange();
+//}
+
+//public void OnMoneyChange()
+//{
+//    Attributes[PlayerAttributes.Money] = Attributes[PlayerAttributes.Coins] * Coin.Value + Attributes[PlayerAttributes.Gold] * Gold.Value;
+//}
+
+//public (PlayerAttributes attribute, int value)? RetrievePlayerAttribute(PlayerAttributes attribute)
+//{
+//    if (!Attributes.ContainsKey(attribute))
+//        return null;
+//    return (attribute, Attributes[attribute]); 
+//}
