@@ -15,11 +15,11 @@ public class HealPotion : IPotion
     public string Name => "Healing Potion";
 
     public int HP = 5;
-    private void ApplyChanges(PlayerStats playerStats)
+    private void ApplyEffect(PlayerStats playerStats)
     {
         playerStats.ModifyPlayerAttribute(PlayerAttributes.Health, HP);
     }
-    private void RevertChanges(PlayerStats playerStats)
+    private void RevertEffect(PlayerStats playerStats)
     {
         playerStats.ModifyPlayerAttribute(PlayerAttributes.Health, -HP);
     }
@@ -28,11 +28,11 @@ public class HealPotion : IPotion
 
     public void Use(Player? player)
     {
-        ApplyChanges(player?.RetrievePlayerStats());
+        ApplyEffect(player?.RetrievePlayerStats());
     }
 
     public void Dispose(Player? player)
     {
-        RevertChanges(player?.RetrievePlayerStats());
+        RevertEffect(player?.RetrievePlayerStats());
     }
 }

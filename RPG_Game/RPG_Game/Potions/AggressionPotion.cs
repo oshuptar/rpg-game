@@ -16,12 +16,12 @@ public class AggressionPotion : IPotion
     public string Name => "Aggresion Potion";
 
     public int Aggression = 5;
-    private void ApplyChanges(PlayerStats playerStats) 
+    private void ApplyEffect(PlayerStats playerStats) 
     {
         playerStats.ModifyPlayerAttribute(PlayerAttributes.Aggression, Aggression);
     }
     //Made it private, so only possible to apply when used
-    private void RevertChanges(PlayerStats playerStats) // ask about this private accessor
+    private void RevertEffect(PlayerStats playerStats) // ask about this private accessor
     {
         playerStats.ModifyPlayerAttribute(PlayerAttributes.Aggression, -Aggression);
     }
@@ -30,11 +30,11 @@ public class AggressionPotion : IPotion
 
     public void Use(Player? player)
     {
-        ApplyChanges(player?.RetrievePlayerStats()!);
+        ApplyEffect(player?.RetrievePlayerStats()!);
     }
 
     public void Dispose(Player? player)
     {
-        RevertChanges(player?.RetrievePlayerStats()!);
+        RevertEffect(player?.RetrievePlayerStats()!);
     }
 }
