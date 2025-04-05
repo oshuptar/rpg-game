@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="UIHandlers\" />
+    <Folder Include="RawInputHandlers\" />
     <Folder Include="UnusedClasses\" />
   </ItemGroup>
 

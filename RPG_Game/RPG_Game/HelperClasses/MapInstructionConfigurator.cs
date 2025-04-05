@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RPG_Game.Controller;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,12 +26,25 @@ public class MapInstructionConfigurator : IConfigurator
         _sb.Append(" - To leave hands or inventory scope - press `Escape`\n");
 
         ObjectRenderer.GetInstance().noOfControlsLines += 7;
+
+        RequestHandlerChain.GetInstance().AddHandler(new EquipItemHandler());
+        RequestHandlerChain.GetInstance().AddHandler(new PickUpItemHandler());
+        RequestHandlerChain.GetInstance().AddHandler(new DropItemHandler());
+        RequestHandlerChain.GetInstance().AddHandler(new NextItemHandler());
+        RequestHandlerChain.GetInstance().AddHandler(new PrevItemHandler());
+        RequestHandlerChain.GetInstance().AddHandler(new ScopeInventoryHandler());
+        RequestHandlerChain.GetInstance().AddHandler(new ScopeHandsHandler());
+        RequestHandlerChain.GetInstance().AddHandler(new ScopeRoomHandler());
     }
 
     public void AddMoveControls()
     {
         _sb.Append(" - Moves in four directions are controlled by `W`, `S`, `A`, `D`\n");
         ObjectRenderer.GetInstance().noOfControlsLines += 1;
+        RequestHandlerChain.GetInstance().AddHandler(new MoveUpHandler());
+        RequestHandlerChain.GetInstance().AddHandler(new MoveDownHandler());
+        RequestHandlerChain.GetInstance().AddHandler(new MoveLeftHandler());
+        RequestHandlerChain.GetInstance().AddHandler(new MoveRightHandler());
     }
 
     public void AddCentralRoom()
@@ -66,6 +80,8 @@ public class MapInstructionConfigurator : IConfigurator
         _sb.Append(" - To open/hide controls - press `K`\n");
 
         ObjectRenderer.GetInstance().noOfControlsLines += 2;
+        RequestHandlerChain.GetInstance().AddHandler(new HideControlsHandler());
+
     }
 
     public void FillDungeon()

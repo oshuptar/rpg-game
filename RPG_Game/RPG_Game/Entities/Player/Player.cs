@@ -10,6 +10,7 @@ using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using RPG_Game.UIHandlers;
 
 namespace RPG_Game.Entiities;
 
@@ -119,7 +120,8 @@ public class Player : ICanMove, ICanReceiveDamage
         IItem? item;
         if (fromInventory)
             item = Inventory.DropFromInventory(room, index, this);
-        item = Hands.DropFromHands(room, index, this);
+        else 
+            item = Hands.DropFromHands(room, index, this);
 
         if(item != null)
             ConsoleObjectDisplayer.GetInstance().LogMessage(new OnItemDropMessage(item, this.Name));

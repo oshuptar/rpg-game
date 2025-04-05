@@ -1,4 +1,5 @@
-﻿using RPG_Game.Currencies;
+﻿using RPG_Game.Controller;
+using RPG_Game.Currencies;
 using RPG_Game.Entiities;
 using RPG_Game.Enums;
 using RPG_Game.HelperClasses;
@@ -16,6 +17,9 @@ using static RPG_Game.Entiities.Room;
 
 namespace RPG_Game.HelperClasses;
 
+// Map configurator is responsible for configuring the proper chain of input keys handling
+// Implement a proper MVC model
+// Serialize cofiguration and save thm in files
 public class MapConfigurator : IConfigurator
 { 
     private Room _room;

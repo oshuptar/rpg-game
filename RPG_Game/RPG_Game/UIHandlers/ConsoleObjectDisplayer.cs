@@ -12,9 +12,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
 using System.Xml.Linq;
+using RPG_Game.HelperClasses;
 
-namespace RPG_Game.HelperClasses;
+namespace RPG_Game.UIHandlers;
 
+// state of the game in the console object displayer
 public class ConsoleObjectDisplayer
 {
     // Divide the console output
