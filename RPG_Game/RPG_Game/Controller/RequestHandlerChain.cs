@@ -32,14 +32,17 @@ public class RequestHandlerChain
         firstHandler?.HandleRequest(request);
     }
 
+    // Fix implementation, make more concise
     public void AddHandler(IRequestHandler handler)
     {
         if (firstHandler == null)
         {
             firstHandler = handler;
             lastHandler = handler;
+            firstHandler.SetNext(new DefaultHandler());
         }
         lastHandler?.SetNext(handler);
         lastHandler = handler;
+        lastHandler.SetNext(new DefaultHandler());
     }
 }

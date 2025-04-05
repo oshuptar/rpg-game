@@ -1,4 +1,4 @@
-﻿using RPG_Game.Entiities;
+﻿using RPG_Game.Controller;
 
 namespace RPG_Game;
 

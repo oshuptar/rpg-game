@@ -187,6 +187,11 @@ public class ConsoleObjectDisplayer
         LogMessage($"{messageInfo.Name} picked up {messageInfo.Item.Name} {messageInfo.Item.Description}");
     }
 
+    public void LogMessage(OnRequestNotSupportedMessage messageInfo)
+    {
+        LogMessage($"{messageInfo.Desciprtion}");
+    }
+
     // We are overriding previous contents on Enemy type cells
     public void DisplayEnemies()
     {

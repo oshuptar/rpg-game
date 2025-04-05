@@ -2,6 +2,7 @@
 using RPG_Game.Enums;
 using RPG_Game.Interfaces;
 using RPG_Game.UIHandlers;
+using RPG_Game.LogMessages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -101,6 +102,18 @@ public class MoveLeftHandler : BaseHandler
             base.HandleRequest(request);
     }
 }
+
+// default handler
+public class DefaultHandler : BaseHandler
+{
+    protected override RequestType RequestType => RequestType.Ignore;
+
+    public override void HandleRequest(ActionRequest request)
+    {
+        ConsoleObjectDisplayer.GetInstance().LogMessage(new OnRequestNotSupportedMessage());
+    }
+}
+
 
 public class PickUpItemHandler : BaseHandler
 {
