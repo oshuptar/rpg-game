@@ -13,7 +13,7 @@ namespace RPG_Game.Entities;
 public abstract class EntityStats
 {
     public virtual Dictionary<PlayerAttributes, int> Attributes { get; private set; } = new Dictionary<PlayerAttributes, int>();
-    public virtual void ModifyPlayerAttribute(PlayerAttributes attribute, int value)
+    public virtual void ModifyEntityAttribute(PlayerAttributes attribute, int value)
     {
         if (Attributes.ContainsKey(attribute))
             Attributes[attribute] += value;
@@ -27,7 +27,7 @@ public abstract class EntityStats
         Attributes[PlayerAttributes.Money] = Attributes[PlayerAttributes.Coins] * Coin.Value + Attributes[PlayerAttributes.Gold] * Gold.Value;
     }
 
-    public virtual (PlayerAttributes attribute, int value)? RetrievePlayerAttribute(PlayerAttributes attribute)
+    public virtual (PlayerAttributes attribute, int value)? RetrieveEntityAttribute(PlayerAttributes attribute)
     {
         if (!Attributes.ContainsKey(attribute))
             return null;

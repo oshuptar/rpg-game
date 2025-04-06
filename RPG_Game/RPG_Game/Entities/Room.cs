@@ -1,4 +1,5 @@
-﻿using RPG_Game.Enums;
+﻿using RPG_Game.Entities;
+using RPG_Game.Enums;
 using RPG_Game.HelperClasses;
 using RPG_Game.Interfaces;
 using System;

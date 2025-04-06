@@ -20,7 +20,7 @@ public class Inventory : StorageManager
         return item;
     }
 
-    public void EmptyDirectory(Room room, Player player)
+    public void EmptyInventory(Room room, Player player)
     {
         int itemCount = inventory.Count;
         for(int i = 0; i < itemCount; i++)
@@ -32,6 +32,6 @@ public class Inventory : StorageManager
         if (item == null)
             return;
         inventory.Add(item);
-        item.ApplyChanges(player.RetrievePlayerStats());
+        item.ApplyChanges(player.RetrieveEntityStats());
     }
 }

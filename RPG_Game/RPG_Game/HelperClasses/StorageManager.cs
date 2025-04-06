@@ -1,4 +1,5 @@
 ﻿using RPG_Game.Entiities;
+using RPG_Game.Entities;
 using RPG_Game.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -10,13 +11,13 @@ namespace RPG_Game.HelperClasses;
 
 public abstract class StorageManager
 {
-    public IItem? Drop(Room room, int index, List<IItem> list, Player player)
+    public IItem? Drop(Room room, int index, List<IItem> list, IEntity entity)
     {
         IItem? item = Remove(index, list);
         if (item != null)
         {
-            room.AddItem(item, (player.Position.x, player.Position.y));
-            item.RevertChanges(player.RetrievePlayerStats());
+            room.AddItem(item, (entity.Position.x, entity.Position.y));
+            item.RevertChanges(entity.RetrieveEntityStats());
         }
         return item;
     }

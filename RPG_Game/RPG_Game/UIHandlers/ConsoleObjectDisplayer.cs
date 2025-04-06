@@ -126,9 +126,9 @@ public class ConsoleObjectDisplayer
 
     public void DisplayPlayerAttributes(Player player)
     {
-        foreach (var key in player.RetrievePlayerStats().Attributes.Keys)
+        foreach (var key in player.RetrieveEntityStats().Attributes.Keys)
         { 
-            Console.Write($"{key}: {player.RetrievePlayerStats().Attributes[key]}");
+            Console.Write($"{key}: {player.RetrieveEntityStats().Attributes[key]}");
             FillLine();
             CursorPosition = (CursorPosition.left, CursorPosition.top + 1);
             Console.SetCursorPosition(CursorPosition.left, CursorPosition.top);

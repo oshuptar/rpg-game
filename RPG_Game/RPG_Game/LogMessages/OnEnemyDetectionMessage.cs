@@ -1,4 +1,4 @@
-﻿using RPG_Game.Interfaces;
+﻿using RPG_Game.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -11,30 +11,43 @@ using RPG_Game.Enums;
 namespace RPG_Game.Potions;
 
 // Implement via events in PlayerStats class
+
+//Temporary potion
 public class AggressionPotion : IPotion
 {
     public string Name => "Aggresion Potion";
 
     public int Aggression = 5;
-    private void ApplyEffect(PlayerStats playerStats) 
+    public void ApplyEffect(EntityStats? entityStats) 
     {
-        playerStats.ModifyPlayerAttribute(PlayerAttributes.Aggression, Aggression);
+        entityStats?.ModifyEntityAttribute(PlayerAttributes.Aggression, Aggression);
     }
-    //Made it private, so only possible to apply when used
-    private void RevertEffect(PlayerStats playerStats) // ask about this private accessor
+    public void RevertEffect(EntityStats? entityStats) 
     {
-        playerStats.ModifyPlayerAttribute(PlayerAttributes.Aggression, -Aggression);
+        entityStats?.ModifyEntityAttribute(PlayerAttributes.Aggression, -Aggression);
     }
-
     public string Description => $"(Adds {Aggression} Aggression)";
 
-    public void Use(Player? player)
+    public void Use(IEntity? entity)
     {
-        ApplyEffect(player?.RetrievePlayerStats()!);
+        ApplyEffect(entity?.RetrieveEntityStats()!);
     }
 
-    public void Dispose(Player? player)
+    public void Dispose(IEntity? entity)
     {
-        RevertEffect(player?.RetrievePlayerStats()!);
+        RevertEffect(entity?.RetrieveEntityStats()!);
+    }
+    public void PickUp(IEntity? entity)
+    {
+
+    }
+
+    public void Drop(IEntity? entity)
+    {
+
+    }
+    public void OnMoveHandler(object sender, EventArgs e)
+    {
+        throw new NotImplementedException();
     }
 }

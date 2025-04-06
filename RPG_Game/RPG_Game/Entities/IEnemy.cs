@@ -4,11 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RPG_Game.Interfaces;
+namespace RPG_Game.Entities;
 
-public interface IEnemy : ICanMove, ICanReceiveDamage
+public interface IEnemy : IEntity
 {
     public IEnemy Clone();
-
-    public (int x, int y) Position { get; set; }
 }

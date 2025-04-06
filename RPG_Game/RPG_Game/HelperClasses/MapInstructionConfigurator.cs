@@ -12,9 +12,7 @@ public class MapInstructionConfigurator : IConfigurator
     private StringBuilder _sb = new StringBuilder();
     private bool ItemControls = false;
     private bool MoveControls = false;
-
     public MapInstructionConfigurator() => ResetMapConfiguration();
-
     public void AddItemControls()
     {
         _sb.Append(" - To pick up an item - press `E`\n");
@@ -37,7 +35,6 @@ public class MapInstructionConfigurator : IConfigurator
         RequestHandlerChain.GetInstance().AddHandler(new ScopeHandsHandler());
         RequestHandlerChain.GetInstance().AddHandler(new ScopeRoomHandler());
     }
-
     public void AddMoveControls()
     {
         _sb.Append(" - Moves in four directions are controlled by `W`, `S`, `A`, `D`\n");
@@ -47,7 +44,6 @@ public class MapInstructionConfigurator : IConfigurator
         RequestHandlerChain.GetInstance().AddHandler(new MoveLeftHandler());
         RequestHandlerChain.GetInstance().AddHandler(new MoveRightHandler());
     }
-
     public void AddCentralRoom()
     {
         if (!MoveControls)
@@ -56,7 +52,6 @@ public class MapInstructionConfigurator : IConfigurator
             MoveControls = true;
         }
     }
-
     public void AddChambers()
     {
         if (!MoveControls)
@@ -65,7 +60,6 @@ public class MapInstructionConfigurator : IConfigurator
             MoveControls = true;
         }
     }
-
     public void AddPaths()
     {
         if (!MoveControls)
@@ -74,7 +68,6 @@ public class MapInstructionConfigurator : IConfigurator
             MoveControls = true;
         }
     }
-
     public void CreateEmptyDungeon()
     {
         _sb.Append("Instructions:\n");
@@ -84,10 +77,8 @@ public class MapInstructionConfigurator : IConfigurator
         RequestHandlerChain.GetInstance().AddHandler(new HideControlsHandler());
         RequestHandlerChain.GetInstance().AddHandler(new QuitHadler());
     }
-
     public void FillDungeon()
     { }
-
     public void PlaceDecoratedItems()
     {
         if (!ItemControls && MoveControls)
@@ -96,7 +87,6 @@ public class MapInstructionConfigurator : IConfigurator
             ItemControls = true;
         }
     }
-
     public void PlaceDecoratedWeapons()
     {
         if (!ItemControls && MoveControls)
@@ -110,7 +100,6 @@ public class MapInstructionConfigurator : IConfigurator
             ObjectRenderer.GetInstance().noOfControlsLines += 1;
         }
     }
-
     public void PlaceEnemies()
     {
         if(MoveControls)
@@ -119,7 +108,6 @@ public class MapInstructionConfigurator : IConfigurator
             ObjectRenderer.GetInstance().noOfControlsLines++;
         }
     }
-
     public void PlaceItems()
     {
         if (!ItemControls && MoveControls)
@@ -128,7 +116,6 @@ public class MapInstructionConfigurator : IConfigurator
             ItemControls = true;
         }
     }
-
     public void PlacePotions()
     {
         if (!ItemControls && MoveControls)
@@ -142,7 +129,6 @@ public class MapInstructionConfigurator : IConfigurator
             ObjectRenderer.GetInstance().noOfControlsLines++;
         }
     }
-
     public void PlaceWeapons()
     {
         if (!ItemControls && MoveControls)
@@ -151,12 +137,10 @@ public class MapInstructionConfigurator : IConfigurator
             ItemControls = true;
         }
     }
-
     public void ResetMapConfiguration()
     {
         _sb = new StringBuilder();
     }
-
     public StringBuilder GetResult() => _sb;
 }
 

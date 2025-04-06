@@ -62,7 +62,6 @@ public class Game
                 displayer.DisplayRoutine(player);
                 i++;
             }
-
         }
     }
 }

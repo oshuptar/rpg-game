@@ -24,7 +24,7 @@ public class Hands : StorageManager
         Capacity += item.Capacity;
 
         if (!isInInventory)
-            item.ApplyChanges(player.RetrievePlayerStats());
+            item.ApplyChanges(player.RetrieveEntityStats());
 
         return true;
     }

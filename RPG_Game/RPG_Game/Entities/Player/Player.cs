@@ -14,9 +14,11 @@ using RPG_Game.UIHandlers;
 
 namespace RPG_Game.Entiities;
 
-public class Player : ICanMove, ICanReceiveDamage
+
+public class Player : IEntity
 {
-    public (int x, int y) Position { get; private set; }
+    public event EventHandler? PlayerMoved;
+    public (int x, int y) Position { get; set; }
 
     public string Name = "Daymio Harutosi";
 
@@ -51,6 +53,11 @@ public class Player : ICanMove, ICanReceiveDamage
         return TempPos;
     }
 
+    protected virtual void OnMoveEvent()
+    {
+        PlayerMoved?.Invoke(this, EventArgs.Empty);
+    }
+
     public (int,int)? IsMovable(Direction direction, Room room) // whether we can move in the following direction
     {
         (int x, int y) TempPos = GetNewPosition(direction);
@@ -72,6 +79,8 @@ public class Player : ICanMove, ICanReceiveDamage
             Position = ((int, int))TempPos;
             //Extract the enemy which is closest to the player given the cartesian product distance
             IEnemy? enemy = room.Enemies.MinBy((enemy) => Math.Sqrt(Math.Pow(this.Position.x - enemy.Position.x, 2) + Math.Pow(this.Position.y -  enemy.Position.y, 2)));
+            OnMoveEvent();
+
             ConsoleObjectDisplayer.GetInstance().LogMessage(new OnEnemyDetectionMessage(enemy));
             ConsoleObjectDisplayer.GetInstance().LogMessage(new OnMoveMessage(direction, this.Name));
             return true;
@@ -81,6 +90,7 @@ public class Player : ICanMove, ICanReceiveDamage
 
     public void PlacePlayer(Room room) => room.RetrieveGrid()[Position.x, Position.y].CellType |= CellType.Player;
     public void ReceiveDamage(int damage) { }// To implement
+    //We can implement PickUp as Visitor
     public void PickUp(IItem? item)
     {
         Inventory.PickUp(item, this); //changes player's attrbutes when picked up
@@ -131,11 +141,11 @@ public class Player : ICanMove, ICanReceiveDamage
 
     public void EmptyInventory(Room room)
     {
-        Inventory.EmptyDirectory(room, this);
+        Inventory.EmptyInventory(room, this);
         ConsoleObjectDisplayer.GetInstance().LogMessage(new OnEmptyDirectory(this.Name));
     }
     public List<IItem> RetrieveHands() => this.Hands.hands;
     public List<IItem> RetrieveInventory() => this.Inventory.inventory;
-    public PlayerStats RetrievePlayerStats() => this.PlayerStats;
+    public EntityStats RetrieveEntityStats() => this.PlayerStats;
 
 }

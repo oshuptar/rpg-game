@@ -14,8 +14,8 @@ public class Gold : ICurrency
 {
     public string Name => "Gold";
     public static int Value => 50;
-    public void ApplyChanges(PlayerStats playerStats) => playerStats.ModifyPlayerAttribute(PlayerAttributes.Gold, 1);
-    public void RevertChanges(PlayerStats playerStats) => playerStats.ModifyPlayerAttribute(PlayerAttributes.Gold, -1);
+    public void ApplyChanges(EntityStats entityStats) => entityStats.ModifyEntityAttribute(PlayerAttributes.Gold, 1);
+    public void RevertChanges(EntityStats entityStats) => entityStats.ModifyEntityAttribute(PlayerAttributes.Gold, -1);
 
     public string Description => "";
 }
