@@ -20,6 +20,13 @@ public class Inventory : StorageManager
         return item;
     }
 
+    public void EmptyDirectory(Room room, Player player)
+    {
+        int itemCount = inventory.Count;
+        for(int i = 0; i < itemCount; i++)
+            DropFromInventory(room, 0, player);
+    }
+
     public void PickUp(IItem? item, Player player)
     {
         if (item == null)

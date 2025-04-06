@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace RPG_Game.LogMessages;
 
-public class OnRequestNotSupportedMessage
+public class OnEmptyDirectory
 {
-    public string Description => "The key is not supported";
+    public string Name { get; set; }
+    public OnEmptyDirectory(string name)
+    {
+        Name = name;
+    }
 }

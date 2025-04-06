@@ -17,6 +17,7 @@ public enum RequestType
     EquipItem, // This is responsible both for equipping and unequipping
     ScopeHands,
     ScopeInventory,
+    EmptyInventory,
     ScopeRoom,
     HideControls,
     NextItem,

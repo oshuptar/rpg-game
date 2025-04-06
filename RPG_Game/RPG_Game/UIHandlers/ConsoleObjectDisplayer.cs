@@ -145,7 +145,7 @@ public class ConsoleObjectDisplayer
     private void LogMessage(string message)
     {
         Console.SetCursorPosition(Room._width + _horizontalSpaceSize, _noOfLists + _noOfAttributes + 3*_verticalSpaceSize);
-        Console.Write($"\"{message}\"");
+        Console.Write($"{message}");
         FillLine();
     }
 
@@ -161,6 +161,11 @@ public class ConsoleObjectDisplayer
     {
         if(messageInfo.enemy != null)
             LogWarning($"Enemy Warning: {messageInfo.enemy} at x:{messageInfo.enemy.Position.x}, y:{messageInfo.enemy.Position.y}");
+    }
+
+    public void LogMessage(OnEmptyDirectory messageInfo)
+    {
+        LogMessage($"{messageInfo.Name} emptied his inventory");
     }
     public void LogMessage(OnMoveMessage messageInfo)
     {
@@ -189,7 +194,14 @@ public class ConsoleObjectDisplayer
 
     public void LogMessage(OnRequestNotSupportedMessage messageInfo)
     {
-        LogMessage($"{messageInfo.Desciprtion}");
+        LogMessage($"{messageInfo.Description}");
+    }
+
+    public void ClearConsole() => Console.Clear();
+
+    public void ClearLogMessage()
+    {
+        LogMessage(ObjectRenderer.GetInstance().RenderEmptyLine().ToString());
     }
 
     // We are overriding previous contents on Enemy type cells

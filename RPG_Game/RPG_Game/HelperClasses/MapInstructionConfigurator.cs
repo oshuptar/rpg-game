@@ -18,7 +18,7 @@ public class MapInstructionConfigurator : IConfigurator
     public void AddItemControls()
     {
         _sb.Append(" - To pick up an item - press `E`\n");
-        _sb.Append(" - To drop an item - press `G`\n");
+        _sb.Append(" - To drop an item - press `G`. To drop all items - press 'Ctrl + G'\n");
         _sb.Append(" - To equip/unequip an item - press `Q`. You can equip an item from inventory or from staying on the item, depending on your focus\n");
         _sb.Append(" - Use arrows to navigate through inventory, map items or eqquiped items\n");
         _sb.Append(" - To enter the inventory scope - press `I`, then use arrows to change the object\n");
@@ -30,6 +30,7 @@ public class MapInstructionConfigurator : IConfigurator
         RequestHandlerChain.GetInstance().AddHandler(new EquipItemHandler());
         RequestHandlerChain.GetInstance().AddHandler(new PickUpItemHandler());
         RequestHandlerChain.GetInstance().AddHandler(new DropItemHandler());
+        RequestHandlerChain.GetInstance().AddHandler(new EmptyInventoryHandler());
         RequestHandlerChain.GetInstance().AddHandler(new NextItemHandler());
         RequestHandlerChain.GetInstance().AddHandler(new PrevItemHandler());
         RequestHandlerChain.GetInstance().AddHandler(new ScopeInventoryHandler());
@@ -77,11 +78,11 @@ public class MapInstructionConfigurator : IConfigurator
     public void CreateEmptyDungeon()
     {
         _sb.Append("Instructions:\n");
+        _sb.Append(" - To finish the game - press 'X'\n");
         _sb.Append(" - To open/hide controls - press `K`\n");
-
-        ObjectRenderer.GetInstance().noOfControlsLines += 2;
+        ObjectRenderer.GetInstance().noOfControlsLines += 3;
         RequestHandlerChain.GetInstance().AddHandler(new HideControlsHandler());
-
+        RequestHandlerChain.GetInstance().AddHandler(new QuitHadler());
     }
 
     public void FillDungeon()
@@ -114,7 +115,7 @@ public class MapInstructionConfigurator : IConfigurator
     {
         if(MoveControls)
         {
-            _sb.Append(" - There are enemies, which protect treasures. Watch out!");
+            _sb.Append(" - There are enemies, which protect treasures. Watch out!\n");
             ObjectRenderer.GetInstance().noOfControlsLines++;
         }
     }

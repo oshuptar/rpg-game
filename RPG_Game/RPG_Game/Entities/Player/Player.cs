@@ -128,6 +128,12 @@ public class Player : ICanMove, ICanReceiveDamage
 
         return item;
     }
+
+    public void EmptyInventory(Room room)
+    {
+        Inventory.EmptyDirectory(room, this);
+        ConsoleObjectDisplayer.GetInstance().LogMessage(new OnEmptyDirectory(this.Name));
+    }
     public List<IItem> RetrieveHands() => this.Hands.hands;
     public List<IItem> RetrieveInventory() => this.Inventory.inventory;
     public PlayerStats RetrievePlayerStats() => this.PlayerStats;

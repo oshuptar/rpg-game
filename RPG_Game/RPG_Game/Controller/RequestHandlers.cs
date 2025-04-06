@@ -35,6 +35,7 @@ public class BaseHandler : IRequestHandler
 }
 
 // will be implemented with events later on, so the code common part would be smaller
+//Figure out how to clear out LogMessages
 public class MoveUpHandler : BaseHandler
 {
     protected override RequestType RequestType => RequestType.MoveUp;
@@ -42,7 +43,7 @@ public class MoveUpHandler : BaseHandler
     {
         if (CanHandleRequest(request))
         {
-            //MovePlayerAction(request, Direction.North);
+            ConsoleObjectDisplayer.GetInstance().ClearLogMessage();
             Context gameContext = request.GetContext();
             gameContext.GetPlayer().Move(Direction.North, gameContext.GetRoom());
             ConsoleObjectDisplayer.GetInstance().ResetFocusIndex();
@@ -62,6 +63,7 @@ public class MoveDownHandler : BaseHandler
     {
         if (CanHandleRequest(request))
         {
+            ConsoleObjectDisplayer.GetInstance().ClearLogMessage(); 
             Context gameContext = request.GetContext();
             gameContext.GetPlayer().Move(Direction.South, gameContext.GetRoom());
             ConsoleObjectDisplayer.GetInstance().ResetFocusIndex();
@@ -78,6 +80,7 @@ public class MoveRightHandler : BaseHandler
     {
         if (CanHandleRequest(request))
         {
+            ConsoleObjectDisplayer.GetInstance().ClearLogMessage();
             Context gameContext = request.GetContext();
             gameContext.GetPlayer().Move(Direction.East, gameContext.GetRoom());
             ConsoleObjectDisplayer.GetInstance().ResetFocusIndex();
@@ -94,6 +97,7 @@ public class MoveLeftHandler : BaseHandler
     {
         if (CanHandleRequest(request))
         {
+            ConsoleObjectDisplayer.GetInstance().ClearLogMessage();
             Context gameContext = request.GetContext();
             gameContext.GetPlayer().Move(Direction.West, gameContext.GetRoom());
             ConsoleObjectDisplayer.GetInstance().ResetFocusIndex();
@@ -110,9 +114,30 @@ public class DefaultHandler : BaseHandler
 
     public override void HandleRequest(ActionRequest request)
     {
+        ConsoleObjectDisplayer.GetInstance().ClearLogMessage();
         ConsoleObjectDisplayer.GetInstance().LogMessage(new OnRequestNotSupportedMessage());
     }
 }
+
+public class QuitHadler : BaseHandler
+{
+    protected override RequestType RequestType => RequestType.Quit;
+    public override void HandleRequest(ActionRequest request)
+    {
+        if(CanHandleRequest(request))
+        {
+            // Some save state logic can be implemented
+            // Add confirmation logic
+            ConsoleObjectDisplayer.GetInstance().ClearLogMessage();
+            ConsoleObjectDisplayer.GetInstance().ClearConsole();
+            Thread.Sleep(1000);
+            Environment.Exit(0);
+        }
+        else
+            base.HandleRequest(request);
+    }
+}
+
 
 
 public class PickUpItemHandler : BaseHandler
@@ -123,6 +148,7 @@ public class PickUpItemHandler : BaseHandler
     {
         if(CanHandleRequest(request))
         {
+            ConsoleObjectDisplayer.GetInstance().ClearLogMessage();
             Context gameContext = request.GetContext();
             IItem? item = gameContext.GetRoom().RemoveItem(gameContext.GetPlayer().Position, ConsoleObjectDisplayer.GetInstance().CurrentFocus);
             gameContext.GetPlayer().PickUp(item);
@@ -141,6 +167,8 @@ public class DropItemHandler : BaseHandler
     {
         if(CanHandleRequest(request))
         {
+            ConsoleObjectDisplayer.GetInstance().ClearLogMessage();
+
             Context gameContext = request.GetContext();
             if (ConsoleObjectDisplayer.GetInstance().FocusOn == FocusType.Inventory)
             {
@@ -165,6 +193,8 @@ public class EquipItemHandler : BaseHandler
     {
         if (CanHandleRequest(request))
         {
+            ConsoleObjectDisplayer.GetInstance().ClearLogMessage();
+
             Context gameContext = request.GetContext();
             Player player = gameContext.GetPlayer();
             ConsoleObjectDisplayer displayer = ConsoleObjectDisplayer.GetInstance();
@@ -197,6 +227,25 @@ public class EquipItemHandler : BaseHandler
     }
 }
 
+public class EmptyInventoryHandler : BaseHandler
+{
+    protected override RequestType RequestType => RequestType.EmptyInventory;
+    public override void HandleRequest(ActionRequest request)
+    {
+        if(CanHandleRequest(request))
+        {
+            if (ConsoleObjectDisplayer.GetInstance().FocusOn == FocusType.Inventory)
+            {
+                Context gameContext = request.GetContext();
+                gameContext.GetPlayer().EmptyInventory(gameContext.GetRoom());
+                ConsoleObjectDisplayer.GetInstance().ResetFocusIndex();
+            }
+        }
+        else
+            base.HandleRequest(request);
+    }
+}
+
 public class ScopeInventoryHandler : BaseHandler
 {
     protected override RequestType RequestType => RequestType.ScopeInventory;
@@ -204,6 +253,7 @@ public class ScopeInventoryHandler : BaseHandler
     {
         if (CanHandleRequest(request))
         {
+            ConsoleObjectDisplayer.GetInstance().ClearLogMessage();
             ConsoleObjectDisplayer.GetInstance().SetInventoryFocus();
             ConsoleObjectDisplayer.GetInstance().ResetFocusIndex();
         }
@@ -219,6 +269,7 @@ public class ScopeHandsHandler : BaseHandler
     {
         if(CanHandleRequest(request))
         {
+            ConsoleObjectDisplayer.GetInstance().ClearLogMessage();
             ConsoleObjectDisplayer.GetInstance().SetHandsFocus();
             ConsoleObjectDisplayer.GetInstance().ResetFocusIndex();
         }
@@ -234,6 +285,7 @@ public class ScopeRoomHandler : BaseHandler
     {
         if (CanHandleRequest(request))
         {
+            ConsoleObjectDisplayer.GetInstance().ClearLogMessage();
             ConsoleObjectDisplayer.GetInstance().ResetFocusType();
             ConsoleObjectDisplayer.GetInstance().ResetFocusIndex();
         }
@@ -248,7 +300,10 @@ public class HideControlsHandler : BaseHandler
     public override void HandleRequest(ActionRequest request)
     {
         if (CanHandleRequest(request))
+        {
+            ConsoleObjectDisplayer.GetInstance().ClearLogMessage();
             ConsoleObjectDisplayer.GetInstance().ChangeControlsVisibility();
+        }
         else
             base.HandleRequest(request);
     }
@@ -259,8 +314,11 @@ public class NextItemHandler : BaseHandler
     protected override RequestType RequestType => RequestType.NextItem;
     public override void HandleRequest(ActionRequest request)
     {
-        if (CanHandleRequest(request)) 
+        if (CanHandleRequest(request))
+        {
+            ConsoleObjectDisplayer.GetInstance().ClearLogMessage();
             ConsoleObjectDisplayer.GetInstance().ShiftCurrentFocus(request.GetContext().GetPlayer(), Direction.East);
+        }
         else
             base.HandleRequest(request);
     }
@@ -272,7 +330,10 @@ public class PrevItemHandler : BaseHandler
     public override void HandleRequest(ActionRequest request)
     {
         if (CanHandleRequest(request))
+        {
+            ConsoleObjectDisplayer.GetInstance().ClearLogMessage();
             ConsoleObjectDisplayer.GetInstance().ShiftCurrentFocus(request.GetContext().GetPlayer(), Direction.West);
+        }
         else
             base.HandleRequest(request);
     }
