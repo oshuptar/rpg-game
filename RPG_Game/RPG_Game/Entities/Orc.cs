@@ -13,7 +13,7 @@ public class Orc : IEnemy
     public (int x, int y) Position { get; set; }
     private EnemyStats orcStats = new EnemyStats();
 
-    public event EventHandler? PlayerMoved;
+    public event EventHandler? EntityMoved;
 
     public bool Move(Direction direction, Room room)
     {

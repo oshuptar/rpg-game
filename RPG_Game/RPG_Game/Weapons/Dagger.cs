@@ -9,9 +9,9 @@ namespace RPG_Game.Weapons;
 
 public class Dagger : IWeapon
 {
-    public int Damage => 5;
-    public string Name => "Dagger";
+    public override int Damage => 5;
+    public override string Name => "Dagger";
     //public override string ToString() => Name;
 
-    public string Description => $"(Damage: {Damage}; One-Handed)";
+    public override string Description => $"(Damage: {Damage}; One-Handed)";
 }

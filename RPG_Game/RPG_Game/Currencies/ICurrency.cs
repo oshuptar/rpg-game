@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace RPG_Game.Interfaces;
 
-public interface ICurrency : IItem
+public abstract class ICurrency : IItem
 {
-    public static int Value { get; }
-    public string GetDescription() => $"A currency {Name} with value {Value}";
+    //public abstract int Value { get; }
+    //public virtual string GetDescription() => $"A currency {Name} with value {Value}";
 }

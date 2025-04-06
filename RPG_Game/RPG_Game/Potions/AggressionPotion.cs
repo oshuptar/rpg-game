@@ -13,41 +13,47 @@ namespace RPG_Game.Potions;
 // Implement via events in PlayerStats class
 
 //Temporary potion
-public class AggressionPotion : IPotion
-{
-    public string Name => "Aggresion Potion";
+// They could be refilled again after some number of player moves
 
-    public int Aggression = 5;
-    public void ApplyEffect(EntityStats? entityStats) 
+// Add cloning to potions, since right now they all refer to the very same potion
+public class AggressionPotion : TemporaryPotion
+{
+    public override string Name => $"Aggresion Potion { (IsDisposed ? "(Disposed)" : "") }";
+
+    public int Aggression = 10;
+    protected override int ActiveTime { get; set; } = 0;
+    public override int Lifetime => 10;
+    public override void ApplyEffect(EntityStats? entityStats) 
     {
         entityStats?.ModifyEntityAttribute(PlayerAttributes.Aggression, Aggression);
     }
-    public void RevertEffect(EntityStats? entityStats) 
+    public override void RevertEffect(EntityStats? entityStats) 
     {
         entityStats?.ModifyEntityAttribute(PlayerAttributes.Aggression, -Aggression);
     }
-    public string Description => $"(Adds {Aggression} Aggression)";
+    public override string Description => $"(Adds {Aggression} Aggression)";
 
-    public void Use(IEntity? entity)
+    public override void Use(IEntity? entity)
     {
-        ApplyEffect(entity?.RetrieveEntityStats()!);
+        if (IsDisposed)
+            return;
+
+        if (entity != null)
+            entity.EntityMoved += OnMoveHandler;
+        ApplyEffect(entity?.RetrieveEntityStats());
     }
 
-    public void Dispose(IEntity? entity)
+    public override void Dispose(IEntity? entity)
     {
-        RevertEffect(entity?.RetrieveEntityStats()!);
+        RevertEffect(entity?.RetrieveEntityStats());
+        if (entity != null)
+            entity.EntityMoved -= OnMoveHandler;
+        IsDisposed = true;
     }
-    public void PickUp(IEntity? entity)
+    public override void OnMoveHandler(object sender, EventArgs e)
     {
-
-    }
-
-    public void Drop(IEntity? entity)
-    {
-
-    }
-    public void OnMoveHandler(object sender, EventArgs e)
-    {
-        throw new NotImplementedException();
+        ActiveTime++;
+        if (ActiveTime >= Lifetime)
+            Dispose(sender as IEntity);
     }
 }

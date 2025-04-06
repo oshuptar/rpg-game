@@ -9,6 +9,7 @@ namespace RPG_Game.Enums;
 public enum RequestType
 {
     MoveUp,
+    UseItem,
     MoveDown,
     MoveRight,
     MoveLeft,

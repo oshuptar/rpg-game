@@ -10,10 +10,9 @@ using System.Threading.Tasks;
 namespace RPG_Game.Interfaces;
 
 // Categorizing interface
-public interface IPotion : IItem
+public abstract class IPotion : IItem
 {
-    public void OnMoveHandler(object sender, EventArgs e);
-    public void RevertEffect(EntityStats? entityStats);
-    public void ApplyEffect(EntityStats? entityStats);
-    public void Dispose(IEntity? entity);
+    protected bool IsDisposed = false;
+    public abstract void ApplyEffect(EntityStats? entityStats);
+    public abstract void Dispose(IEntity? entity);
 }

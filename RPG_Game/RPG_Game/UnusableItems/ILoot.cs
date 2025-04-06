@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace RPG_Game.Interfaces;
 
-public interface ILoot : IItem
+public abstract class ILoot : IItem
 {
    //void Inspect(); // Describes the item when checked in inventory
 }

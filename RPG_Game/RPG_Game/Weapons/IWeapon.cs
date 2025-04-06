@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace RPG_Game.Interfaces;
 
-public interface IWeapon : IItem
+public abstract class IWeapon : IItem
 {
-    public int Damage { get; }
+    public abstract int Damage { get; }
 
     //Default implementations
     //public void Attack(Player player)

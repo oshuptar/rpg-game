@@ -37,6 +37,7 @@ public class KeyboardTranslator : IInputHandler
         KeyBindings.Add((ConsoleKey.G, ConsoleModifiers.None), RequestType.DropItem);
         KeyBindings.Add((ConsoleKey.G, ConsoleModifiers.Control), RequestType.EmptyInventory);
         KeyBindings.Add((ConsoleKey.K, ConsoleModifiers.None), RequestType.HideControls);
+        KeyBindings.Add((ConsoleKey.U, ConsoleModifiers.None), RequestType.UseItem);
         KeyBindings.Add((ConsoleKey.Q, ConsoleModifiers.None), RequestType.EquipItem);
         KeyBindings.Add((ConsoleKey.H, ConsoleModifiers.None), RequestType.ScopeHands);
         KeyBindings.Add((ConsoleKey.I, ConsoleModifiers.None), RequestType.ScopeInventory);

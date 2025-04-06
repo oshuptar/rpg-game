@@ -12,10 +12,10 @@ namespace RPG_Game.Currencies;
 
 public class Gold : ICurrency
 {
-    public string Name => "Gold";
+    public override string Name => "Gold";
     public static int Value => 50;
-    public void ApplyChanges(EntityStats entityStats) => entityStats.ModifyEntityAttribute(PlayerAttributes.Gold, 1);
-    public void RevertChanges(EntityStats entityStats) => entityStats.ModifyEntityAttribute(PlayerAttributes.Gold, -1);
+    public override void ApplyChanges(EntityStats entityStats) => entityStats.ModifyEntityAttribute(PlayerAttributes.Gold, 1);
+    public override void RevertChanges(EntityStats entityStats) => entityStats.ModifyEntityAttribute(PlayerAttributes.Gold, -1);
 
-    public string Description => "";
+    public override string Description => "";
 }

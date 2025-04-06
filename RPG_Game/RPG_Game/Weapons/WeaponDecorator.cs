@@ -11,11 +11,11 @@ namespace RPG_Game.Weapons;
 public class WeaponDecorator : IWeapon
 {
     protected IWeapon weapon;
-    public int Capacity => weapon.Capacity;
-    public virtual int Damage => weapon.Damage;
-    public virtual string Name => weapon.Name;
+    public override int Capacity => weapon.Capacity;
+    public override int Damage => weapon.Damage;
+    public override string Name => weapon.Name;
 
-    public virtual string Description => weapon.Description;
+    public override string Description => weapon.Description;
 
     public WeaponDecorator(IWeapon weapon)
     {

@@ -1,4 +1,5 @@
 ﻿using RPG_Game.Entiities;
+using RPG_Game.Entities;
 using RPG_Game.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -11,8 +12,8 @@ namespace RPG_Game.UnusableItems;
 
 public class Note : ILoot
 {
-    public string Name => "A mysterious note";
-    public void Use(Player? player) => Console.WriteLine("Hmm.. Exploration - is the KEY to finding treasures");
+    public override string Name => "A mysterious note";
+    public override void Use(IEntity? entity) => Console.WriteLine("Hmm.. Exploration - is the KEY to finding treasures");
 
-    public string Description => "(Ancient note)";
+    public override string Description => "(Ancient note)";
 }

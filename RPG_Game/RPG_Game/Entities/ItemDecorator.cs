@@ -11,12 +11,12 @@ namespace RPG_Game.Entiities;
 public class ItemDecorator : IItem
 {
     protected IItem item;
-    public virtual string Name => item.Name;
-    public virtual int Capacity => item.Capacity; //reccursively callls this function until it reaches some concrete object
-    public virtual void ApplyChanges(EntityStats entityStats) => item.ApplyChanges(entityStats);
-    public virtual void RevertChanges(EntityStats entityStats) => item.RevertChanges(entityStats);
+    public override string Name => item.Name;
+    public override int Capacity => item.Capacity; //reccursively callls this function until it reaches some concrete object
+    public override void ApplyChanges(EntityStats entityStats) => item.ApplyChanges(entityStats);
+    public override void RevertChanges(EntityStats entityStats) => item.RevertChanges(entityStats);
 
-    public virtual string Description => item.Description;
+    public override string Description => item.Description;
    
     public ItemDecorator(IItem item)
     {

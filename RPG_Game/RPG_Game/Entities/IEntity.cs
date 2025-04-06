@@ -9,7 +9,7 @@ namespace RPG_Game.Entities;
 
 public interface IEntity : ICanMove, ICanReceiveDamage
 {
-    public event EventHandler? PlayerMoved;
+    public event EventHandler? EntityMoved;
     public EntityStats RetrieveEntityStats();
     public (int x, int y) Position { get; set; }
 }

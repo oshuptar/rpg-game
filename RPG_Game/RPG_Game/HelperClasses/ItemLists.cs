@@ -62,6 +62,7 @@ public class ItemLists
     {
         new HealPotion(),
         new AggressionPotion(),
+        new DexterityPotion(),
     };
 
 

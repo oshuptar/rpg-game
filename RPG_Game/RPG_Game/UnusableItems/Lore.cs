@@ -1,5 +1,6 @@
 ﻿using RPG_Game.Entiities;
 using RPG_Game.Interfaces;
+using RPG_Game.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,10 +11,10 @@ namespace RPG_Game.UnusableItems;
 
 public class Lore : ILoot
 {
-    public string Name => "Lore";
+    public override string Name => "Lore";
 
     // Possible use of Cursor.SetPosition for a nice output
-    public void Use(Player? player) => Console.WriteLine("In the distant past, the land was ruled by Shogun Ryūjin, a warrior of unmatched skill and a ruler with an iron will.\n" +
+    public override void Use(IEntity? entity) => Console.WriteLine("In the distant past, the land was ruled by Shogun Ryūjin, a warrior of unmatched skill and a ruler with an iron will.\n" +
         " He unified the warring clans under his banner, bringing an age of prosperity—but also fear.\n" +
         " Ryūjin was obsessed with power and believed that wealth and mystical relics would grant him eternal rule.\n\n" +
         "He sent his most loyal samurai across the land to gather the greatest treasures ever known—artifacts of gods, weapons of war, and riches beyond imagination.\n" +
@@ -22,5 +23,5 @@ public class Lore : ILoot
         "Now, centuries later, his hidden treasures remain scattered across the land, locked away in ancient temples, buried beneath fallen castles, or guarded by supernatural forces.\n" +
         " Those who seek them must face the dangers of Ryūjin’s wrath—for his spirit is said to still wander, watching over his legacy.");
 
-    public string Description => "(An old abandoned letter)";
+    public override string Description => "(An old abandoned letter)";
 }

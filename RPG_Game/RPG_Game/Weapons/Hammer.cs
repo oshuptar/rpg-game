@@ -10,10 +10,10 @@ namespace RPG_Game.Weapons;
 //two-handed weapon
 public class Hammer : IWeapon
 {
-    public int Damage => 10;
-    public string Name => "Hammer";
+    public override int Damage => 10;
+    public override string Name => "Hammer";
     //public override string ToString() => Name;
-    public int Capacity => 2;
+    public override int Capacity => 2;
 
-    public string Description => $"(Damage: {Damage}; Two-Handed)";
+    public override string Description => $"(Damage: {Damage}; Two-Handed)";
 }

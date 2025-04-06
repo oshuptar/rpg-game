@@ -16,17 +16,19 @@ public class MapInstructionConfigurator : IConfigurator
     public void AddItemControls()
     {
         _sb.Append(" - To pick up an item - press `E`\n");
-        _sb.Append(" - To drop an item - press `G`. To drop all items - press 'Ctrl + G'\n");
+        _sb.Append(" - To drop an item - press `G`. To drop all items - press `Ctrl + G`\n");
+        _sb.Append(" - To use item - press `U`\n");
         _sb.Append(" - To equip/unequip an item - press `Q`. You can equip an item from inventory or from staying on the item, depending on your focus\n");
         _sb.Append(" - Use arrows to navigate through inventory, map items or eqquiped items\n");
         _sb.Append(" - To enter the inventory scope - press `I`, then use arrows to change the object\n");
         _sb.Append(" - To enter hands scope - press `H`, then use arrows to change the object\n");
         _sb.Append(" - To leave hands or inventory scope - press `Escape`\n");
 
-        ObjectRenderer.GetInstance().noOfControlsLines += 7;
+        ObjectRenderer.GetInstance().noOfControlsLines += 8;
 
         RequestHandlerChain.GetInstance().AddHandler(new EquipItemHandler());
         RequestHandlerChain.GetInstance().AddHandler(new PickUpItemHandler());
+        RequestHandlerChain.GetInstance().AddHandler(new UseItemHandler());
         RequestHandlerChain.GetInstance().AddHandler(new DropItemHandler());
         RequestHandlerChain.GetInstance().AddHandler(new EmptyInventoryHandler());
         RequestHandlerChain.GetInstance().AddHandler(new NextItemHandler());

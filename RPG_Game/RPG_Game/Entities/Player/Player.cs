@@ -17,7 +17,7 @@ namespace RPG_Game.Entiities;
 
 public class Player : IEntity
 {
-    public event EventHandler? PlayerMoved;
+    public event EventHandler? EntityMoved;
     public (int x, int y) Position { get; set; }
 
     public string Name = "Daymio Harutosi";
@@ -52,10 +52,10 @@ public class Player : IEntity
         }
         return TempPos;
     }
-
+    
     protected virtual void OnMoveEvent()
     {
-        PlayerMoved?.Invoke(this, EventArgs.Empty);
+        EntityMoved?.Invoke(this, EventArgs.Empty);
     }
 
     public (int,int)? IsMovable(Direction direction, Room room) // whether we can move in the following direction

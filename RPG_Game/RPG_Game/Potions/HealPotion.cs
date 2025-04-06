@@ -11,36 +11,28 @@ using System.Threading.Tasks;
 namespace RPG_Game.Potions;
 
 // Eternal potion
-public class HealPotion : IPotion
+public class HealPotion : EternalPotion
 {
-    public string Name => "Healing Potion";
+    public override string Name => $"Healing Potion {(IsDisposed ? "(Disposed)" : "")}";
 
     public int HP = 5;
-    public void ApplyEffect(EntityStats? entityStats)
+    public override void ApplyEffect(EntityStats? entityStats)
     {
         entityStats?.ModifyEntityAttribute(PlayerAttributes.Health, HP);
     }
-    public void RevertEffect(EntityStats? entityStats)
+
+    public override string Description => $"(Adds {HP} HP)";
+
+    public override void Dispose(IEntity? entity)
     {
-        entityStats?.ModifyEntityAttribute(PlayerAttributes.Health, -HP);
+        IsDisposed = true;
     }
 
-    public string Description => $"(Adds {HP} HP)";
-
-    public void Use(IEntity? entity)
+    public override void Use(IEntity? entity)
     {
-        entity.PlayerMoved += OnMoveHandler;
+        if (IsDisposed) return;
+
         ApplyEffect(entity?.RetrieveEntityStats());
-    }
-
-    public void Dispose(IEntity? entity)
-    {
-        entity.PlayerMoved -= OnMoveHandler;
-        RevertEffect(entity?.RetrieveEntityStats());
-    }
-
-    public void OnMoveHandler(object sender, EventArgs e)
-    {
-        throw new NotImplementedException();
+        Dispose(entity);
     }
 }

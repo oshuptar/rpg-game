@@ -1,5 +1,6 @@
 ﻿using RPG_Game.Entiities;
 using RPG_Game.Entities;
+using RPG_Game.Enums;
 using RPG_Game.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -10,43 +11,47 @@ using System.Threading.Tasks;
 namespace RPG_Game.Potions;
 
 // The ability of hero dodging attacks
-public class DexterityPotion : IPotion
+public class DexterityPotion : TemporaryPotion
 {
-    public string Name => "Dexterity Potion";
+    public override string Name => $"Dexterity Potion {(IsDisposed ? "(Disposed)" : "")}";
+    protected override int ActiveTime { get; set; } = 0;
+    public override int Lifetime => 10;
+    public int Dexterity = 10;
+    public override string Description => $"(Adds {Dexterity} to the ability of dodging attacks)";
 
-    public int Dexterity = 4;
-    public string Description => $"(Adds {Dexterity} to the ability of dodging attacks)";
-
-    public void RevertEffect(EntityStats? entityStats)
+    public override void RevertEffect(EntityStats? entityStats)
     {
-        throw new NotImplementedException();
+        entityStats?.ModifyEntityAttribute(PlayerAttributes.Aggression, -1);
     }
 
-    public void ApplyEffect(EntityStats? Stats)
+    public override void ApplyEffect(EntityStats? entityStats)
     {
-        throw new NotImplementedException();
-    }
-    public void PickUp(IEntity? entity)
-    {
-
+        entityStats?.ModifyEntityAttribute(PlayerAttributes.Aggression, Dexterity);
     }
 
-    public void Drop(IEntity? entity)
+    public override void Use(IEntity? entity)
     {
+        if (IsDisposed) return;
 
-    }
-
-    public void Use(IEntity? entity)
-    {
+        if (entity != null)
+            entity.EntityMoved += OnMoveHandler;
         ApplyEffect(entity?.RetrieveEntityStats());
     }
-    public void Dispose(IEntity? entity)
+    public override void Dispose(IEntity? entity)
     {
-        RevertEffect(entity?.RetrieveEntityStats());
+        if (entity != null)
+            entity.EntityMoved -= OnMoveHandler;
+        IsDisposed = true;
     }
 
-    public void OnMoveHandler(object sender, EventArgs e)
+    public override void OnMoveHandler(object sender, EventArgs e)
     {
-        throw new NotImplementedException();
+        ActiveTime++;
+        if (ActiveTime >= Lifetime)
+        {
+            Dispose(sender as IEntity);
+            return;
+        }
+        RevertEffect((sender as IEntity)?.RetrieveEntityStats());
     }
 }
