@@ -13,7 +13,7 @@ namespace RPG_Game.UnusableItems;
 public class Note : ILoot
 {
     public override string Name => "A mysterious note";
-    public override void Use(IEntity? entity) => Console.WriteLine("Hmm.. Exploration - is the KEY to finding treasures");
+    //public override void Use(IEntity? entity) => Console.WriteLine("Hmm.. Exploration - is the KEY to finding treasures");
 
     public override string Description => "(Ancient note)";
 

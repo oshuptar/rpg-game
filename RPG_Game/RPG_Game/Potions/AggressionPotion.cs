@@ -33,14 +33,14 @@ public class AggressionPotion : TemporaryPotion
     }
     public override string Description => $"(Adds {Aggression} Aggression)";
 
-    public override void Use(IEntity? entity)
+    public override void Use(IEntity? source, List<IEntity>? target)
     {
         if (IsDisposed)
             return;
 
-        if (entity != null)
-            entity.EntityMoved += OnMoveHandler;
-        ApplyEffect(entity?.RetrieveEntityStats());
+        if (source != null)
+            source.EntityMoved += OnMoveHandler;
+        ApplyEffect(source?.RetrieveEntityStats());
         IsDisposed = true;
     }
 

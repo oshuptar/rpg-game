@@ -16,7 +16,7 @@ public abstract class IItem : ICopyable
     public virtual int Capacity => 1; // default capacity for every item
     public virtual void ApplyChanges(EntityStats entityStats) { }
     public virtual void RevertChanges(EntityStats entityStats) { }
-    public virtual void Use(IEntity? source) { }
+    public virtual void Use(IEntity? source, List<IEntity>? target) { }
     public virtual void PickUp(IEntity entity) => ApplyChanges(entity.RetrieveEntityStats());
     public virtual void Drop(IEntity entity) => RevertChanges(entity.RetrieveEntityStats());
     public abstract object Copy();

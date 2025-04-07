@@ -101,7 +101,7 @@ public class Player : IEntity
     {
         bool isEquipped = Hands.Equip(item, this, isInInventory);
         if(isEquipped)
-            ConsoleObjectDisplayer.GetInstance().LogMessage(new OnItemEquipMessage(item, this.Name));
+            ConsoleObjectDisplayer.GetInstance().LogMessage(new OnItemEquipMessage(item!, this.Name));
         return isEquipped;
     }
     public void UnEquip(int index)

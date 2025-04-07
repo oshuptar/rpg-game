@@ -28,12 +28,12 @@ public class HealPotion : EternalPotion
         IsDisposed = true;
     }
 
-    public override void Use(IEntity? entity)
+    public override void Use(IEntity? source, List<IEntity>? targets)
     {
         if (IsDisposed) return;
 
-        ApplyEffect(entity?.RetrieveEntityStats());
-        Dispose(entity);
+        ApplyEffect(source?.RetrieveEntityStats());
+        Dispose(source);
     }
 
     public override object Copy() => new HealPotion();

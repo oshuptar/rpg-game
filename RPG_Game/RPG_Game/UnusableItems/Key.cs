@@ -13,7 +13,7 @@ namespace RPG_Game.UnusableItems;
 public class Key : ILoot
 {
     public override string Name => "Key";
-    public override void Use(IEntity? entity = null) { }
+    //public override void Use(IEntity? entity = null) { }
 
     public override string Description => $"(This is a old rusty key. Maybe it opens a chest...?)";
 

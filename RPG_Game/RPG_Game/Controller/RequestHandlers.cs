@@ -10,6 +10,7 @@ using System.Numerics;
 using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
+using RPG_Game.Entities;
 
 namespace RPG_Game.Controller;
 
@@ -45,7 +46,13 @@ public class UseItemHandler : BaseHandler
             Context gameContext = request.GetContext();
             IItem? item = gameContext.GetPlayer().Retrieve(ConsoleObjectDisplayer.GetInstance().CurrentFocus, 
                 ConsoleObjectDisplayer.GetInstance().FocusOn == FocusType.Inventory);
-            item?.Use(gameContext.GetPlayer());
+
+            // For each action I can define a radius of aciton, i.e. I pass list of enemies and then I can filter only these for whom the distance is less or equal to this radius of action
+            List<IEntity> target = new List<IEntity>();
+            IEntity? entity = gameContext.GetRoom().RetrieveGrid()[gameContext.GetPlayer().Position.x, gameContext.GetPlayer().Position.y].Enemy;
+            if(entity != null)
+                target.Add(entity);
+            item?.Use(gameContext.GetPlayer(), target);
         }
         else
             base.HandleRequest(request);
