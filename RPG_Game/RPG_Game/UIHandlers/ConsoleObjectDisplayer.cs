@@ -199,10 +199,7 @@ public class ConsoleObjectDisplayer
 
     public void ClearConsole() => Console.Clear();
 
-    public void ClearLogMessage()
-    {
-        LogMessage(ObjectRenderer.GetInstance().RenderEmptyLine().ToString());
-    }
+    public void ClearLogMessage() => LogMessage(" ");
 
     // We are overriding previous contents on Enemy type cells
     public void DisplayEnemies()
