@@ -12,7 +12,6 @@ public class Context
 {
     private Player Player { get; set; }
     private Room Room { get; set; }
-    private IItem? item { get; set; } 
     public Context(Player player, Room room, IItem? item = null)
     {
         this.Player = player;

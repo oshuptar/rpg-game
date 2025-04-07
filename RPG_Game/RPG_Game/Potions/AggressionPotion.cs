@@ -41,6 +41,7 @@ public class AggressionPotion : TemporaryPotion
         if (entity != null)
             entity.EntityMoved += OnMoveHandler;
         ApplyEffect(entity?.RetrieveEntityStats());
+        IsDisposed = true;
     }
 
     public override void Dispose(IEntity? entity)
@@ -48,12 +49,11 @@ public class AggressionPotion : TemporaryPotion
         RevertEffect(entity?.RetrieveEntityStats());
         if (entity != null)
             entity.EntityMoved -= OnMoveHandler;
-        IsDisposed = true;
     }
     public override void OnMoveHandler(object sender, EventArgs e)
     {
         ActiveTime++;
-        if (ActiveTime >= Lifetime)
+        if (ActiveTime > Lifetime)
             Dispose(sender as IEntity);
     }
 }

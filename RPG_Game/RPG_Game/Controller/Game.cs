@@ -12,61 +12,82 @@ using RPG_Game.Entiities;
 
 namespace RPG_Game.Controller;
 
-//Controller class
 public class Game
 {
     private Room _room = new Room();
+    private Player _player = new Player();
+    private MapConfigurator _map = new MapConfigurator();
+    private IInputHandler _inputHandler;
+    private GamePhase _gamePhase;
+    //private UIHandler _uiHandler;
 
+    public Game()
+    {
+        ConfigureMap();
+        ConfigureSettings();
+    }
     private void SetMapConfiguration(MapConfigurator mapConfigurator)
     {
         _room = mapConfigurator.GetResult();
         ObjectRenderer.GetInstance().SetMapInstructionConfigurator(mapConfigurator.GetInstructionConfiguration());
         ConsoleObjectDisplayer.GetInstance().SetRoom(_room);
+        // View must access the model state
     }
 
-    public Game() { }
+    public void ConfigureMap()
+    {
+        _map.CreateEmptyDungeon();
+        _map.FillDungeon();
+        _map.AddCentralRoom();
+        _map.AddChambers();
+        _map.AddPaths();
+        _map.PlaceItems();
+        _map.PlaceDecoratedWeapons();
+        _map.PlaceDecoratedItems();
+        _map.PlaceDecoratedItems();
+        _map.SpawnPlayer(_player);
+        _map.PlaceEnemies();
+        _map.PlacePotions();
+        SetMapConfiguration(_map);
+    }
+
+    public void ConfigureSettings()
+    {
+        _inputHandler = new KeyboardTranslator();
+    }
 
     public void StartGame()
     {
-        Player player = new Player();
         ConsoleObjectDisplayer displayer = ConsoleObjectDisplayer.GetInstance();
-        MapConfigurator map = new MapConfigurator();
-
-        // This will allow to change the map configuration during runtime
-        map.CreateEmptyDungeon();
-        map.FillDungeon();
-        map.AddCentralRoom();
-        map.AddChambers();
-        map.AddPaths();
-        map.PlaceItems();
-        map.PlaceDecoratedWeapons();
-        map.PlaceDecoratedItems();
-        map.PlaceDecoratedItems();
-        map.SpawnPlayer(player);
-        map.PlaceEnemies();
-        map.PlacePotions();
-        SetMapConfiguration(map);
         displayer.WelcomeRoutine();
-        KeyboardTranslator keyboardManager = new KeyboardTranslator();
-
-        int i = 0;
+        _gamePhase = GamePhase.Welcome;
         while (true)
         {
-            RequestType? requestType = keyboardManager.TranslateRequest();
-            if (requestType != null)
-            {
-                if (i == 0)
-                    Console.Clear();
+            RequestType? requestType = _inputHandler.TranslateRequest();
 
-                keyboardManager.DispatchRequest(new ActionRequest(new Context(player, _room), (RequestType)requestType));
-                displayer.DisplayRoutine(player);
-                i++;
+            if (requestType == null)
+                continue;
+
+            if (_gamePhase == GamePhase.Welcome)
+            {
+                _gamePhase = GamePhase.Playing;
+                Console.Clear();
             }
+
+            _inputHandler.DispatchRequest(new ActionRequest(new Context(_player, _room), (RequestType)requestType));
+            displayer.DisplayRoutine(_player);
         }
     }
 }
 
+public enum GamePhase
+{
+    Welcome,
+    Playing
+}
 
+
+// This will allow to change the map configuration during runtime
 // This is just to showcase that we can change map configuration during runtime
 //if (i == 10)
 //{

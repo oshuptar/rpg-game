@@ -9,9 +9,7 @@ namespace RPG_Game.LogMessages;
 
 public class OnItemPickUpMessage : OnItemActionMessage
 {
-    public OnItemPickUpMessage(IItem item, string name)
+    public OnItemPickUpMessage(IItem item, string name) : base(item, name)
     {
-        this.Item = item;
-        this.Name = name;
     }
 }

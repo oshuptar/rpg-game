@@ -21,12 +21,12 @@ public class DexterityPotion : TemporaryPotion
 
     public override void RevertEffect(EntityStats? entityStats)
     {
-        entityStats?.ModifyEntityAttribute(PlayerAttributes.Aggression, -1);
+        entityStats?.ModifyEntityAttribute(PlayerAttributes.Dexterity, -1);
     }
 
     public override void ApplyEffect(EntityStats? entityStats)
     {
-        entityStats?.ModifyEntityAttribute(PlayerAttributes.Aggression, Dexterity);
+        entityStats?.ModifyEntityAttribute(PlayerAttributes.Dexterity, Dexterity);
     }
 
     public override void Use(IEntity? entity)
@@ -36,18 +36,19 @@ public class DexterityPotion : TemporaryPotion
         if (entity != null)
             entity.EntityMoved += OnMoveHandler;
         ApplyEffect(entity?.RetrieveEntityStats());
+
+        IsDisposed = true;
     }
     public override void Dispose(IEntity? entity)
     {
         if (entity != null)
             entity.EntityMoved -= OnMoveHandler;
-        IsDisposed = true;
     }
 
     public override void OnMoveHandler(object sender, EventArgs e)
     {
         ActiveTime++;
-        if (ActiveTime >= Lifetime)
+        if (ActiveTime > Lifetime)
         {
             Dispose(sender as IEntity);
             return;

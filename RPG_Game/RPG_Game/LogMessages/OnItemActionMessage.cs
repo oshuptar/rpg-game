@@ -11,4 +11,11 @@ public class OnItemActionMessage
 {
     public IItem Item { get; set; }
     public string Name { get; set; }
+
+    public OnItemActionMessage(IItem item, string name)
+    {
+        this.Item = item;
+        this.Name = name;
+    }
+
 }

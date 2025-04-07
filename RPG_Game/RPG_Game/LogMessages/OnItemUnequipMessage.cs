@@ -9,9 +9,7 @@ namespace RPG_Game.LogMessages;
 
 public class OnItemUnequipMessage : OnItemActionMessage
 {
-    public OnItemUnequipMessage(IItem item,string name)
+    public OnItemUnequipMessage(IItem item,string name) : base(item,name)
     {
-        this.Item = item;
-        this.Name = name;
     }
 }
