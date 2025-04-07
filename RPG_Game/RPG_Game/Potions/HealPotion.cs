@@ -35,4 +35,6 @@ public class HealPotion : EternalPotion
         ApplyEffect(entity?.RetrieveEntityStats());
         Dispose(entity);
     }
+
+    public override object Copy() => new HealPotion();
 }

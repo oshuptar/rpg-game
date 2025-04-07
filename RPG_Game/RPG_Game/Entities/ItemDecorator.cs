@@ -3,6 +3,7 @@ using RPG_Game.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -22,4 +23,6 @@ public class ItemDecorator : IItem
     {
         this.item = item;
     }
+
+    public override object Copy() => new ItemDecorator((IItem)item.Copy());
 }

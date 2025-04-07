@@ -14,4 +14,5 @@ public class PowerWeaponDecorator : WeaponDecorator
     public override string Name => weapon.Name + "(Increased Damage)";
     public override int Damage => weapon.Damage + 5;
 
+    public override object Copy() => new PowerWeaponDecorator((IWeapon)weapon.Copy());
 }

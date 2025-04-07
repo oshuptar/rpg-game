@@ -14,4 +14,6 @@ public class Dagger : IWeapon
     //public override string ToString() => Name;
 
     public override string Description => $"(Damage: {Damage}; One-Handed)";
+
+    public override object Copy() => new Dagger();
 }

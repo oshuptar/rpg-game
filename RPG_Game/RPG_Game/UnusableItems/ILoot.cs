@@ -8,5 +8,4 @@ namespace RPG_Game.Interfaces;
 
 public abstract class ILoot : IItem
 {
-   //void Inspect(); // Describes the item when checked in inventory
 }

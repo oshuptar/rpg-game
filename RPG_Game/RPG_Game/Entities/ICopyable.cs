@@ -6,5 +6,7 @@ using System.Threading.Tasks;
 
 namespace RPG_Game.Entities;
 
-public interface IEnemy : IEntity
-{}
+public interface ICopyable
+{
+    public object Copy();
+}

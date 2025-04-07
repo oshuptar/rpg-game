@@ -16,4 +16,6 @@ public class Key : ILoot
     public override void Use(IEntity? entity = null) { }
 
     public override string Description => $"(This is a old rusty key. Maybe it opens a chest...?)";
+
+    public override object Copy() => new Key();
 }

@@ -16,4 +16,6 @@ public class Note : ILoot
     public override void Use(IEntity? entity) => Console.WriteLine("Hmm.. Exploration - is the KEY to finding treasures");
 
     public override string Description => "(Ancient note)";
+
+    public override object Copy() => new Note();
 }

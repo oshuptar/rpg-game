@@ -14,7 +14,6 @@ public class PlayerStats : EntityStats
 {
     public PlayerStats()
     {
-        // provide enum key 
         Attributes.Add(PlayerAttributes.Health, new AttributeValue(100, 100));
         Attributes.Add(PlayerAttributes.Strength, new AttributeValue(0));
         Attributes.Add(PlayerAttributes.Luck, new AttributeValue(0));

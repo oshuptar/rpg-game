@@ -21,4 +21,5 @@ public class WeaponDecorator : IWeapon
     {
         this.weapon = weapon;
     }
+    public override object Copy() => new WeaponDecorator((IWeapon)weapon.Copy());
 }

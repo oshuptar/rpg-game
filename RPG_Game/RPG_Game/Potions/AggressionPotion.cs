@@ -56,4 +56,6 @@ public class AggressionPotion : TemporaryPotion
         if (ActiveTime > Lifetime)
             Dispose(sender as IEntity);
     }
+
+    public override object Copy() => new AggressionPotion();
 }

@@ -148,4 +148,8 @@ public class Player : IEntity
     public List<IItem> RetrieveInventory() => this.Inventory.inventory;
     public EntityStats RetrieveEntityStats() => this.PlayerStats;
 
+    public object Copy()
+    {
+        return new Player();
+    }
 }

@@ -49,7 +49,7 @@ public class Room
     public const int _height = _defaultHeight + 2 * _frameSize; 
     private Cell[,] Grid = new Cell[_width, _height]; //Array of references
 
-    public List<IEnemy> Enemies = new List<IEnemy>(); 
+    public List<IEnemy> Enemies = new List<IEnemy>();  // for the sake of calculatingthe distance to the closest enemy
     public Cell[,] RetrieveGrid() => Grid;
     public Room() { }
     public bool IsPosAvailable(int x, int y)
@@ -76,10 +76,9 @@ public class Room
             return;
 
         AddObject(CellType.Enemy, (position.x , position.y));
-        IEnemy placedEnemy = enemy.Clone();
-        placedEnemy.Position = (position.x, position.y);
-        Enemies.Add(placedEnemy);
-        Grid[position.x, position.y].Enemy = placedEnemy; // this ensures a deep copy of enemy attributes
+        enemy.Position = (position.x, position.y);
+        Enemies.Add(enemy);
+        Grid[position.x, position.y].Enemy = enemy; // this ensures a deep copy of enemy attributes
     }
 
     public bool RemoveObject(CellType cellType, (int x, int y) position) //assuming the position is the position of the player

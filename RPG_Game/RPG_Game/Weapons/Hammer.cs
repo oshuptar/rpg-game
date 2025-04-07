@@ -16,4 +16,6 @@ public class Hammer : IWeapon
     public override int Capacity => 2;
 
     public override string Description => $"(Damage: {Damage}; Two-Handed)";
+
+    public override object Copy() => new Hammer();
 }

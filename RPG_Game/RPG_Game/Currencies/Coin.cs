@@ -18,4 +18,6 @@ public class Coin : ICurrency
     public override void RevertChanges(EntityStats entityStats) => entityStats.ModifyEntityAttribute(PlayerAttributes.Coins, -1);
 
     public override string Description => "";
+
+    public override object Copy() => new Coin();
 }

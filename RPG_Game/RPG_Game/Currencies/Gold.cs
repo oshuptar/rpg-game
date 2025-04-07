@@ -18,4 +18,6 @@ public class Gold : ICurrency
     public override void RevertChanges(EntityStats entityStats) => entityStats.ModifyEntityAttribute(PlayerAttributes.Gold, -1);
 
     public override string Description => "";
+
+    public override object Copy() => new Gold();
 }

@@ -23,5 +23,5 @@ public class LuckItemDecorator : ItemDecorator
         entityStats.ModifyEntityAttribute(PlayerAttributes.Luck, -2); // the name is hardcoded, think about the way to fix this
         item.RevertChanges(entityStats);
     }
-
+    public override object Copy() => new LuckItemDecorator((IItem)item.Copy());
 }

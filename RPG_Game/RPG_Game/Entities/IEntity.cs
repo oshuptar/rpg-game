@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace RPG_Game.Entities;
 
-public interface IEntity : ICanMove, ICanReceiveDamage
+public interface IEntity : ICanMove, ICanReceiveDamage, ICopyable
 {
     public event EventHandler? EntityMoved;
     public EntityStats RetrieveEntityStats();

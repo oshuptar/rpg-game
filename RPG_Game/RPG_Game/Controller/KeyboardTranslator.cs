@@ -25,7 +25,6 @@ public class KeyboardTranslator : IInputHandler
     {
         RequestHandlerChain.GetInstance().HandleRequest(request);
     }
-
     // to exract the desired binding just read the key from console as usual
     // For not KeyBindings are constant, but I will provide functionality to allow user anytime during the game to change them for the desired ones
     public KeyboardTranslator()

@@ -24,17 +24,11 @@ public class Goblin : IEnemy
     {
         throw new NotImplementedException();
     }
-
-    public Goblin(Goblin goblin)
-    {
-        // Deep copy
-    }
-
     public Goblin() { }
 
-    public IEnemy Clone()
+    public object Copy()
     {
-        return new Goblin(this);
+        return new Goblin();
     }
 
     public override string ToString() => "Goblin";

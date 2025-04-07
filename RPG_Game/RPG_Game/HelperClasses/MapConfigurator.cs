@@ -1,6 +1,7 @@
 ﻿using RPG_Game.Controller;
 using RPG_Game.Currencies;
 using RPG_Game.Entiities;
+using RPG_Game.Entities;
 using RPG_Game.Enums;
 using RPG_Game.HelperClasses;
 using RPG_Game.Interfaces;
@@ -166,7 +167,7 @@ public class MapConfigurator : IConfigurator
             int Y = Room._frameSize + random.Next() % (Room._defaultHeight - Room._frameSize);
 
             int randomIndex = random.Next() % itemList.Count;
-            _room.AddItem(itemList[randomIndex], (X, Y));
+            _room.AddItem((IItem)itemList[randomIndex].Copy(), (X, Y));
         }
     }
 
@@ -205,7 +206,7 @@ public class MapConfigurator : IConfigurator
             int Y = Room._frameSize + random.Next(0, Room._defaultHeight);
 
             int randomIndex = random.Next(0, _items.EnemyList.Count);
-            _room.AddEnemy(_items.EnemyList[randomIndex], (X, Y));
+            _room.AddEnemy((IEnemy)_items.EnemyList[randomIndex].Copy(), (X, Y));
         }
 
         this._instructionConfigurator.PlaceEnemies();

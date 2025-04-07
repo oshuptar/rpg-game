@@ -27,17 +27,12 @@ public class Orc : IEnemy
 
     public Orc() { }
 
-    public Orc(Orc goblin)
-    {
-        // Deep copy
-    }
-
-    public IEnemy Clone()
-    {
-        return new Orc(this);
-    }
-
     public override string ToString() => "Orc";
 
     public EntityStats RetrieveEntityStats() => this.orcStats;
+
+    public object Copy()
+    {
+        return new Orc();
+    }
 }

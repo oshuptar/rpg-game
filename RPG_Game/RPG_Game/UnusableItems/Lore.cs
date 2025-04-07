@@ -24,4 +24,6 @@ public class Lore : ILoot
         " Those who seek them must face the dangers of Ryūjin’s wrath—for his spirit is said to still wander, watching over his legacy.");
 
     public override string Description => "(An old abandoned letter)";
+
+    public override object Copy() => new Lore();
 }

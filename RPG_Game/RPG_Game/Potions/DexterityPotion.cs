@@ -55,4 +55,6 @@ public class DexterityPotion : TemporaryPotion
         }
         RevertEffect((sender as IEntity)?.RetrieveEntityStats());
     }
+
+    public override object Copy() => new DexterityPotion();
 }
