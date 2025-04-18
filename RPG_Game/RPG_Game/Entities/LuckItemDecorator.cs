@@ -24,7 +24,5 @@ public class LuckItemDecorator : ItemDecorator
         item.RevertChanges(entityStats);
     }
 
-
-
     public override object Copy() => new LuckItemDecorator((IItem)item.Copy());
 }

@@ -89,7 +89,7 @@ public class Player : IEntity
     }
 
     public void PlacePlayer(Room room) => room.RetrieveGrid()[Position.x, Position.y].CellType |= CellType.Player;
-    public void ReceiveDamage(int damage) 
+    public void ReceiveDamage(int damage, IEntity? source) 
     { 
         PlayerStats.ModifyEntityAttribute(PlayerAttributes.Health, -damage);
     }

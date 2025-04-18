@@ -28,6 +28,7 @@ public enum RequestType
     NormalAttack,
     StealthAttack,
     MagicAttack,
+    EnemyAttack,
     Quit,
     Ignore,
 }

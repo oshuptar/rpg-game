@@ -43,15 +43,13 @@ public class ItemLists
 
     public List<IItem> DecoratedWeaponList = new List<IItem>()
     {
-        new LuckItemDecorator(new Sword()),
         new PowerWeaponDecorator(new Hammer()),
         new PowerWeaponDecorator(new PowerWeaponDecorator(new Hammer())),
-        new LuckItemDecorator( new PowerWeaponDecorator(new PowerWeaponDecorator(new Hammer()))),
-        new Hammer(),
         new Sword(),
         new Dagger(),
         new PowerWeaponDecorator(new Dagger()),
-        new PowerWeaponDecorator(new Sword())
+        new PowerWeaponDecorator(new Sword()),
+        new PowerWeaponDecorator(new PowerWeaponDecorator(new Sword())),
     };
 
     public List<IEnemy> EnemyList = new List<IEnemy>()

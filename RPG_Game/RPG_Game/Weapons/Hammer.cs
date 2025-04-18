@@ -28,7 +28,7 @@ public class Hammer : HeavyWeapon
             int DrawDamageValue = strategy.AttackRequestHandler(this, entity, damage);
             int DrawDefenseValue = strategy.DefenseRequestHandler(this, entity, DrawDamageValue);
             int ReceivedDamageValue = DrawDamageValue - DrawDefenseValue;
-            entity.ReceiveDamage(ReceivedDamageValue);
+            entity.ReceiveDamage(ReceivedDamageValue, source);
         }
     }
     public override object Copy() => new Hammer();

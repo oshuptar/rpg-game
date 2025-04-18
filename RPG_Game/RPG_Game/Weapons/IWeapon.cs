@@ -16,7 +16,6 @@ public abstract class IWeapon : IItem
     // THis field will be only accessed inside weapon classes, hence we can store it here
     //In case I need to provide Attack method for all IItem classes, I should move it there
     public abstract int RadiusOfAction { get; }
-    public abstract void Use(AttackStrategy strategy, IEntity? source, List<IEntity>? target);
     public abstract void DispatchAttack(AttackStrategy strategy, IEntity? source, List<IEntity>? target, int damage);
 }
 public abstract class LightWeapon : IWeapon

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using RPG_Game.Controller;
 
 namespace RPG_Game.Potions;
 
@@ -28,7 +29,7 @@ public class HealPotion : EternalPotion
         IsDisposed = true;
     }
 
-    public override void Use(IEntity? source, List<IEntity>? targets)
+    public override void Use(AttackStrategy strategy, IEntity? source, List<IEntity>? targets)
     {
         if (IsDisposed) return;
 

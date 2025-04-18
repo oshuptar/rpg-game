@@ -27,7 +27,7 @@ public class Dagger : LightWeapon
             int DrawDamageValue = strategy.AttackRequestHandler(this, entity, Damage);
             int DrawDefenseValue = strategy.DefenseRequestHandler(this, entity, DrawDamageValue);
             int ReceivedDamageValue = DrawDamageValue - DrawDefenseValue;
-            entity.ReceiveDamage(ReceivedDamageValue);
+            entity.ReceiveDamage(ReceivedDamageValue, source);
         }
     }
     public override object Copy() => new Dagger();

@@ -189,7 +189,7 @@ public class MapConfigurator : IConfigurator
     }
     public void PlaceDecoratedWeapons()
     {
-        RandomizeItemsPlacement(_items.DecoratedWeaponList, 20);
+        RandomizeItemsPlacement(_items.DecoratedWeaponList, 15);
         this._instructionConfigurator.PlaceDecoratedWeapons();
     }
     public void PlacePotions()

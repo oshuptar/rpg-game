@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RPG_Game.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,5 +9,5 @@ namespace RPG_Game.Interfaces;
 
 public interface ICanReceiveDamage
 {
-    public void ReceiveDamage(int damage);
+    public void ReceiveDamage(int damage, IEntity? source);
 }

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
+using RPG_Game.Controller;
 
 namespace RPG_Game.Entiities;
 
@@ -17,9 +18,9 @@ public class ItemDecorator : IItem
     public override void ApplyChanges(EntityStats entityStats) => item.ApplyChanges(entityStats);
     public override void RevertChanges(EntityStats entityStats) => item.RevertChanges(entityStats);
 
-    public override void Use(IEntity? source, List<IEntity>? target)
+    public override void Use(AttackStrategy strategy, IEntity? source, List<IEntity>? target)
     {
-        item.Use(source, target);
+        item.Use(strategy, source, target);
     }
     public override string Description => item.Description;
    

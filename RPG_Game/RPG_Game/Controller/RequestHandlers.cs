@@ -96,8 +96,7 @@ public class OneWeaponAttackHandler : BaseHandler
             Context gameContext = request.GetContext();
             if(ConsoleObjectDisplayer.GetInstance().FocusOn == FocusType.Hands)
             {
-                // Attack via weapon currently focused
-                 IWeapon? weapon = gameContext.GetPlayer().RetrieveHands()[ConsoleObjectDisplayer.GetInstance().CurrentFocus] as IWeapon;
+                IWeapon? weapon = gameContext.GetPlayer().RetrieveHands()[ConsoleObjectDisplayer.GetInstance().CurrentFocus] as IWeapon;
                 if (weapon == null) return;
 
                 List<IEntity>? entities = gameContext.GetRoom().RetrieveEnemiesInRadius(request.GetContext().GetPlayer(), weapon.RadiusOfAction);
@@ -133,6 +132,20 @@ public class TwoWeaponAttackHandler : BaseHandler
     }
 }
 
+public class EnemyAttackHandler : BaseHandler
+{
+    protected override RequestType RequestType => RequestType.EnemyAttack;
+
+    public override void HandleRequest(ActionRequest request)
+    {
+        if(CanHandleRequest(request))
+        {
+            
+        }
+        base.HandleRequest(request);
+    }
+}
+
 
 
 public class UseItemHandler : BaseHandler
@@ -152,7 +165,7 @@ public class UseItemHandler : BaseHandler
             IEntity? entity = gameContext.GetRoom().RetrieveGrid()[gameContext.GetPlayer().Position.x, gameContext.GetPlayer().Position.y].Entity;
             if(entity != null)
                 target.Add(entity);
-            item?.Use(gameContext.GetPlayer(), target);
+            item?.Use(request.GetContext().GetGame().AttackStrategy, gameContext.GetPlayer(), target);
         }
         else
             base.HandleRequest(request);

@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using RPG_Game.Controller;
 namespace RPG_Game.Potions;
 
 // The ability of hero dodging attacks
@@ -29,7 +29,7 @@ public class DexterityPotion : TemporaryPotion
         entityStats?.ModifyEntityAttribute(PlayerAttributes.Dexterity, Dexterity);
     }
 
-    public override void Use(IEntity? source, List<IEntity>? target)
+    public override void Use(AttackStrategy strategy, IEntity? source, List<IEntity>? target)
     {
         if (IsDisposed) return;
 

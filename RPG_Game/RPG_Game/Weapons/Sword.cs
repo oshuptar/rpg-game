@@ -28,7 +28,7 @@ public class Sword : LightWeapon
             int DrawDamageValue = strategy.AttackRequestHandler(this, entity, damage);
             int DrawDefenseValue = strategy.DefenseRequestHandler(this, entity, DrawDamageValue);
             int ReceivedDamageValue = DrawDamageValue - DrawDefenseValue;
-            entity.ReceiveDamage(ReceivedDamageValue);
+            entity.ReceiveDamage(ReceivedDamageValue, source);
         }
     }
     public override object Copy() => new Sword();
