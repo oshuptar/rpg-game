@@ -38,6 +38,7 @@ public class ItemLists
         new Hammer(),
         new Sword(),
         new Dagger(),
+        new Sword()
     };
 
     public List<IItem> DecoratedWeaponList = new List<IItem>()
@@ -49,7 +50,8 @@ public class ItemLists
         new Hammer(),
         new Sword(),
         new Dagger(),
-        new PowerWeaponDecorator(new Dagger())
+        new PowerWeaponDecorator(new Dagger()),
+        new PowerWeaponDecorator(new Sword())
     };
 
     public List<IEnemy> EnemyList = new List<IEnemy>()

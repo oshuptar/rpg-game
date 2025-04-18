@@ -22,10 +22,11 @@ public class Orc : IEnemy
 
     public void ReceiveDamage(int damage)
     {
-        throw new NotImplementedException();
+        orcStats.ModifyEntityAttribute(PlayerAttributes.Health, -damage);
     }
 
-    public Orc() { }
+    public Orc() 
+    { }
 
     public override string ToString() => "Orc";
 

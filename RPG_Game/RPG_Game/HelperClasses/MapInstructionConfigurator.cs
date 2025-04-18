@@ -15,6 +15,8 @@ public class MapInstructionConfigurator : IConfigurator
     public MapInstructionConfigurator() => ResetMapConfiguration();
     public void AddItemControls()
     {
+        ObjectRenderer.GetInstance().noOfControlsLines += 8;
+        //Add description for atacking handlers
         _sb.Append(" - To pick up an item - press `E`\n");
         _sb.Append(" - To drop an item - press `G`. To drop all items - press `Ctrl + G`\n");
         _sb.Append(" - To use item - press `U`\n");
@@ -23,8 +25,6 @@ public class MapInstructionConfigurator : IConfigurator
         _sb.Append(" - To enter the inventory scope - press `I`, then use arrows to change the object\n");
         _sb.Append(" - To enter hands scope - press `H`, then use arrows to change the object\n");
         _sb.Append(" - To leave hands or inventory scope - press `Escape`\n");
-
-        ObjectRenderer.GetInstance().noOfControlsLines += 8;
 
         RequestHandlerChain.GetInstance().AddHandler(new EquipItemHandler());
         RequestHandlerChain.GetInstance().AddHandler(new PickUpItemHandler());
@@ -36,6 +36,11 @@ public class MapInstructionConfigurator : IConfigurator
         RequestHandlerChain.GetInstance().AddHandler(new ScopeInventoryHandler());
         RequestHandlerChain.GetInstance().AddHandler(new ScopeHandsHandler());
         RequestHandlerChain.GetInstance().AddHandler(new ScopeRoomHandler());
+        RequestHandlerChain.GetInstance().AddHandler(new OneWeaponAttackHandler());
+        RequestHandlerChain.GetInstance().AddHandler(new TwoWeaponAttackHandler());
+        RequestHandlerChain.GetInstance().AddHandler(new MagicAttackModeHandler());
+        RequestHandlerChain.GetInstance().AddHandler(new NormalAttackModeHandler());
+        RequestHandlerChain.GetInstance().AddHandler(new StealthAttackModeHandler());
     }
     public void AddMoveControls()
     {

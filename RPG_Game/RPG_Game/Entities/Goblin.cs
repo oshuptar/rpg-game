@@ -22,7 +22,7 @@ public class Goblin : IEnemy
 
     public void ReceiveDamage(int damage)
     {
-        throw new NotImplementedException();
+        goblinStats.ModifyEntityAttribute(PlayerAttributes.Health, -damage);
     }
     public Goblin() { }
 

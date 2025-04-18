@@ -17,6 +17,10 @@ public class ItemDecorator : IItem
     public override void ApplyChanges(EntityStats entityStats) => item.ApplyChanges(entityStats);
     public override void RevertChanges(EntityStats entityStats) => item.RevertChanges(entityStats);
 
+    public override void Use(IEntity? source, List<IEntity>? target)
+    {
+        item.Use(source, target);
+    }
     public override string Description => item.Description;
    
     public ItemDecorator(IItem item)

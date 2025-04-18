@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace RPG_Game.Controller;
 
 // We can use a Linked List data structure, however I decided to write my own
-public class RequestHandlerChain 
+public class RequestHandlerChain
 {
     public static RequestHandlerChain? chain = null;
     private IRequestHandler? firstHandler;

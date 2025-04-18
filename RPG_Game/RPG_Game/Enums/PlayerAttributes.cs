@@ -16,4 +16,7 @@ public enum PlayerAttributes
     Coins,
     Gold,
     Money,
+    Attack,
+    Armor,
+    Wisdom,
 }

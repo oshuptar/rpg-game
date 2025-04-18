@@ -42,6 +42,11 @@ public class KeyboardTranslator : IInputHandler
         KeyBindings.Add((ConsoleKey.I, ConsoleModifiers.None), RequestType.ScopeInventory);
         KeyBindings.Add((ConsoleKey.E, ConsoleModifiers.None), RequestType.PickUpItem);
         KeyBindings.Add((ConsoleKey.X, ConsoleModifiers.None), RequestType.Quit);
+        KeyBindings.Add((ConsoleKey.D1, ConsoleModifiers.None), RequestType.NormalAttack);
+        KeyBindings.Add((ConsoleKey.D2, ConsoleModifiers.None), RequestType.StealthAttack);
+        KeyBindings.Add((ConsoleKey.D3, ConsoleModifiers.None), RequestType.MagicAttack);
+        KeyBindings.Add((ConsoleKey.Spacebar, ConsoleModifiers.None), RequestType.OneWeaponAttack);
+        KeyBindings.Add((ConsoleKey.Spacebar, ConsoleModifiers.Shift), RequestType.TwoWeaponAttack);
         KeyBindings.Add((ConsoleKey.Escape, ConsoleModifiers.None), RequestType.ScopeRoom);
         KeyBindings.Add((ConsoleKey.LeftArrow, ConsoleModifiers.None), RequestType.PrevItem);
         KeyBindings.Add((ConsoleKey.RightArrow, ConsoleModifiers.None), RequestType.NextItem);

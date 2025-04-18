@@ -160,7 +160,9 @@ public class ConsoleObjectDisplayer
     public void LogMessage(OnEnemyDetectionMessage messageInfo)
     {
         if(messageInfo.enemy != null)
-            LogWarning($"Enemy Warning: {messageInfo.enemy} at x:{messageInfo.enemy.Position.x}, y:{messageInfo.enemy.Position.y}");
+            LogWarning($"Enemy Warning: {messageInfo.enemy} " +
+                $"{messageInfo.enemy.RetrieveEntityStats().Attributes[PlayerAttributes.Health].GetCurrentValue()}HP" +
+                $" at x:{messageInfo.enemy.Position.x}, y:{messageInfo.enemy.Position.y}");
     }
 
     public void LogMessage(OnEmptyDirectory messageInfo)

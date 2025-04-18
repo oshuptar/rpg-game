@@ -89,7 +89,10 @@ public class Player : IEntity
     }
 
     public void PlacePlayer(Room room) => room.RetrieveGrid()[Position.x, Position.y].CellType |= CellType.Player;
-    public void ReceiveDamage(int damage) { }// To implement
+    public void ReceiveDamage(int damage) 
+    { 
+        PlayerStats.ModifyEntityAttribute(PlayerAttributes.Health, -damage);
+    }
     //We can implement PickUp as Visitor
     public void PickUp(IItem? item)
     {

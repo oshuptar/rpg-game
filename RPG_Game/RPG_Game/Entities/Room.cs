@@ -15,8 +15,7 @@ public class Room
     public class Cell 
     {
         public CellType CellType { get; set; } = CellType.Empty;
-
-        public IEnemy? Enemy { get; set; }
+        public IEntity? Entity { get; set; } // Two entities cannot be on the same field at the same time
 
         public List<IItem>? Items;
         public string PrintCell()
@@ -37,8 +36,16 @@ public class Room
         }
         public bool IsWalkable()
         {
-            if (CellType == CellType.Wall) return false;
+            if ((CellType & CellType.Wall) != 0 
+                || (CellType & CellType.Enemy) != 0) return false;
             return true;
+        }
+
+        public bool IsWall()
+        {
+            if (CellType == CellType.Wall)
+                return true;
+            return false;
         }
     };
 
@@ -72,13 +79,13 @@ public class Room
         if (!IsPosAvailable(position.x, position.y) || Grid[position.x, position.y].CellType == CellType.Player)
             return;
 
-        if (Grid[position.x, position.y].Enemy != null)
+        if (Grid[position.x, position.y].Entity != null)
             return;
 
         AddObject(CellType.Enemy, (position.x , position.y));
         enemy.Position = (position.x, position.y);
         Enemies.Add(enemy);
-        Grid[position.x, position.y].Enemy = enemy; // this ensures a deep copy of enemy attributes
+        Grid[position.x, position.y].Entity = enemy; // this ensures a deep copy of enemy attributes
     }
 
     public bool RemoveObject(CellType cellType, (int x, int y) position) //assuming the position is the position of the player
@@ -116,4 +123,96 @@ public class Room
 
         return tempItem;
     }
+    public bool IsInRange((int x, int y) position)
+    {
+        if (position.x >= _frameSize && position.x < _width - _frameSize
+            && position.y >= _frameSize && position.y < _height - _frameSize)
+            return true;
+        return false;
+    }
+
+    // BFS will be used to retrieve enemies around the player
+    public void BFS(List<IEntity> entities, bool[,] visited, List<(int x, int y)> directions,
+        int maxDepth, Queue<(Position position, int depth)> bfsQueue)
+    {
+        while (bfsQueue.Count > 0)
+        {
+            (Position positon, int depth) = bfsQueue.Dequeue();
+            if (depth > maxDepth)
+                continue;
+
+            IEntity? entity = Grid[positon.X, positon.Y].Entity;
+            if (entity != null)
+                entities.Add(entity);
+            foreach (var direction in directions)
+            {
+                (int X, int Y) newPosition = (positon.X + direction.x, positon.Y + direction.y);
+                if (IsInRange(newPosition) && !Grid[newPosition.X, newPosition.Y].IsWall() && !visited[newPosition.X, newPosition.Y])
+                {
+                    bfsQueue.Enqueue((new Position(newPosition), depth + 1));
+                    visited[newPosition.X, newPosition.Y] = true;
+                }
+            }
+        }
+    }
+
+    public List<IEntity>? RetrieveEnemiesInRadius(IEntity entity, int radius)
+    {
+        List<(int x, int y)> directions = new List<(int, int)> { (-1, 0), (1, 0), (0, 1), (0, -1) };
+        List<IEntity> entities = new List<IEntity>();
+        bool[,] visited = new bool[_width + 1, _height + 1];
+
+        for (int i = 0; i < _width; i++)
+            for (int j = 0; j < _height; j++)
+                visited[i, j] = false;
+
+        Queue<(Position, int)> bfsQueue = new Queue<(Position, int)>();
+        bfsQueue.Enqueue((new Position(entity.Position), 0));
+        BFS(entities, visited, directions, radius, bfsQueue);
+        return entities;
+    }
 }
+
+public class Position
+{
+    public int X;
+    public int Y;
+    public Position(int x, int y)
+    {
+        X = x;
+        Y = y;
+    }
+
+    public Position((int x, int y) position)
+    {
+        X = position.x;
+        Y = position.y;
+    }
+}
+
+
+//first Dispatch to the weapon -> weapon type is known
+//Second dispatch to the attack object which knows how to compute the damage for the received weapon
+//Third dispatch to the enemy (player) which receives the damage, knowing the attack type and weapon type
+
+//weapon attack and defense methods
+
+// so attack visitor
+// and defend visitor
+
+// attack is performed -> weapon is known
+// the attack type is not known
+// dipatch goes to the attack type class, which is visited
+//calculates attack value
+
+// then the attack value is dispatched to the player(entity) with the weapon used
+
+// the Defense method in item is triggered, passing the player attributes and the weapon used
+// the weapon dispatched it to the Attack Type used
+// the defense is calculated and returned to the hero
+
+// the hero subtracts the damage receives - teh defense value and changes its attributes
+
+// Question now - how to remember the attack type?
+
+// Conclusion, we sould pass attack type as well

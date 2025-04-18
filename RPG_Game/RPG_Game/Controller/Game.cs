@@ -12,6 +12,8 @@ using RPG_Game.Entiities;
 
 namespace RPG_Game.Controller;
 
+// Per-session Per-Player class
+// Most likely room later on has to contian a list of players
 public class Game
 {
     private Room _room = new Room();
@@ -19,8 +21,10 @@ public class Game
     private MapConfigurator _map = new MapConfigurator();
     private IInputHandler _inputHandler;
     private GamePhase _gamePhase;
+    public AttackType AttackType { get; set; } = AttackType.NormalAttack;
+    public AttackStrategy AttackStrategy { get; set; } = new NormalAttackStrategy();
     //private UIHandler _uiHandler;
-
+    //List<Player> Players
     public Game()
     {
         ConfigureMap();
@@ -74,10 +78,19 @@ public class Game
                 Console.Clear();
             }
 
-            _inputHandler.DispatchRequest(new ActionRequest(new Context(_player, _room), (RequestType)requestType));
+            _inputHandler.DispatchRequest(new ActionRequest(new Context(this), (RequestType)requestType));
             displayer.DisplayRoutine(_player);
         }
     }
+
+    public void SetAttackMode(AttackType attackType, AttackStrategy attackStrategy)
+    {
+        AttackType = attackType;
+        AttackStrategy = attackStrategy;
+    }
+
+    public Room GetRoom() => _room;
+    public Player GetPlayer() => _player;
 }
 
 public enum GamePhase

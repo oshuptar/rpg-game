@@ -10,18 +10,20 @@ using System.Threading.Tasks;
 
 namespace RPG_Game.Entities;
 
+// Luck defines the chance of gving a critical damage which is calculated as 2*Damage
 public class PlayerStats : EntityStats
 {
     public PlayerStats()
     {
         Attributes.Add(PlayerAttributes.Health, new AttributeValue(100, 100));
         Attributes.Add(PlayerAttributes.Strength, new AttributeValue(0));
-        Attributes.Add(PlayerAttributes.Luck, new AttributeValue(0));
+        Attributes.Add(PlayerAttributes.Luck, new AttributeValue(0, 100));
         Attributes.Add(PlayerAttributes.Aggression, new AttributeValue(0));
         Attributes.Add(PlayerAttributes.Dexterity, new AttributeValue(2));
         Attributes.Add(PlayerAttributes.Coins, new AttributeValue(5));
         Attributes.Add(PlayerAttributes.Gold, new AttributeValue(0));
         Attributes.Add(PlayerAttributes.Money, new AttributeValue(0));
+        Attributes.Add(PlayerAttributes.Wisdom, new AttributeValue(0));
         OnMoneyChange();
     }
 

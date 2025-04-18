@@ -19,6 +19,7 @@ public class BaseHandler : IRequestHandler
     protected virtual RequestType RequestType => RequestType.Ignore;
     protected IRequestHandler? NextHandler { get; set; } = null;
 
+
     public virtual void HandleRequest(ActionRequest request)
     {
         NextHandler?.HandleRequest(request);
@@ -35,6 +36,105 @@ public class BaseHandler : IRequestHandler
     }
 }
 
+public class DefaultHandler : BaseHandler
+{
+    protected override RequestType RequestType => RequestType.Ignore;
+
+    public override void HandleRequest(ActionRequest request)
+    {
+        ConsoleObjectDisplayer.GetInstance().ClearLogMessage();
+        ConsoleObjectDisplayer.GetInstance().LogMessage(new OnRequestNotSupportedMessage());
+    }
+}
+
+public class NormalAttackModeHandler : BaseHandler
+{
+    protected override RequestType RequestType => RequestType.NormalAttack;
+
+    public override void HandleRequest(ActionRequest request)
+    {
+         if (CanHandleRequest(request)) 
+            request.GetContext().GetGame().SetAttackMode(AttackType.NormalAttack, new NormalAttackStrategy());
+        else
+            base.HandleRequest(request);
+    }
+}
+
+public class StealthAttackModeHandler : BaseHandler
+{
+    protected override RequestType RequestType => RequestType.StealthAttack;
+
+    public override void HandleRequest(ActionRequest request)
+    {
+        if (CanHandleRequest(request))
+            request.GetContext().GetGame().SetAttackMode(AttackType.StealthAttack, new StealthAttackStrategy());
+        else
+            base.HandleRequest(request);
+    }
+}
+
+public class MagicAttackModeHandler : BaseHandler
+{
+    protected override RequestType RequestType => RequestType.MagicAttack;
+    public override void HandleRequest(ActionRequest request)
+    {
+        if (CanHandleRequest(request))
+            request.GetContext().GetGame().SetAttackMode(AttackType.MagicAttack, new MagicAttackStrategy());
+        else
+            base.HandleRequest(request);
+    }
+}
+
+
+public class OneWeaponAttackHandler : BaseHandler
+{
+    protected override RequestType RequestType => RequestType.OneWeaponAttack;
+    public override void HandleRequest(ActionRequest request)
+    {
+        if (CanHandleRequest(request))
+        {
+            Context gameContext = request.GetContext();
+            if(ConsoleObjectDisplayer.GetInstance().FocusOn == FocusType.Hands)
+            {
+                // Attack via weapon currently focused
+                 IWeapon? weapon = gameContext.GetPlayer().RetrieveHands()[ConsoleObjectDisplayer.GetInstance().CurrentFocus] as IWeapon;
+                if (weapon == null) return;
+
+                List<IEntity>? entities = gameContext.GetRoom().RetrieveEnemiesInRadius(request.GetContext().GetPlayer(), weapon.RadiusOfAction);
+                weapon?.Use(request.GetContext().GetGame().AttackStrategy, gameContext.GetPlayer(), entities);
+            }
+        }
+        else
+            base.HandleRequest(request);
+    }
+}
+
+public class TwoWeaponAttackHandler : BaseHandler
+{
+    protected override RequestType RequestType => RequestType.TwoWeaponAttack;
+
+    public override void HandleRequest(ActionRequest request)
+    {
+        if(CanHandleRequest(request))
+        {
+            foreach(var item in request.GetContext().GetPlayer().RetrieveHands())
+            {
+                Context gameContext = request.GetContext();
+
+                IWeapon? weapon = item as IWeapon;
+                if (weapon == null) return;
+
+                List<IEntity>? entities = gameContext.GetRoom().RetrieveEnemiesInRadius(request.GetContext().GetPlayer(), weapon.RadiusOfAction);
+                weapon?.Use(request.GetContext().GetGame().AttackStrategy, gameContext.GetPlayer(), entities);
+            }
+        }
+        else
+            base.HandleRequest(request);
+    }
+}
+
+
+
 public class UseItemHandler : BaseHandler
 {
     protected override RequestType RequestType => RequestType.UseItem;
@@ -49,7 +149,7 @@ public class UseItemHandler : BaseHandler
 
             // For each action I can define a radius of aciton, i.e. I pass list of enemies and then I can filter only these for whom the distance is less or equal to this radius of action
             List<IEntity> target = new List<IEntity>();
-            IEntity? entity = gameContext.GetRoom().RetrieveGrid()[gameContext.GetPlayer().Position.x, gameContext.GetPlayer().Position.y].Enemy;
+            IEntity? entity = gameContext.GetRoom().RetrieveGrid()[gameContext.GetPlayer().Position.x, gameContext.GetPlayer().Position.y].Entity;
             if(entity != null)
                 target.Add(entity);
             item?.Use(gameContext.GetPlayer(), target);
@@ -61,6 +161,10 @@ public class UseItemHandler : BaseHandler
 
 // will be implemented with events later on, so the code common part would be smaller
 //Figure out how to clear out LogMessages
+
+//The displaying could be implemented via events in the view
+// Think about it, or could explicitly delegated by the controller
+
 public class MoveUpHandler : BaseHandler
 {
     protected override RequestType RequestType => RequestType.MoveUp;
@@ -72,8 +176,6 @@ public class MoveUpHandler : BaseHandler
             Context gameContext = request.GetContext();
             gameContext.GetPlayer().Move(Direction.North, gameContext.GetRoom());
             ConsoleObjectDisplayer.GetInstance().ResetFocusIndex();
-            //The displaying could be implemented via events in the view
-            // Think about it, or could explicitly delegated by the controller
         }
         else
             base.HandleRequest(request);
@@ -130,18 +232,6 @@ public class MoveLeftHandler : BaseHandler
         }
         else
             base.HandleRequest(request);
-    }
-}
-
-// default handler
-public class DefaultHandler : BaseHandler
-{
-    protected override RequestType RequestType => RequestType.Ignore;
-
-    public override void HandleRequest(ActionRequest request)
-    {
-        ConsoleObjectDisplayer.GetInstance().ClearLogMessage();
-        ConsoleObjectDisplayer.GetInstance().LogMessage(new OnRequestNotSupportedMessage());
     }
 }
 

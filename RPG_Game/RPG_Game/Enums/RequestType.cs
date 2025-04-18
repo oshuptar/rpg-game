@@ -23,6 +23,11 @@ public enum RequestType
     HideControls,
     NextItem,
     PrevItem,
+    OneWeaponAttack,
+    TwoWeaponAttack,
+    NormalAttack,
+    StealthAttack,
+    MagicAttack,
     Quit,
     Ignore,
 }
