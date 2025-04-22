@@ -14,7 +14,7 @@ public class Sword : LightWeapon
 {
     public override int Damage => 7;
     public override string Name => "Sword";
-    public override string Description => $"(Damage: {Damage}; One-Handed)";
+    public override string Description => $"(Damage: {Damage}; Radius-Of-Action: {RadiusOfAction}; One-Handed;)";
     public override int RadiusOfAction => 1;
     public override void Use(AttackStrategy strategy, IEntity? source, List<IEntity>? target)
     {

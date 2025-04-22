@@ -14,7 +14,7 @@ public class Hammer : HeavyWeapon
 {
     public override int Damage => 10;
     public override string Name => "Hammer";
-    public override string Description => $"(Damage: {Damage}; Two-Handed)";
+    public override string Description => $"(Damage: {Damage}; Radius-Of-Action: {RadiusOfAction}; Two-Handed)";
     public override int RadiusOfAction => 2;// Means that all enemies and players in the radius 1 from the hero would be affected
     public override void Use(AttackStrategy strategy, IEntity? source, List<IEntity>? target)
     {

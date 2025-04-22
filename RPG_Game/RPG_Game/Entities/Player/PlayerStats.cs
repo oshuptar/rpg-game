@@ -15,7 +15,7 @@ public class PlayerStats : EntityStats
 {
     public PlayerStats()
     {
-        Attributes.Add(PlayerAttributes.Health, new AttributeValue(1000, 1000));
+        Attributes.Add(PlayerAttributes.Health, new AttributeValue(100, 100));
         Attributes.Add(PlayerAttributes.Strength, new AttributeValue(0));
         Attributes.Add(PlayerAttributes.Luck, new AttributeValue(0, 100));
         Attributes.Add(PlayerAttributes.Aggression, new AttributeValue(0));
