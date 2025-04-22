@@ -64,11 +64,11 @@ public abstract class EntityStats
 
     }
 
-    public virtual void OnDeath()
+    protected virtual void OnDeath()
     {
         Died?.Invoke(this, EventArgs.Empty);
     }
-    public virtual void OnMoneyChange()
+    protected virtual void OnMoneyChange()
     {
         Attributes[PlayerAttributes.Money].SetCurrentValue(Attributes[PlayerAttributes.Coins].GetCurrentValue() * Coin.Value
             + Attributes[PlayerAttributes.Gold].GetCurrentValue() * Gold.Value);

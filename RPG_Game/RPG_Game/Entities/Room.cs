@@ -111,6 +111,17 @@ public class Room
         Grid[position.x, position.y].Items!.Add(item);
     }
 
+    public void RemoveEntity(IEnemy enemy)
+    {
+        IEntity? entity = Grid[enemy.Position.x, enemy.Position.y].Entity;
+        if (entity != null && entity.Equals(enemy))
+        {
+            Grid[enemy.Position.x, enemy.Position.y].Entity = null;
+            this.RemoveObject(CellType.Enemy, (enemy.Position.x, enemy.Position.y));
+            this.Enemies.Remove(enemy);
+        }
+    }
+
     // index denotes the index of the item from the list to be removed
     public IItem? RemoveItem((int x, int y) position, int index = 0)
     {

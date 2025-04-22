@@ -2,7 +2,9 @@
 using RPG_Game.Entiities;
 using RPG_Game.Enums;
 using RPG_Game.Interfaces;
+using RPG_Game.UIHandlers;
 using RPG_Game.Weapons;
+using RPG_Game.LogMessages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +21,8 @@ public class Orc : IEnemy
     private EnemyStats orcStats = new EnemyStats();
     public IWeapon Weapon = new PowerWeaponDecorator(new Hammer());
     public AttackStrategy AttackStrategy { get; set; } = new NormalAttackStrategy();
+
+    public event EventHandler? OwnDeath;
     public bool Move(Direction direction, Room room)
     {
         throw new NotImplementedException();
@@ -32,11 +36,17 @@ public class Orc : IEnemy
     {
         orcStats.ModifyEntityAttribute(PlayerAttributes.Health, -damage);
         if (source != null)
+        {
+            ConsoleObjectDisplayer.GetInstance().LogMessage(new OnAttackMessage(source, this, damage));
+            ConsoleObjectDisplayer.GetInstance().LogMessage(new OnEnemyDetectionMessage(this));
             Attack(source);
+        }
     }
 
     public Orc() 
-    { }
+    {
+        this.orcStats.Died += OwnDeathHandler;
+    }
 
     public override string ToString() => "Orc";
 
@@ -45,5 +55,10 @@ public class Orc : IEnemy
     public object Copy()
     {
         return new Orc();
+    }
+
+    protected void OwnDeathHandler(object sender, EventArgs e)
+    {
+        this.OwnDeath?.Invoke(this, EventArgs.Empty);
     }
 }

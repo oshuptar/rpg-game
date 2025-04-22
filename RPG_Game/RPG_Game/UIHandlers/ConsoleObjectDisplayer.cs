@@ -13,6 +13,8 @@ using System.Threading.Tasks;
 using System.Transactions;
 using System.Xml.Linq;
 using RPG_Game.HelperClasses;
+using System.Xml.Xsl;
+using RPG_Game.Controller;
 
 namespace RPG_Game.UIHandlers;
 
@@ -24,7 +26,7 @@ public class ConsoleObjectDisplayer
     private static ConsoleObjectDisplayer? _objectDisplayerInstance;
     private const int _verticalSpaceSize = Room._height / 10;
     private const int _horizontalSpaceSize = Room._width / 10;
-    private Room _room = new Room();
+    private Game _game;
 
     private int _noOfAttributes = 8; // hardcoded value; to change
     private int _noOfLists = 4; // hardcoded value; to change
@@ -41,7 +43,7 @@ public class ConsoleObjectDisplayer
         IsControlsVisible = true;
     }
 
-    public void SetRoom(Room room) => _room = room;
+    public void SetGame(Game game) => _game = game;
 
     public static ConsoleObjectDisplayer GetInstance()
     {
@@ -50,14 +52,36 @@ public class ConsoleObjectDisplayer
         return _objectDisplayerInstance;
     }
 
-    public void ResetFocusIndex() => CurrentFocus = 0;
-    public void SetInventoryFocus() => FocusOn = FocusType.Inventory;
-    public void SetHandsFocus() => FocusOn = FocusType.Hands;
-    public void ResetFocusType() => FocusOn = FocusType.Room;
-    public  void DisplayControls(bool isControlsVisible = true) => Console.Write(ObjectRenderer.GetInstance().RenderControls(isControlsVisible));
+    public void AdjustFocusIndex()
+    {
+        CurrentFocus = CurrentFocus - 1 > 0 ? CurrentFocus - 1 : 0;
+    }
+
+    public void ResetFocusIndex()
+    {
+        if(FocusOn == FocusType.Room)
+            CurrentFocus = 0;
+    }
+    public void SetInventoryFocus()
+    {
+        FocusOn = FocusType.Inventory;
+        CurrentFocus = 0;
+    }
+    public void SetHandsFocus()
+    {
+        FocusOn = FocusType.Hands;
+        CurrentFocus = 0;
+    }
+    public void ResetFocusType()
+    {
+        FocusOn = FocusType.Room;
+        CurrentFocus = 0;
+        
+    }
+    public void DisplayControls(bool isControlsVisible = true) => Console.Write(ObjectRenderer.GetInstance().RenderControls(isControlsVisible));
     public StringBuilder DisplayInventory(Player player) => ObjectRenderer.GetInstance().RenderItemList(player.RetrieveInventory(), "Inventory");
     public StringBuilder DisplayEquipped(Player player) => ObjectRenderer.GetInstance().RenderItemList(player.RetrieveHands(), "Equipped");
-    public StringBuilder DisplayTileItems((int x, int y) position) => ObjectRenderer.GetInstance().RenderItemList(_room.RetrieveGrid()[position.x, position.y].Items, "Items");
+    public StringBuilder DisplayTileItems((int x, int y) position) => ObjectRenderer.GetInstance().RenderItemList(_game.GetRoom().RetrieveGrid()[position.x, position.y].Items, "Items");
     public void ChangeControlsVisibility() => IsControlsVisible = !IsControlsVisible;
     public void FillLine() => Console.Write(ObjectRenderer.GetInstance().RenderEmptyLine());
 
@@ -71,39 +95,39 @@ public class ConsoleObjectDisplayer
 
         Console.Write($"Current Focus (in {Object}): ");
         Console.ForegroundColor = ConsoleColor.Red;
-        Console.Write($"{ output ?? "None"}");
+        Console.Write($"{output ?? "None"}");
         Console.ForegroundColor = ConsoleColor.White;
     }
 
-    public void DisplayCurrentItem(Player player)
+    public void DisplayCurrentItem()
     {
 
         switch (FocusOn)
         {
             case FocusType.Inventory:
-                DisplayCurrent(player.RetrieveInventory(), "Inventory");
+                DisplayCurrent(_game.GetPlayer().RetrieveInventory(), "Inventory");
                 break;
             case FocusType.Hands:
-                DisplayCurrent(player.RetrieveHands(), "Hands");
+                DisplayCurrent(_game.GetPlayer().RetrieveHands(), "Hands");
                 break;
             case FocusType.Room:
-                DisplayCurrent(_room.RetrieveGrid()[player.Position.x, player.Position.y].Items, "Room");
+                DisplayCurrent(_game.GetRoom().RetrieveGrid()[_game.GetPlayer().Position.x, _game.GetPlayer().Position.y].Items, "Room");
                 break;
         }
     }
 
-    public void ShiftCurrentFocus(Player player, Direction direction)
+    public void ShiftCurrentFocus(Direction direction)
     {
-        switch(FocusOn)
+        switch (FocusOn)
         {
             case FocusType.Inventory:
-                ShiftFocus(player.RetrieveInventory(), direction);
+                ShiftFocus(_game.GetPlayer().RetrieveInventory(), direction);
                 break;
             case FocusType.Hands:
-                ShiftFocus(player.RetrieveHands(), direction);
+                ShiftFocus(_game.GetPlayer().RetrieveHands(), direction);
                 break;
             case FocusType.Room:
-                ShiftFocus(_room.RetrieveGrid()[player.Position.x, player.Position.y].Items, direction);
+                ShiftFocus(_game.GetRoom().RetrieveGrid()[_game.GetPlayer().Position.x, _game.GetPlayer().Position.y].Items, direction);
                 break;
         }
     }
@@ -124,15 +148,17 @@ public class ConsoleObjectDisplayer
         }
     }
 
-    public void DisplayPlayerAttributes(Player player)
+    public void DisplayPlayerAttributes()
     {
-        foreach (var key in player.RetrieveEntityStats().Attributes.Keys)
-        { 
-            Console.Write($"{key}: {player.RetrieveEntityStats().Attributes[key]}");
+        foreach (var key in _game.GetPlayer().RetrieveEntityStats().Attributes.Keys)
+        {
+            Console.Write($"{key}: {_game.GetPlayer().RetrieveEntityStats().Attributes[key]}");
             FillLine();
             CursorPosition = (CursorPosition.left, CursorPosition.top + 1);
             Console.SetCursorPosition(CursorPosition.left, CursorPosition.top);
         }
+        Console.Write($"Attack Strategy: {_game.AttackType.ToString()}");
+        FillLine();
     }
 
     public void WelcomeRoutine()
@@ -144,9 +170,15 @@ public class ConsoleObjectDisplayer
 
     private void LogMessage(string message)
     {
-        Console.SetCursorPosition(Room._width + _horizontalSpaceSize, _noOfLists + _noOfAttributes + 3*_verticalSpaceSize);
+        Console.SetCursorPosition(Room._width + _horizontalSpaceSize, _noOfLists + _noOfAttributes + 3 * _verticalSpaceSize);
         Console.Write($"{message}");
         FillLine();
+    }
+    public void LogMessage(OnPlayerDeathMessage messageInfo)
+    {
+        this.ClearConsole();
+        Console.SetCursorPosition(0, 0);
+        Console.Write($"{messageInfo.Player.Name} was killed. End of Game!");
     }
 
     private void LogWarning(string message)
@@ -159,7 +191,7 @@ public class ConsoleObjectDisplayer
     }
     public void LogMessage(OnEnemyDetectionMessage messageInfo)
     {
-        if(messageInfo.enemy != null)
+        if (messageInfo.enemy != null)
             LogWarning($"Enemy Warning: {messageInfo.enemy} " +
                 $"{messageInfo.enemy.RetrieveEntityStats().Attributes[PlayerAttributes.Health].GetCurrentValue()}HP" +
                 $" at x:{messageInfo.enemy.Position.x}, y:{messageInfo.enemy.Position.y}");
@@ -199,9 +231,21 @@ public class ConsoleObjectDisplayer
         LogMessage($"{messageInfo.Description}");
     }
 
+    public void LogMessage(OnEnemyDeathMessage messageInfo)
+    {
+        LogMessage($"{messageInfo.enemy.ToString()} was killed");
+    }
+
+    public void LogMessage(OnAttackMessage messageInfo)
+    {
+        LogMessage($"{messageInfo.source} attacked {messageInfo.target}: -{messageInfo.Damage}HP");
+    }
     public void ClearConsole() => Console.Clear();
 
-    public void ClearLogMessage() => LogMessage(" ");
+    public void ClearLogMessage()
+    {
+        LogMessage(" ");
+    }
 
     // We are overriding previous contents on Enemy type cells
     public void DisplayEnemies()
@@ -211,10 +255,10 @@ public class ConsoleObjectDisplayer
         {
             for (int j = 0; j < Room._height; j++)
             {
-                if ((_room.RetrieveGrid()[i, j].CellType & CellType.Enemy) != 0)
+                if ((_game.GetRoom().RetrieveGrid()[i, j].CellType & CellType.Enemy) != 0)
                 {
                     Console.SetCursorPosition(i, j);
-                    Console.Write(_room.RetrieveGrid()[i, j].PrintCell());
+                    Console.Write(_game.GetRoom().RetrieveGrid()[i, j].PrintCell());
                 }
             }
         }
@@ -222,10 +266,10 @@ public class ConsoleObjectDisplayer
     }
 
     // Fix implementation
-    public void DisplayRoutine(Player player)
+    public void DisplayRoutine()
     {
         Console.SetCursorPosition(0, 0);
-        Console.Write(ObjectRenderer.GetInstance().RenderGrid(_room));
+        Console.Write(ObjectRenderer.GetInstance().RenderGrid(_game.GetRoom()));
 
         (int X, int Y) oldPosition = Console.GetCursorPosition();
 
@@ -235,29 +279,29 @@ public class ConsoleObjectDisplayer
         int verticalPosition = _verticalSpaceSize;
 
         Console.SetCursorPosition(horizontalPosition, verticalPosition);
-        Console.Write(DisplayTileItems(player.Position));
+        Console.Write(DisplayTileItems(_game.GetPlayer().Position));
         FillLine();
 
         Console.SetCursorPosition(horizontalPosition, verticalPosition + 1);
-        Console.Write(DisplayEquipped(player));
+        Console.Write(DisplayEquipped(_game.GetPlayer()));
         FillLine();
 
         Console.SetCursorPosition(horizontalPosition, verticalPosition + 2);
-        Console.Write(DisplayInventory(player));
-        FillLine(); 
-
-        Console.SetCursorPosition(horizontalPosition, verticalPosition + 3);
-        DisplayCurrentItem(player);
+        Console.Write(DisplayInventory(_game.GetPlayer()));
         FillLine();
 
-        CursorPosition = (horizontalPosition, verticalPosition + _noOfLists + _verticalSpaceSize);
+        Console.SetCursorPosition(horizontalPosition, verticalPosition + 3);
+        DisplayCurrentItem();
+        FillLine();
+
+        CursorPosition = (horizontalPosition, verticalPosition + _noOfLists + _verticalSpaceSize - 1);
         Console.SetCursorPosition(CursorPosition.left, CursorPosition.top);
-        DisplayPlayerAttributes(player);
+        DisplayPlayerAttributes();
 
         CursorPosition = (horizontalPosition, Console.GetCursorPosition().Top + _verticalSpaceSize);
 
         Console.SetCursorPosition(oldPosition.X, oldPosition.Y + _verticalSpaceSize);
-        
+
         DisplayControls(IsControlsVisible);
 
         Console.SetCursorPosition(oldPosition.X, oldPosition.Y);

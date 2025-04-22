@@ -161,11 +161,7 @@ public class UseItemHandler : BaseHandler
                 ConsoleObjectDisplayer.GetInstance().FocusOn == FocusType.Inventory);
 
             // For each action I can define a radius of aciton, i.e. I pass list of enemies and then I can filter only these for whom the distance is less or equal to this radius of action
-            List<IEntity> target = new List<IEntity>();
-            IEntity? entity = gameContext.GetRoom().RetrieveGrid()[gameContext.GetPlayer().Position.x, gameContext.GetPlayer().Position.y].Entity;
-            if(entity != null)
-                target.Add(entity);
-            item?.Use(request.GetContext().GetGame().AttackStrategy, gameContext.GetPlayer(), target);
+            item?.Use(request.GetContext().GetGame().AttackStrategy, gameContext.GetPlayer(), null);
         }
         else
             base.HandleRequest(request);
@@ -281,7 +277,6 @@ public class PickUpItemHandler : BaseHandler
             Context gameContext = request.GetContext();
             IItem? item = gameContext.GetRoom().RemoveItem(gameContext.GetPlayer().Position, ConsoleObjectDisplayer.GetInstance().CurrentFocus);
             gameContext.GetPlayer().PickUp(item);
-            ConsoleObjectDisplayer.GetInstance().ResetFocusIndex();
         }
         else
             base.HandleRequest(request);
@@ -302,12 +297,12 @@ public class DropItemHandler : BaseHandler
             if (ConsoleObjectDisplayer.GetInstance().FocusOn == FocusType.Inventory)
             {
                 gameContext.GetPlayer().Drop(gameContext.GetRoom(), ConsoleObjectDisplayer.GetInstance().CurrentFocus, true);
-                ConsoleObjectDisplayer.GetInstance().ResetFocusIndex();
+                ConsoleObjectDisplayer.GetInstance().AdjustFocusIndex();
             }
             else if (ConsoleObjectDisplayer.GetInstance().FocusOn == FocusType.Hands)
             {
                 gameContext.GetPlayer().Drop(gameContext.GetRoom(), ConsoleObjectDisplayer.GetInstance().CurrentFocus, false);
-                ConsoleObjectDisplayer.GetInstance().ResetFocusIndex();
+                ConsoleObjectDisplayer.GetInstance().AdjustFocusIndex();
             }
         }
         else
@@ -336,18 +331,15 @@ public class EquipItemHandler : BaseHandler
                     item = player.Retrieve(displayer.CurrentFocus, true);
                     if (player.Equip(item))
                         item = player.Remove(displayer.CurrentFocus, true);
-                    displayer.ResetFocusIndex();
                     break;
                 // Unequips
                 case FocusType.Hands:
                     player.UnEquip(displayer.CurrentFocus);
-                    displayer.ResetFocusIndex();
                     break;
                 case FocusType.Room:
                     item = room.RemoveItem(player.Position, displayer.CurrentFocus);
                     if (!player.Equip(item, false))
                         room.AddItem(item, player.Position);
-                    displayer.ResetFocusIndex();
                     break;
             }
         }
@@ -384,7 +376,7 @@ public class ScopeInventoryHandler : BaseHandler
         {
             ConsoleObjectDisplayer.GetInstance().ClearLogMessage();
             ConsoleObjectDisplayer.GetInstance().SetInventoryFocus();
-            ConsoleObjectDisplayer.GetInstance().ResetFocusIndex();
+            //ConsoleObjectDisplayer.GetInstance().ResetFocusIndex();
         }
         else
             base.HandleRequest(request);
@@ -400,7 +392,7 @@ public class ScopeHandsHandler : BaseHandler
         {
             ConsoleObjectDisplayer.GetInstance().ClearLogMessage();
             ConsoleObjectDisplayer.GetInstance().SetHandsFocus();
-            ConsoleObjectDisplayer.GetInstance().ResetFocusIndex();
+            //ConsoleObjectDisplayer.GetInstance().ResetFocusIndex();
         }
         else
             base.HandleRequest(request);
@@ -416,7 +408,7 @@ public class ScopeRoomHandler : BaseHandler
         {
             ConsoleObjectDisplayer.GetInstance().ClearLogMessage();
             ConsoleObjectDisplayer.GetInstance().ResetFocusType();
-            ConsoleObjectDisplayer.GetInstance().ResetFocusIndex();
+            //ConsoleObjectDisplayer.GetInstance().ResetFocusIndex();
         }
         else
             base.HandleRequest(request);
@@ -446,7 +438,7 @@ public class NextItemHandler : BaseHandler
         if (CanHandleRequest(request))
         {
             ConsoleObjectDisplayer.GetInstance().ClearLogMessage();
-            ConsoleObjectDisplayer.GetInstance().ShiftCurrentFocus(request.GetContext().GetPlayer(), Direction.East);
+            ConsoleObjectDisplayer.GetInstance().ShiftCurrentFocus(Direction.East);
         }
         else
             base.HandleRequest(request);
@@ -461,7 +453,7 @@ public class PrevItemHandler : BaseHandler
         if (CanHandleRequest(request))
         {
             ConsoleObjectDisplayer.GetInstance().ClearLogMessage();
-            ConsoleObjectDisplayer.GetInstance().ShiftCurrentFocus(request.GetContext().GetPlayer(), Direction.West);
+            ConsoleObjectDisplayer.GetInstance().ShiftCurrentFocus(Direction.West);
         }
         else
             base.HandleRequest(request);

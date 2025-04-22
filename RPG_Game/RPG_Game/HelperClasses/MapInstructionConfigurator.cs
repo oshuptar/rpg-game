@@ -15,16 +15,17 @@ public class MapInstructionConfigurator : IConfigurator
     public MapInstructionConfigurator() => ResetMapConfiguration();
     public void AddItemControls()
     {
-        ObjectRenderer.GetInstance().noOfControlsLines += 8;
-        //Add description for atacking handlers
-        _sb.Append(" - To pick up an item - press `E`\n");
-        _sb.Append(" - To drop an item - press `G`. To drop all items - press `Ctrl + G`\n");
-        _sb.Append(" - To use item - press `U`\n");
-        _sb.Append(" - To equip/unequip an item - press `Q`. You can equip an item from inventory or from staying on the item, depending on your focus\n");
-        _sb.Append(" - Use arrows to navigate through inventory, map items or eqquiped items\n");
-        _sb.Append(" - To enter the inventory scope - press `I`, then use arrows to change the object\n");
-        _sb.Append(" - To enter hands scope - press `H`, then use arrows to change the object\n");
-        _sb.Append(" - To leave hands or inventory scope - press `Escape`\n");
+        ObjectRenderer.GetInstance().noOfControlsLines += 10;
+        _sb.Append(" - Attack - Press 'Space'. Two-Weapon Attack - Press `Shift + Space`\n");
+        _sb.Append(" - Normal Attack - `1`. Stealth Attack - `2`. Magic Attack - `3`\n");
+        _sb.Append(" - Pick Up - Press `E`\n");
+        _sb.Append(" - Drop - Press `G`. Drop All - Press `Ctrl + G`\n");
+        _sb.Append(" - Use - Press `U`\n");
+        _sb.Append(" - Equip/Unequip - Press `Q`\n");
+        _sb.Append(" - Navigation - Via Arrows\n");
+        _sb.Append(" - Inventory Score - Press `I`\n");
+        _sb.Append(" - Hands Scope - Press `H`\n");
+        _sb.Append(" - Leave Current Scope - Press `Escape`\n");
 
         RequestHandlerChain.GetInstance().AddHandler(new EquipItemHandler());
         RequestHandlerChain.GetInstance().AddHandler(new PickUpItemHandler());
@@ -44,8 +45,9 @@ public class MapInstructionConfigurator : IConfigurator
     }
     public void AddMoveControls()
     {
-        _sb.Append(" - Moves in four directions are controlled by `W`, `S`, `A`, `D`\n");
+        _sb.Append(" - Move - press `W`, `S`, `A`, `D`\n");
         ObjectRenderer.GetInstance().noOfControlsLines += 1;
+
         RequestHandlerChain.GetInstance().AddHandler(new MoveUpHandler());
         RequestHandlerChain.GetInstance().AddHandler(new MoveDownHandler());
         RequestHandlerChain.GetInstance().AddHandler(new MoveLeftHandler());
@@ -78,9 +80,10 @@ public class MapInstructionConfigurator : IConfigurator
     public void CreateEmptyDungeon()
     {
         _sb.Append("Instructions:\n");
-        _sb.Append(" - To finish the game - press 'X'\n");
-        _sb.Append(" - To open/hide controls - press `K`\n");
+        _sb.Append(" - Finish Game - Press `X`\n");
+        _sb.Append(" - Open/Hide Controls - Press `K`\n");
         ObjectRenderer.GetInstance().noOfControlsLines += 3;
+
         RequestHandlerChain.GetInstance().AddHandler(new HideControlsHandler());
         RequestHandlerChain.GetInstance().AddHandler(new QuitHadler());
     }

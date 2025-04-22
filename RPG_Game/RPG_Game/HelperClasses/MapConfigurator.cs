@@ -206,9 +206,9 @@ public class MapConfigurator : IConfigurator
             int Y = Room._frameSize + random.Next(0, Room._defaultHeight);
 
             int randomIndex = random.Next(0, _items.EnemyList.Count);
-            _room.AddEnemy((IEnemy)_items.EnemyList[randomIndex].Copy(), (X, Y));
+            IEnemy? enemy = _items.EnemyList[randomIndex];
+            _room.AddEnemy((IEnemy)enemy.Copy(), (X, Y));
         }
-
         this._instructionConfigurator.PlaceEnemies();
     }
 }

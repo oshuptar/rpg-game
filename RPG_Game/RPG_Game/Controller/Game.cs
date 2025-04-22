@@ -9,11 +9,22 @@ using System.Text;
 using System.Threading.Tasks;
 using RPG_Game.UIHandlers;
 using RPG_Game.Entiities;
+using System.Runtime.CompilerServices;
+using RPG_Game.Entities;
+using RPG_Game.LogMessages;
 
 namespace RPG_Game.Controller;
 
+public enum GamePhase
+{
+    Welcome,
+    Playing
+}
+
 // Per-session Per-Player class
 // Most likely room later on has to contian a list of players
+
+// Game must be per-user class. Encpsulate the MODEL and map configration to another class
 public class Game
 {
     private Room _room = new Room();
@@ -27,6 +38,7 @@ public class Game
     //List<Player> Players
     public Game()
     {
+        _player.OwnDeath += PlayerDeathHandler;
         ConfigureMap();
         ConfigureSettings();
     }
@@ -34,7 +46,10 @@ public class Game
     {
         _room = mapConfigurator.GetResult();
         ObjectRenderer.GetInstance().SetMapInstructionConfigurator(mapConfigurator.GetInstructionConfiguration());
-        ConsoleObjectDisplayer.GetInstance().SetRoom(_room);
+        ConsoleObjectDisplayer.GetInstance().SetGame(this);
+
+        foreach (var enemy in _room.Enemies)
+            enemy.OwnDeath += EnemyDeathHandler;
         // View must access the model state
     }
 
@@ -79,7 +94,7 @@ public class Game
             }
 
             _inputHandler.DispatchRequest(new ActionRequest(new Context(this), (RequestType)requestType));
-            displayer.DisplayRoutine(_player);
+            displayer.DisplayRoutine();
         }
     }
 
@@ -91,12 +106,19 @@ public class Game
 
     public Room GetRoom() => _room;
     public Player GetPlayer() => _player;
-}
 
-public enum GamePhase
-{
-    Welcome,
-    Playing
+    public void PlayerDeathHandler(object sender, EventArgs e)
+    {
+        ConsoleObjectDisplayer.GetInstance().LogMessage(new OnPlayerDeathMessage((Player)sender));
+        Thread.Sleep(3000);
+        _inputHandler.DispatchRequest(new ActionRequest(new Context(this), RequestType.Quit));
+    }
+
+    public void EnemyDeathHandler(object sender, EventArgs e)
+    {
+        _room.RemoveEntity((IEnemy)sender);
+        ConsoleObjectDisplayer.GetInstance().LogMessage(new OnEnemyDeathMessage((IEnemy)sender));
+    }
 }
 
 

@@ -18,6 +18,9 @@ namespace RPG_Game.Entiities;
 public class Player : IEntity
 {
     public event EventHandler? EntityMoved;
+
+    public event EventHandler? OwnDeath;
+
     public (int x, int y) Position { get; set; }
 
     public string Name = "Daymio Harutosi";
@@ -29,6 +32,7 @@ public class Player : IEntity
     private Inventory Inventory = new Inventory();
     public Player()
     {
+        this.PlayerStats.Died += OwnDeathHandler;
         Position = (1, 1);
     }
 
@@ -51,6 +55,11 @@ public class Player : IEntity
                 break;
         }
         return TempPos;
+    }
+
+    protected void OwnDeathHandler(object sender, EventArgs e)
+    {
+        this.OwnDeath?.Invoke(this, e);
     }
     
     protected virtual void OnMoveEvent()
@@ -92,6 +101,8 @@ public class Player : IEntity
     public void ReceiveDamage(int damage, IEntity? source) 
     { 
         PlayerStats.ModifyEntityAttribute(PlayerAttributes.Health, -damage);
+        //if (source != null)
+        //    ConsoleObjectDisplayer.GetInstance().LogMessage(new OnAttackMessage(source, this, damage));
     }
     //We can implement PickUp as Visitor
     public void PickUp(IItem? item)
@@ -154,5 +165,10 @@ public class Player : IEntity
     public object Copy()
     {
         return new Player();
+    }
+
+    public override string ToString()
+    {
+        return this.Name;
     }
 }
