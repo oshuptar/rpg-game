@@ -11,25 +11,14 @@ namespace RPG_Game.Controller;
 // Context provides means between COR and Game Session objects
 public class Context
 {
-    //private Player Player { get; set; }
-    //private Room Room { get; set; }
-
-    private Game GameSession { get; set; }
-
+    private Game Game { get; set; }
     public Context(Game game)
     {
-        GameSession = game;
+        Game = game;
     }
-
-    public Game GetGame() => GameSession;
-    public Player GetPlayer() => GameSession.GetPlayer();
-    public Room GetRoom() => GameSession.GetRoom();
-
-    //public Context(Player player, Room room, IItem? item = null)
-    //{
-    //    this.Player = player;
-    //    this.Room = room;
-    //}
+    public Game GetGame() => Game;
+    public Player GetPlayer() => Game.GetPlayer();
+    public Room GetRoom() => Game.GetRoom();
 
 }
 

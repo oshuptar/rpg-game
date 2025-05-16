@@ -12,6 +12,6 @@ public interface IEntity : ICanMove, ICanReceiveDamage, ICopyable
     public event EventHandler? OwnDeath;
 
     public event EventHandler? EntityMoved;
-    public EntityStats RetrieveEntityStats();
-    public (int x, int y) Position { get; set; }
+    public EntityStats GetEntityStats();
+    public Position Position { get; set; }
 }

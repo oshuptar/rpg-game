@@ -16,12 +16,11 @@ public abstract class StorageManager
         IItem? item = Remove(index, list);
         if (item != null)
         {
-            room.AddItem(item, (entity.Position.x, entity.Position.y));
+            room.AddItem(item, entity.Position);
             item.Drop(entity);
         }
         return item;
     }
-
     public IItem? Retrieve(int index, List<IItem> list)
     {
         if (list.Count == 0)
@@ -29,7 +28,6 @@ public abstract class StorageManager
         IItem item = list.ElementAt(index);
         return item;
     }
-
     public IItem? Remove(int index, List<IItem> list)
     {
         IItem? item = Retrieve(index, list);

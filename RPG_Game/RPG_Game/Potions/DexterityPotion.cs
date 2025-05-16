@@ -23,19 +23,17 @@ public class DexterityPotion : TemporaryPotion
     {
         entityStats?.ModifyEntityAttribute(PlayerAttributes.Dexterity, -1);
     }
-
     public override void ApplyEffect(EntityStats? entityStats)
     {
         entityStats?.ModifyEntityAttribute(PlayerAttributes.Dexterity, Dexterity);
     }
-
     public override void Use(AttackStrategy strategy, IEntity? source, List<IEntity>? target)
     {
         if (IsDisposed) return;
 
         if (source != null)
             source.EntityMoved += OnMoveHandler;
-        ApplyEffect(source?.RetrieveEntityStats());
+        ApplyEffect(source?.GetEntityStats());
 
         IsDisposed = true;
     }
@@ -44,7 +42,6 @@ public class DexterityPotion : TemporaryPotion
         if (entity != null)
             entity.EntityMoved -= OnMoveHandler;
     }
-
     public override void OnMoveHandler(object sender, EventArgs e)
     {
         ActiveTime++;
@@ -53,8 +50,7 @@ public class DexterityPotion : TemporaryPotion
             Dispose(sender as IEntity);
             return;
         }
-        RevertEffect((sender as IEntity)?.RetrieveEntityStats());
+        RevertEffect((sender as IEntity)?.GetEntityStats());
     }
-
     public override object Copy() => new DexterityPotion();
 }

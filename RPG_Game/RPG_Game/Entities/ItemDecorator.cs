@@ -17,10 +17,9 @@ public class ItemDecorator : IItem
     public override int Capacity => item.Capacity; //reccursively callls this function until it reaches some concrete object
     public override void ApplyChanges(EntityStats entityStats) => item.ApplyChanges(entityStats);
     public override void RevertChanges(EntityStats entityStats) => item.RevertChanges(entityStats);
-
     public override void Use(AttackStrategy strategy, IEntity? source, List<IEntity>? target)
     {
-        item.Use(strategy, source, target);
+        item.Use(strategy,source, target);
     }
     public override string Description => item.Description;
    
@@ -28,6 +27,5 @@ public class ItemDecorator : IItem
     {
         this.item = item;
     }
-
     public override object Copy() => new ItemDecorator((IItem)item.Copy());
 }

@@ -10,39 +10,36 @@ namespace RPG_Game.Controller;
 // We can use a Linked List data structure, however I decided to write my own
 public class RequestHandlerChain
 {
-    public static RequestHandlerChain? chain = null;
-    private IRequestHandler? firstHandler;
-    private IRequestHandler? lastHandler;
-
+    public static RequestHandlerChain? Chain = null;
+    private IRequestHandler? _firstHandler;
+    private IRequestHandler? _lastHandler;
     private RequestHandlerChain()
     {
-        firstHandler = null;
-        lastHandler = null;
+        _firstHandler = null;
+        _lastHandler = null;
     }
-
     public static RequestHandlerChain GetInstance()
     {
-        if (chain == null)
-            chain = new RequestHandlerChain();
-        return chain;
+        if (Chain == null)
+            Chain = new RequestHandlerChain();
+        return Chain;
     }
-
     public void HandleRequest(ActionRequest request)
     {
-        firstHandler?.HandleRequest(request);
+        _firstHandler?.HandleRequest(request);
     }
 
     // Fix implementation, make more concise
     public void AddHandler(IRequestHandler handler)
     {
-        if (firstHandler == null)
+        if (_firstHandler == null)
         {
-            firstHandler = handler;
-            lastHandler = handler;
-            firstHandler.SetNext(new DefaultHandler());
+            _firstHandler = handler;
+            _lastHandler = handler;
+            _firstHandler.SetNext(new DefaultHandler());
         }
-        lastHandler?.SetNext(handler);
-        lastHandler = handler;
-        lastHandler.SetNext(new DefaultHandler());
+        _lastHandler?.SetNext(handler);
+        _lastHandler = handler;
+        _lastHandler.SetNext(new DefaultHandler());
     }
 }

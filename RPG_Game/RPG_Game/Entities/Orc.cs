@@ -16,18 +16,15 @@ namespace RPG_Game.Entities;
 public class Orc : IEnemy
 {
     public event EventHandler? EntityMoved;
-    public (int x, int y) Position { get; set; }
-
+    public Position Position { get; set; }
     private EnemyStats orcStats = new EnemyStats();
     public IWeapon Weapon = new PowerWeaponDecorator(new Hammer());
     public AttackStrategy AttackStrategy { get; set; } = new NormalAttackStrategy();
-
     public event EventHandler? OwnDeath;
     public bool Move(Direction direction, Room room)
     {
         throw new NotImplementedException();
     }
-
     public void Attack(IEntity target)
     {
         Weapon.Use(AttackStrategy, this, new List<IEntity>() { target });
@@ -37,26 +34,21 @@ public class Orc : IEnemy
         orcStats.ModifyEntityAttribute(PlayerAttributes.Health, -damage);
         if (source != null)
         {
-            ConsoleObjectDisplayer.GetInstance().LogMessage(new OnAttackMessage(source, this, damage));
-            ConsoleObjectDisplayer.GetInstance().LogMessage(new OnEnemyDetectionMessage(this));
+            ConsoleView.GetInstance().LogMessage(new OnAttackMessage(source, this, damage));
+            ConsoleView.GetInstance().LogMessage(new OnEnemyDetectionMessage(this));
             Attack(source);
         }
     }
-
     public Orc() 
     {
         this.orcStats.Died += OwnDeathHandler;
     }
-
     public override string ToString() => "Orc";
-
-    public EntityStats RetrieveEntityStats() => this.orcStats;
-
+    public EntityStats GetEntityStats() => this.orcStats;
     public object Copy()
     {
         return new Orc();
     }
-
     protected void OwnDeathHandler(object sender, EventArgs e)
     {
         this.OwnDeath?.Invoke(this, EventArgs.Empty);

@@ -20,7 +20,6 @@ public class KeyboardTranslator : IInputHandler
             requestType = RequestType.Ignore;
         return requestType;
     }
-
     public void DispatchRequest(ActionRequest request)
     {
         RequestHandlerChain.GetInstance().HandleRequest(request);

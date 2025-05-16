@@ -20,5 +20,4 @@ public interface IConfigurator
     void PlaceDecoratedWeapons();
     void PlacePotions();
     void PlaceEnemies();
-
 }

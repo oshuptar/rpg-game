@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace RPG_Game.Enums;
-
 public enum AttackType
 {
     NormalAttack,

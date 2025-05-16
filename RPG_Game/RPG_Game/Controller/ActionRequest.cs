@@ -11,13 +11,11 @@ public class ActionRequest
 {
     private Context Context;
     private RequestType ActionType;
-
     public ActionRequest(Context context, RequestType actionType)
     {
         Context = context;
         ActionType = actionType;
     }
-
     public Context GetContext() => Context;
     public RequestType GetActionRequestType() => ActionType;
 }

@@ -14,7 +14,6 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using static RPG_Game.Entiities.Room;
 
 namespace RPG_Game.HelperClasses;
 
@@ -28,11 +27,11 @@ public class MapConfigurator : IConfigurator
 
     private ItemLists _items = ItemLists.GetInstance();
 
-    private const int _centralRoomWidth = Room._defaultWidth / 5;
-    private const int _centralRoomHeight = Room._defaultHeight / 5;
+    private const int _centralRoomWidth = MapSettings.DefaultWidth / 5;
+    private const int _centralRoomHeight = MapSettings.DefaultHeight / 5;
 
-    private const int _spatialGridCellWidth = Room._defaultWidth / 5;
-    private const int _spatialGridCellHeight = Room._defaultHeight / 5;
+    private const int _spatialGridCellWidth = MapSettings.DefaultWidth / 5;
+    private const int _spatialGridCellHeight = MapSettings.DefaultHeight / 5;
 
     private int _maxRoomWidth = Math.Min(_centralRoomWidth / 2, _spatialGridCellWidth);
     private int _maxRoomHeight = Math.Min(_centralRoomHeight / 2, _spatialGridCellHeight);
@@ -44,53 +43,45 @@ public class MapConfigurator : IConfigurator
         this._room = new Room();
         this._instructionConfigurator = new MapInstructionConfigurator();
     }
-
-    public Room GetResult() => this._room;
+    public Room GetResult() => _room;
     public MapInstructionConfigurator GetInstructionConfiguration() => this._instructionConfigurator;
-
     public void CreateEmptyDungeon()
     {
-
-        for (int i = 0; i < Room._width; i++)
-            for (int j = 0; j < Room._height; j++)
+        for (int i = 0; i < MapSettings.Width; i++)
+            for (int j = 0; j < MapSettings.Height; j++)
             {
-                _room.RetrieveGrid()[i, j] = new Cell();
-                _room.RetrieveGrid()[i, j].CellType = _room.RetrieveGrid()[i, j].CellType | CellType.Empty & ~CellType.Wall;
+                _room.GetRoomState().GetGrid()[i, j] = new RoomState.Cell();
+                _room.GetRoomState().GetGrid()[i, j].CellType = _room.GetRoomState().GetGrid()[i, j].CellType | CellType.Empty & ~CellType.Wall;
             }
         this._instructionConfigurator.CreateEmptyDungeon();
     }
-
     public void FillDungeon()
     {
-        for (int i = 0; i < Room._width; i++)
-            for (int j = 0; j < Room._height; j++)
-                _room.AddObject(CellType.Wall, (i, j));
+        for (int i = 0; i < MapSettings.Width; i++)
+            for (int j = 0; j < MapSettings.Height; j++)
+                _room.AddObject(CellType.Wall, new Position(i, j));
         this._instructionConfigurator.FillDungeon();
     }
-
-    // Adding paths is possible once the chambers and the central room is generated
     public void AddPaths()
     {
         Random random = new Random();
-        int startX = 2 * random.Next(0, Room._width / 2) + 1;
-        int startY = 2 * random.Next(0, Room._height / 2) + 1;
-        bool[,] visited = new bool[Room._width, Room._height];
-        for (int i = 0; i < Room._width; i++)
-            for (int j = 0; j < Room._height; j++)
+        int startX = 2 * random.Next(0, MapSettings.Width / 2) + 1;
+        int startY = 2 * random.Next(0, MapSettings.Height / 2) + 1;
+        bool[,] visited = new bool[MapSettings.Width, MapSettings.Height];
+        for (int i = 0; i < MapSettings.Width; i++)
+            for (int j = 0; j < MapSettings.Height; j++)
                 visited[i, j] = false;
 
         DFS(startX, startY, visited, random);
 
         this._instructionConfigurator.AddPaths();
     }
-
     public void DFS(int startX, int startY, bool[,] visited, Random random)
     {
         visited[startX, startY] = true;
-        _room.RetrieveGrid()[startX, startY].CellType &= ~CellType.Wall;
+        _room.GetRoomState().GetGrid()[startX, startY].CellType &= ~CellType.Wall;
 
         List<(int x, int y)> directions = new List<(int, int)> { (-2, 0), (2, 0), (0, -2), (0, 2) };
-
         // Shuffles a list
         for (int i = directions.Count - 1; i >= 0; i--)
         {
@@ -105,25 +96,26 @@ public class MapConfigurator : IConfigurator
             if (IsInRange((newPosition.x, newPosition.y)) && !visited[newPosition.x, newPosition.y])
             {
                 (int x, int y)midPoint = (startX + (direction.x)/2,  startY + (direction.y)/2);
-                _room.RetrieveGrid()[midPoint.x, midPoint.y].CellType &= ~CellType.Wall;
+                _room.GetRoomState().GetGrid()[midPoint.x, midPoint.y].CellType &= ~CellType.Wall;
                 DFS(newPosition.x, newPosition.y, visited, random);
             }
         }
     }
-
     public bool IsInRange((int x, int y)position)
     {
-        if (position.x >= Room._frameSize && position.x < Room._width - Room._frameSize
-            && position.y >= Room._frameSize && position.y < Room._height - Room._frameSize)
+        if (position.x >= MapSettings.FrameSize 
+            && position.x < MapSettings.Width - MapSettings.FrameSize
+            && position.y >= MapSettings.FrameSize 
+            && position.y < MapSettings.Height - MapSettings.FrameSize)
             return true;
         return false;
     }
     public void AddChambers()
     {
         Random random = new Random();
-        for (int i = 0; i < _defaultWidth / _spatialGridCellWidth; i++)
+        for (int i = 0; i < MapSettings.DefaultWidth / _spatialGridCellWidth; i++)
         {
-            for (int j = 0; j < _defaultHeight / _spatialGridCellHeight; j++)
+            for (int j = 0; j < MapSettings.DefaultHeight / _spatialGridCellHeight; j++)
             {
                 int x = random.Next(1 + i * _spatialGridCellWidth, (i + 1) * _spatialGridCellWidth);
                 int y = random.Next(1 + j * _spatialGridCellHeight, (j + 1) * _spatialGridCellHeight);
@@ -131,13 +123,11 @@ public class MapConfigurator : IConfigurator
                 int width = random.Next(2, _maxRoomWidth);
                 int height = random.Next(2, _maxRoomHeight);
 
-                if (x + width >= Room._width || y + height >= Room._height) continue;
+                if (x + width >= MapSettings.Width || y + height >= MapSettings.Height) continue;
 
                 for (int k = x; k < x + width; k++)
                     for (int m = y; m < y + height; m++)
-                        _room.RetrieveGrid()[k, m].CellType &= ~CellType.Wall;
-
-                //_roomVertices.Add(new RoomVertex(x, y, width, height));
+                        _room.GetRoomState().GetGrid()[k, m].CellType &= ~CellType.Wall;
             }
         }
         this._instructionConfigurator.AddChambers();
@@ -145,32 +135,29 @@ public class MapConfigurator : IConfigurator
     public void AddCentralRoom()
     {
         // + 1 ensures better positioning due to inetegr division
-        int left = Room._defaultWidth / 2 - MapConfigurator._centralRoomWidth / 2 + 1;
-        int top = Room._defaultHeight / 2 - MapConfigurator._centralRoomHeight / 2 + 1;
+        int left = MapSettings.DefaultWidth / 2 - MapConfigurator._centralRoomWidth / 2 + 1;
+        int top =  MapSettings.DefaultHeight / 2 - MapConfigurator._centralRoomHeight / 2 + 1;
 
         for (int i = left; i < left + MapConfigurator._centralRoomWidth; i++)
             for (int j = top; j < top + MapConfigurator._centralRoomHeight; j++)
-                _room.RetrieveGrid()[i, j].CellType &= ~CellType.Wall;
+                _room.GetRoomState().GetGrid()[i, j].CellType &= ~CellType.Wall;
 
-        //_centralRoom = new RoomVertex(left, top, MapBuilder._centralRoomWidth, MapBuilder._centralRoomHeight);
         this._instructionConfigurator.AddCentralRoom();
     }
-
     // Must work because of covariance
     public void RandomizeItemsPlacement(IEnumerable<IItem> items, int factor)
     {
         Random random = new Random();
         List<IItem> itemList = items.ToList();
-        for (int i = 0; i < Room._defaultWidth * Room._defaultHeight / factor; i++)
+        for (int i = 0; i < MapSettings.DefaultWidth * MapSettings.DefaultHeight / factor; i++)
         {
-            int X = Room._frameSize + random.Next() % (Room._defaultWidth - Room._frameSize);
-            int Y = Room._frameSize + random.Next() % (Room._defaultHeight - Room._frameSize);
+            int X = MapSettings.FrameSize + random.Next() % (MapSettings.DefaultWidth - MapSettings.FrameSize);
+            int Y = MapSettings.FrameSize + random.Next() % (MapSettings.DefaultHeight - MapSettings.FrameSize);
 
             int randomIndex = random.Next() % itemList.Count;
-            _room.AddItem((IItem)itemList[randomIndex].Copy(), (X, Y));
+            _room.AddItem((IItem)itemList[randomIndex].Copy(), new Position(X, Y));
         }
     }
-
     public void SpawnPlayer(Player player) => player.PlacePlayer(_room);
     public void PlaceItems()
     {
@@ -200,14 +187,14 @@ public class MapConfigurator : IConfigurator
     public void PlaceEnemies()
     {
         Random random = new Random();
-        for(int i = 0; i < Room._defaultWidth * Room._defaultHeight / 20; i++)
+        for(int i = 0; i < MapSettings.DefaultWidth * MapSettings.DefaultHeight / 20; i++)
         {
-            int X = Room._frameSize + random.Next(0, Room._defaultWidth);
-            int Y = Room._frameSize + random.Next(0, Room._defaultHeight);
+            int X = MapSettings.FrameSize + random.Next(0, MapSettings.DefaultWidth);
+            int Y = MapSettings.FrameSize + random.Next(0, MapSettings.DefaultHeight);
 
             int randomIndex = random.Next(0, _items.EnemyList.Count);
             IEnemy? enemy = _items.EnemyList[randomIndex];
-            _room.AddEnemy((IEnemy)enemy.Copy(), (X, Y));
+            _room.AddEnemy((IEnemy)enemy.Copy(), new Position(X, Y));
         }
         this._instructionConfigurator.PlaceEnemies();
     }

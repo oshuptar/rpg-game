@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 namespace RPG_Game.Enums;
 
 [Flags] // This allows combining the enum values using bitwise operators
-public enum CellType // what if two objects of the same kind are placed on the same cell?
+public enum CellType
 {
     Empty = 0,
-    Wall = 1, // We cannot place items where the wall is placed, add validation
+    Wall = 1, 
     Player = 2,
     Item = 4,
     Enemy = 8,

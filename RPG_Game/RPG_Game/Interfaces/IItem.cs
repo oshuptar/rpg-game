@@ -10,16 +10,15 @@ using System.Threading.Tasks;
 
 namespace RPG_Game.Interfaces;
 
-// Do items need to contain attributes of a Player?
 public abstract class IItem : ICopyable
 {
     public abstract string Name { get; }
-    public virtual int Capacity => 1; // default capacity for every item
+    public virtual int Capacity => 1;
     public virtual void ApplyChanges(EntityStats entityStats) { }
     public virtual void RevertChanges(EntityStats entityStats) { }
     public virtual void Use(AttackStrategy strategy, IEntity? source, List<IEntity>? target) { }
-    public virtual void PickUp(IEntity entity) => ApplyChanges(entity.RetrieveEntityStats());
-    public virtual void Drop(IEntity entity) => RevertChanges(entity.RetrieveEntityStats());
+    public virtual void PickUp(IEntity entity) => ApplyChanges(entity.GetEntityStats());
+    public virtual void Drop(IEntity entity) => RevertChanges(entity.GetEntityStats());
     public abstract object Copy();
     public abstract string Description { get; }
 

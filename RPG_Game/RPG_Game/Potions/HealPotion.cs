@@ -10,8 +10,6 @@ using System.Threading.Tasks;
 using RPG_Game.Controller;
 
 namespace RPG_Game.Potions;
-
-// Eternal potion
 public class HealPotion : EternalPotion
 {
     public override string Name => $"Healing Potion {(IsDisposed ? "(Disposed)" : "")}";
@@ -21,21 +19,18 @@ public class HealPotion : EternalPotion
     {
         entityStats?.ModifyEntityAttribute(PlayerAttributes.Health, HP);
     }
-
     public override string Description => $"(Adds {HP} HP)";
 
     public override void Dispose(IEntity? entity)
     {
         IsDisposed = true;
     }
-
     public override void Use(AttackStrategy strategy, IEntity? source, List<IEntity>? targets)
     {
         if (IsDisposed) return;
 
-        ApplyEffect(source?.RetrieveEntityStats());
+        ApplyEffect(source?.GetEntityStats());
         Dispose(source);
     }
-
     public override object Copy() => new HealPotion();
 }

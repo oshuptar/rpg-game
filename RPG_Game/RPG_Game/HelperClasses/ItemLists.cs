@@ -23,7 +23,6 @@ public class ItemLists
         new Note(),
         new Lore()
     };
-
     public List<IItem> DecoratedItemList = new List<IItem>()
     {
         new LuckItemDecorator(new Key()),
@@ -32,7 +31,6 @@ public class ItemLists
         new LuckItemDecorator(new LuckItemDecorator(new Lore())),
         new LuckItemDecorator(new LuckItemDecorator (new Coin())),
     };
-
     public List<IItem> WeaponList = new List<IItem>()
     {
         new Hammer(),
@@ -40,7 +38,6 @@ public class ItemLists
         new Dagger(),
         new Sword()
     };
-
     public List<IItem> DecoratedWeaponList = new List<IItem>()
     {
         new PowerWeaponDecorator(new Hammer()),
@@ -51,30 +48,23 @@ public class ItemLists
         new PowerWeaponDecorator(new Sword()),
         new PowerWeaponDecorator(new PowerWeaponDecorator(new Sword())),
     };
-
     public List<IEnemy> EnemyList = new List<IEnemy>()
     {
         new Goblin(),
         new Orc(),
     };
-
     public List<IPotion> PotionList = new List<IPotion>()
     {
         new HealPotion(),
         new AggressionPotion(),
         new DexterityPotion(),
     };
-
-
     private static ItemLists? _itemListInstance;
-
     private ItemLists() { }
-
     public static ItemLists GetInstance()
     {
         if(_itemListInstance == null)
             _itemListInstance = new ItemLists();
         return _itemListInstance;
     }
-
 }

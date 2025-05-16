@@ -22,12 +22,10 @@ public abstract class LightWeapon : IWeapon
 {
     public override int Capacity => base.Capacity;
 }
-
 public abstract class HeavyWeapon : IWeapon
 {
     public override int Capacity => 2;
 }
-
 public abstract class MagicWeapon : IWeapon
 { 
     public override int Capacity => base.Capacity;

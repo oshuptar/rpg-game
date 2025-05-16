@@ -8,8 +8,6 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace RPG_Game.Interfaces;
-
-// Categorizing interface
 public abstract class IPotion : IItem
 {
     protected bool IsDisposed = false;

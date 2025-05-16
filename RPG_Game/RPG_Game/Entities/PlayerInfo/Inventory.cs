@@ -11,27 +11,29 @@ namespace RPG_Game.Entities;
 
 public class Inventory : StorageManager
 {
-    // implement inventory as dictionary
-    public List<IItem> inventory { get; } = new List<IItem>();
-
+    private InventoryState InventoryState { get; set; } = new InventoryState();
     public IItem? DropFromInventory(Room room, int index, Player player)
     {
-        IItem? item = Drop(room, index, inventory, player);
+        IItem? item = Drop(room, index, InventoryState.Inventory, player);
         return item;
     }
-
     public void EmptyInventory(Room room, Player player)
     {
-        int itemCount = inventory.Count;
+        int itemCount = InventoryState.Inventory.Count;
         for(int i = 0; i < itemCount; i++)
             DropFromInventory(room, 0, player);
     }
-
     public void PickUp(IItem? item, Player player)
     {
         if (item == null)
             return;
-        inventory.Add(item);
+        InventoryState.Inventory.Add(item);
         item.PickUp(player);
     }
+    public void AddItem(IItem? item)
+    {
+        if (item == null) return;
+        InventoryState.Inventory.Add(item);
+    }
+    public InventoryState GetInventoryState() => InventoryState;
 }

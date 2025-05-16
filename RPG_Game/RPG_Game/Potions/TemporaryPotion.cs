@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace RPG_Game.Potions;
-
 public abstract class TemporaryPotion : IPotion
 {
     protected abstract int ActiveTime { get; set; }

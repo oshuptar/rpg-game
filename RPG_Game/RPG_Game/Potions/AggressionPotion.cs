@@ -15,12 +15,9 @@ namespace RPG_Game.Potions;
 
 //Temporary potion
 // They could be refilled again after some number of player moves
-
-// Add cloning to potions, since right now they all refer to the very same potion
 public class AggressionPotion : TemporaryPotion
 {
     public override string Name => $"Aggresion Potion { (IsDisposed ? "(Disposed)" : "") }";
-
     public int Aggression = 10;
     protected override int ActiveTime { get; set; } = 0;
     public override int Lifetime => 10;
@@ -33,7 +30,6 @@ public class AggressionPotion : TemporaryPotion
         entityStats?.ModifyEntityAttribute(PlayerAttributes.Aggression, -Aggression);
     }
     public override string Description => $"(Adds {Aggression} Aggression)";
-
     public override void Use(AttackStrategy strategy, IEntity? source, List<IEntity>? target)
     {
         if (IsDisposed)
@@ -41,13 +37,12 @@ public class AggressionPotion : TemporaryPotion
 
         if (source != null)
             source.EntityMoved += OnMoveHandler;
-        ApplyEffect(source?.RetrieveEntityStats());
+        ApplyEffect(source?.GetEntityStats());
         IsDisposed = true;
     }
-
     public override void Dispose(IEntity? entity)
     {
-        RevertEffect(entity?.RetrieveEntityStats());
+        RevertEffect(entity?.GetEntityStats());
         if (entity != null)
             entity.EntityMoved -= OnMoveHandler;
     }
@@ -57,6 +52,5 @@ public class AggressionPotion : TemporaryPotion
         if (ActiveTime > Lifetime)
             Dispose(sender as IEntity);
     }
-
     public override object Copy() => new AggressionPotion();
 }

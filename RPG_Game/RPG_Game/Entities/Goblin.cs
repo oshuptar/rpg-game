@@ -16,7 +16,7 @@ namespace RPG_Game.Entities;
 public class Goblin : IEnemy
 {
     public event EventHandler? EntityMoved;
-    public (int x, int y) Position { get; set; }
+    public Position Position { get; set; }
     private EnemyStats goblinStats = new EnemyStats();
     public AttackStrategy AttackStrategy { get; set; } = new NormalAttackStrategy();
     public IWeapon Weapon = new PowerWeaponDecorator(new Sword());
@@ -30,14 +30,13 @@ public class Goblin : IEnemy
     {
         Weapon.Use(AttackStrategy, this, new List<IEntity>() { target });
     }
-    // TODO implement the attack through teh Chain OF Responsibility
     public void ReceiveDamage(int damage, IEntity? source)
     {
         goblinStats.ModifyEntityAttribute(PlayerAttributes.Health, -damage);
         if (source != null)
         {
-            ConsoleObjectDisplayer.GetInstance().LogMessage(new OnAttackMessage(source, this, damage));
-            ConsoleObjectDisplayer.GetInstance().LogMessage(new OnEnemyDetectionMessage(this));
+            ConsoleView.GetInstance().LogMessage(new OnAttackMessage(source, this, damage));
+            ConsoleView.GetInstance().LogMessage(new OnEnemyDetectionMessage(this));
             Attack(source);
         }
     }
@@ -45,16 +44,12 @@ public class Goblin : IEnemy
     {
         this.goblinStats.Died += OwnDeathHandler;
     }
-
     public object Copy()
     {
         return new Goblin();
     }
-
     public override string ToString() => "Goblin";
-
-    public EntityStats RetrieveEntityStats() => this.goblinStats;
-
+    public EntityStats GetEntityStats() => this.goblinStats;
     protected void OwnDeathHandler(object sender, EventArgs e)
     {
         this.OwnDeath?.Invoke(this, EventArgs.Empty);

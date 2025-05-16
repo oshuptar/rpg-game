@@ -153,5 +153,4 @@ public class MapInstructionConfigurator : IConfigurator
     }
     public StringBuilder GetResult() => _sb;
 }
-
           

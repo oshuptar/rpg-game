@@ -5,23 +5,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using RPG_Game.HelperClasses;
-
 using RPG_Game.Entiities;
-namespace RPG_Game.Entities;
+using RPG_Game.Entities;
 
+namespace RPG_Game.Entities;
 public class Hands : StorageManager
 {
-    public const int MaxCapacity = 2; // MaxCapacity of Hands
-    public int Capacity { get; private set; } = 0;
-    public List<IItem> hands { get; } = new List<IItem>(); //technicaly we can equip any item to use it later on like elixir
-
+    private HandsState HandsState = new HandsState();
     public bool Equip(IItem? item, Player player ,bool isInInventory = true)
     {
-        if (item == null || item.Capacity + Capacity > MaxCapacity)
+        if (item == null || item.Capacity + HandsState.Capacity > HandsState.MaxCapacity)
             return false;
 
-        hands.Add(item);
-        Capacity += item.Capacity;
+        HandsState.Hands.Add(item);
+        HandsState.Capacity += item.Capacity;
 
         if (!isInInventory)
             item.PickUp(player);
@@ -30,23 +27,23 @@ public class Hands : StorageManager
     }
     public IItem? UnEquip(int index)
     {
-        if (hands.Count == 0)
+        if (HandsState.Hands.Count == 0)
             return null;
 
-        IItem item = hands.ElementAt(index);
-        hands.Remove(item);
-        Capacity -= item.Capacity;
+        IItem item = HandsState.Hands.ElementAt(index);
+        HandsState.Hands.Remove(item);
+        HandsState.Capacity -= item.Capacity;
 
         return item;
     }
-
     public IItem? DropFromHands(Room room, int index, Player player)
     {
-        IItem? item = Drop(room, index, hands, player);
+        IItem? item = Drop(room, index, HandsState.Hands, player);
 
         if (item != null)
-            Capacity -= item.Capacity;
+            HandsState.Capacity -= item.Capacity;
         return item;
 
     }
+    public HandsState GetHandState() => HandsState;
 }

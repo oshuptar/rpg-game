@@ -1,0 +1,77 @@
+# Stage 5: Multiplayer  
+
+## Task Objective  
+Extend the existing console-based RPG to support networked multiplayer. All players will share the same maze, items, and enemies. In this stage, you will:  
+
+- Refactor the codebase to follow the **Model-View-Controller (MVC)** pattern  
+- Enable JSON-based communication over TCP  
+- Make the application act as both a **server** (accepting connections) and a **client** (connecting to other servers)  
+
+You can earn up to **20 points** for this stage.  
+**Deadline:** 21 May 2025  
+
+---
+
+## Requirements  
+
+### 1. MVC Refactoring  
+- **Model**  
+  - Encapsulate the entire game state (players, map, NPCs, items, turn order, etc.) in one or more classes.  
+- **View**  
+  - Handle all console output (drawing the map, player statuses, messages, etc.).  
+- **Controller**  
+  - Read and validate user commands from the console.  
+  - Invoke updates on the Model.  
+
+> **NOTE:**
+> - No direct console calls in Model classes.  
+> - No game logic in View classes.  
+> - The Model classes cannot depend on View or Controller.  
+> - The View cannot contain game logic or depend on Controller. 
+
+---
+
+### 2. Server–Client Architecture  
+- **Startup Options**  
+  - Prompt the user: "Start as (S)erver or (C)lient?"
+  - Or accept command-line arguments:  
+    - `--server [port]` (default port 5555)  
+    - `--client [ip:port]` (default ip 127.0.0.1 and port 5555)  
+- **Server Mode**  
+  - Listen on the configured TCP port.  
+  - Accept up to **9** client connections (players numbered `1-9` - display player as number).  
+  - On each new connection, send the current Model state (JSON).  
+  - Broadcast all state changes (moves, attacks, etc.) as JSON messages to every client.  
+- **Client Mode**  
+  - Connect to the specified server IP and port.  
+  - Receive the initial game state, then listen for updates.  
+  - Send the local player's actions as JSON messages to the server.  
+
+---
+
+### 3. JSON Serialization  
+- Use `System.Text.Json` for serialization and deserialization.  
+- Create Data Transfer Objects (DTOs) or decorate your Model classes with attributes (e.g., `[JsonPropertyName]`, etc.) as needed.  
+
+---
+
+### 4. Gameplay Synchronization  
+- Ensure that the server and clients maintain a consistent view of the game world.  
+- Queue and order incoming messages correctly to preserve turn order and handle latency.  
+
+> **Optional:** You may implement player-vs-player combat interactions, but they are not required for this stage.  
+
+---
+
+## Hints  
+
+### Model-View-Controller  
+1. You can implement separate View classes for the local console and for networked clients.  
+2. Consider giving each player its own Controller instance.  
+3. Run the View in its own thread and update the display whenever any client request arrives — use `lock` to synchronize access.  
+4. Keep the authoritative game state on the server; clients should only store the data needed for rendering.  
+
+### Server-Client  
+1. On the server, spawn a new `Thread` for each connected client and another for accepting incoming connections.  
+2. Use `TcpListener.AcceptTcpClient()` on the server to wait for connections.  
+3. Use `TcpClient` on the client to connect to the server.  
