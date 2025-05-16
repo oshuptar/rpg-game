@@ -2,9 +2,9 @@
 using RPG_Game.Entiities;
 using RPG_Game.Enums;
 using RPG_Game.Interfaces;
-using RPG_Game.LogMessages;
 using RPG_Game.UIHandlers;
 using RPG_Game.Weapons;
+using RPG_Game.LogMessages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,14 +13,13 @@ using System.Threading.Tasks;
 
 namespace RPG_Game.Entities;
 
-public class Goblin : IEnemy
+public class Orc : IEnemy
 {
     public event EventHandler? EntityMoved;
     public Position Position { get; set; }
-    private EnemyStats goblinStats = new EnemyStats();
+    private EnemyStats orcStats = new EnemyStats();
+    public IWeapon Weapon = new PowerWeaponDecorator(new Hammer());
     public AttackStrategy AttackStrategy { get; set; } = new NormalAttackStrategy();
-    public IWeapon Weapon = new PowerWeaponDecorator(new Sword());
-
     public event EventHandler? OwnDeath;
     public bool Move(Direction direction, Room room)
     {
@@ -32,24 +31,24 @@ public class Goblin : IEnemy
     }
     public void ReceiveDamage(int damage, IEntity? source)
     {
-        goblinStats.ModifyEntityAttribute(PlayerAttributes.Health, -damage);
+        orcStats.ModifyEntityAttribute(PlayerAttributes.Health, -damage);
         if (source != null)
         {
-            ConsoleView.GetInstance().LogMessage(new OnAttackMessage(source, this, damage));
-            ConsoleView.GetInstance().LogMessage(new OnEnemyDetectionMessage(this));
+            ClientConsoleView.GetInstance().LogMessage(new OnAttackMessage(source, this, damage));
+            ClientConsoleView.GetInstance().LogMessage(new OnEnemyDetectionMessage(this));
             Attack(source);
         }
     }
-    public Goblin() 
+    public Orc() 
     {
-        this.goblinStats.Died += OwnDeathHandler;
+        this.orcStats.Died += OwnDeathHandler;
     }
+    public override string ToString() => "Orc";
+    public EntityStats GetEntityStats() => this.orcStats;
     public object Copy()
     {
-        return new Goblin();
+        return new Orc();
     }
-    public override string ToString() => "Goblin";
-    public EntityStats GetEntityStats() => this.goblinStats;
     protected void OwnDeathHandler(object sender, EventArgs e)
     {
         this.OwnDeath?.Invoke(this, EventArgs.Empty);

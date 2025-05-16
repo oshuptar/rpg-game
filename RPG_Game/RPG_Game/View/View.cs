@@ -12,16 +12,13 @@ namespace RPG_Game.View;
 
 public abstract class View : IView
 {
-    private RoomState? RoomState { get; set; }
+    protected IController Controller { get; set; }
+    protected IGameState? GameState { get; set; }
+    public IInputHandler GameInputHandler { get; set; } = new KeyboardHandler();
     public abstract void DisplayRoutine();
     public abstract void WelcomeRoutine();
-    public IInputHandler GameInputHandler { get; set; } = new KeyboardTranslator();
-
     //public SendRequest(RequestType type)
     public View() { }
-    public View(RoomState? roomState)
-    {
-        RoomState = roomState;
-    }
-    public void SetRoomState(RoomState roomState) => RoomState = roomState;
+    public virtual void SetRoomState(IGameState gameState) => GameState = gameState;
+    public virtual void SetController(IController controller) => Controller = controller;
 }

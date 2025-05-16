@@ -8,20 +8,20 @@ using System.Threading.Tasks;
 namespace RPG_Game.Controller;
 
 // We can use a Linked List data structure, however I decided to write my own
-public class RequestHandlerChain
+public class ServerHandlerChain
 {
-    public static RequestHandlerChain? Chain = null;
+    public static ServerHandlerChain? Chain = null;
     private IRequestHandler? _firstHandler;
     private IRequestHandler? _lastHandler;
-    private RequestHandlerChain()
+    private ServerHandlerChain()
     {
         _firstHandler = null;
         _lastHandler = null;
     }
-    public static RequestHandlerChain GetInstance()
+    public static ServerHandlerChain GetInstance()
     {
         if (Chain == null)
-            Chain = new RequestHandlerChain();
+            Chain = new ServerHandlerChain();
         return Chain;
     }
     public void HandleRequest(ActionRequest request)

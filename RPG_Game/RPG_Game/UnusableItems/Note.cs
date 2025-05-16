@@ -15,7 +15,7 @@ namespace RPG_Game.UnusableItems;
 public class Note : ILoot
 {
     public override string Name => "A mysterious note";
-    public override void Use(AttackStrategy strategy, IEntity? source, List<IEntity>? target) => ConsoleView.GetInstance().LogMessage("Hmm.. Exploration - is the KEY to finding treasures");
+    public override void Use(AttackStrategy strategy, IEntity? source, List<IEntity>? target) => ClientConsoleView.GetInstance().LogMessage("Hmm.. Exploration - is the KEY to finding treasures");
     public override string Description => "(Ancient note)";
     public override object Copy() => new Note();
 }

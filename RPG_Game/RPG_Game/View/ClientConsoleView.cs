@@ -20,10 +20,10 @@ using RPG_Game.Entities;
 namespace RPG_Game.UIHandlers;
 
 // state of the game in the console object displayer
-public class ConsoleView : View.View
+public class ClientConsoleView : View.View
 {
     // Divide the console output
-    private static ConsoleView? ConsoleViewInstance;
+    private static ClientConsoleView? ConsoleViewInstance;
     private const int _verticalSpaceSize = MapSettings.Height / 10;
     private const int _horizontalSpaceSize = MapSettings.Width / 10;
     private Game Game;
@@ -33,17 +33,17 @@ public class ConsoleView : View.View
     public FocusType FocusOn { get; private set; }
     private (int left, int top) CursorPosition { get; set; } = (0, 0);
     private bool IsControlsVisible { get; set; }
-    private ConsoleView()
+    private ClientConsoleView()
     {
         CurrentFocus = 0;
         FocusOn = FocusType.Room;
         IsControlsVisible = true;
     }
     public void SetGameState(Game game) => Game = game;
-    public static ConsoleView GetInstance()
+    public static ClientConsoleView GetInstance()
     {
         if (ConsoleViewInstance == null)
-            ConsoleView.ConsoleViewInstance = new ConsoleView();
+            ClientConsoleView.ConsoleViewInstance = new ClientConsoleView();
         return ConsoleViewInstance;
     }
     public void AdjustFocusIndex()

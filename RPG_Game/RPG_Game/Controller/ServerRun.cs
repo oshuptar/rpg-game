@@ -9,6 +9,7 @@ namespace RPG_Game.Controller;
 
 public class ServerRun : ServerState
 {
+    static int playerId = 1;
     public ServerRun(GameServer gameServer) : base(gameServer) { }
     public override void HostGame()
     {
@@ -19,10 +20,12 @@ public class ServerRun : ServerState
         while (true)
         {
             Console.WriteLine("Waiting for connection...");
-            using (TcpClient client = server.AcceptTcpClient())
-            {
-                Console.WriteLine("Connected");
-            }
+            TcpClient client = server.AcceptTcpClient();
+
+            Console.WriteLine($"Client {playerId} connected");
+
+            gameServer.Clients.TryAdd(playerId, client);
+            playerId++;
         }
 
         //Console.WriteLine("Waiting for connection...");

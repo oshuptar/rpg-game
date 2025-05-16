@@ -78,8 +78,8 @@ public class Player : IEntity
             IEnemy? enemy = room.GetRoomState().Enemies.MinBy((enemy) => Math.Sqrt(Math.Pow(Position.X - enemy.Position.X, 2) + Math.Pow(Position.Y -  enemy.Position.Y, 2)));
             OnMoveEvent();
 
-            ConsoleView.GetInstance().LogMessage(new OnEnemyDetectionMessage(enemy));
-            ConsoleView.GetInstance().LogMessage(new OnMoveMessage(direction, this.Name));
+            ClientConsoleView.GetInstance().LogMessage(new OnEnemyDetectionMessage(enemy));
+            ClientConsoleView.GetInstance().LogMessage(new OnMoveMessage(direction, this.Name));
             return true;
         }
         return false;
@@ -93,13 +93,13 @@ public class Player : IEntity
     {
         Inventory.PickUp(item, this); //changes player's attrbutes when picked up
         if(item != null)
-            ConsoleView.GetInstance().LogMessage(new OnItemPickUpMessage(item, this.Name));
+            ClientConsoleView.GetInstance().LogMessage(new OnItemPickUpMessage(item, this.Name));
     }
     public bool Equip(IItem? item, bool isInInventory = true)
     {
         bool isEquipped = Hands.Equip(item, this, isInInventory);
         if(isEquipped)
-            ConsoleView.GetInstance().LogMessage(new OnItemEquipMessage(item!, this.Name));
+            ClientConsoleView.GetInstance().LogMessage(new OnItemEquipMessage(item!, this.Name));
         return isEquipped;
     }
     public void UnEquip(int index)
@@ -108,7 +108,7 @@ public class Player : IEntity
         if (item != null)
         {
             Inventory.AddItem(item);
-            ConsoleView.GetInstance().LogMessage(new OnItemUnequipMessage(item, this.Name));
+            ClientConsoleView.GetInstance().LogMessage(new OnItemUnequipMessage(item, this.Name));
         }
     }
     public IItem? Retrieve(int index, bool fromInventory)
@@ -132,14 +132,14 @@ public class Player : IEntity
             item = Hands.DropFromHands(room, index, this);
 
         if(item != null)
-            ConsoleView.GetInstance().LogMessage(new OnItemDropMessage(item, this.Name));
+            ClientConsoleView.GetInstance().LogMessage(new OnItemDropMessage(item, this.Name));
 
         return item;
     }
     public void EmptyInventory(Room room)
     {
         Inventory.EmptyInventory(room, this);
-        ConsoleView.GetInstance().LogMessage(new OnEmptyDirectory(this.Name));
+        ClientConsoleView.GetInstance().LogMessage(new OnEmptyDirectory(this.Name));
     }
     public Hands GetHands() => this.Hands;
     public Inventory GetInventory() => this.Inventory;

@@ -27,31 +27,31 @@ public class MapInstructionConfigurator : IConfigurator
         _sb.Append(" - Hands Scope - Press `H`\n");
         _sb.Append(" - Leave Current Scope - Press `Escape`\n");
 
-        RequestHandlerChain.GetInstance().AddHandler(new EquipItemHandler());
-        RequestHandlerChain.GetInstance().AddHandler(new PickUpItemHandler());
-        RequestHandlerChain.GetInstance().AddHandler(new UseItemHandler());
-        RequestHandlerChain.GetInstance().AddHandler(new DropItemHandler());
-        RequestHandlerChain.GetInstance().AddHandler(new EmptyInventoryHandler());
-        RequestHandlerChain.GetInstance().AddHandler(new NextItemHandler());
-        RequestHandlerChain.GetInstance().AddHandler(new PrevItemHandler());
-        RequestHandlerChain.GetInstance().AddHandler(new ScopeInventoryHandler());
-        RequestHandlerChain.GetInstance().AddHandler(new ScopeHandsHandler());
-        RequestHandlerChain.GetInstance().AddHandler(new ScopeRoomHandler());
-        RequestHandlerChain.GetInstance().AddHandler(new OneWeaponAttackHandler());
-        RequestHandlerChain.GetInstance().AddHandler(new TwoWeaponAttackHandler());
-        RequestHandlerChain.GetInstance().AddHandler(new MagicAttackModeHandler());
-        RequestHandlerChain.GetInstance().AddHandler(new NormalAttackModeHandler());
-        RequestHandlerChain.GetInstance().AddHandler(new StealthAttackModeHandler());
+        ServerHandlerChain.GetInstance().AddHandler(new EquipItemHandler());
+        ServerHandlerChain.GetInstance().AddHandler(new PickUpItemHandler());
+        ServerHandlerChain.GetInstance().AddHandler(new UseItemHandler());
+        ServerHandlerChain.GetInstance().AddHandler(new DropItemHandler());
+        ServerHandlerChain.GetInstance().AddHandler(new EmptyInventoryHandler());
+        ServerHandlerChain.GetInstance().AddHandler(new NextItemHandler());
+        ServerHandlerChain.GetInstance().AddHandler(new PrevItemHandler());
+        ServerHandlerChain.GetInstance().AddHandler(new ScopeInventoryHandler());
+        ServerHandlerChain.GetInstance().AddHandler(new ScopeHandsHandler());
+        ServerHandlerChain.GetInstance().AddHandler(new ScopeRoomHandler());
+        ServerHandlerChain.GetInstance().AddHandler(new OneWeaponAttackHandler());
+        ServerHandlerChain.GetInstance().AddHandler(new TwoWeaponAttackHandler());
+        ServerHandlerChain.GetInstance().AddHandler(new MagicAttackModeHandler());
+        ServerHandlerChain.GetInstance().AddHandler(new NormalAttackModeHandler());
+        ServerHandlerChain.GetInstance().AddHandler(new StealthAttackModeHandler());
     }
     public void AddMoveControls()
     {
         _sb.Append(" - Move - press `W`, `S`, `A`, `D`\n");
         ObjectRenderer.GetInstance().noOfControlsLines += 1;
 
-        RequestHandlerChain.GetInstance().AddHandler(new MoveUpHandler());
-        RequestHandlerChain.GetInstance().AddHandler(new MoveDownHandler());
-        RequestHandlerChain.GetInstance().AddHandler(new MoveLeftHandler());
-        RequestHandlerChain.GetInstance().AddHandler(new MoveRightHandler());
+        ServerHandlerChain.GetInstance().AddHandler(new MoveUpHandler());
+        ServerHandlerChain.GetInstance().AddHandler(new MoveDownHandler());
+        ServerHandlerChain.GetInstance().AddHandler(new MoveLeftHandler());
+        ServerHandlerChain.GetInstance().AddHandler(new MoveRightHandler());
     }
     public void AddCentralRoom()
     {
@@ -84,8 +84,8 @@ public class MapInstructionConfigurator : IConfigurator
         _sb.Append(" - Open/Hide Controls - Press `K`\n");
         ObjectRenderer.GetInstance().noOfControlsLines += 3;
 
-        RequestHandlerChain.GetInstance().AddHandler(new HideControlsHandler());
-        RequestHandlerChain.GetInstance().AddHandler(new QuitHadler());
+        ServerHandlerChain.GetInstance().AddHandler(new HideControlsHandler());
+        ServerHandlerChain.GetInstance().AddHandler(new QuitHadler());
     }
     public void FillDungeon()
     { }

@@ -11,11 +11,13 @@ public class ServerCrashed : ServerState
     public ServerCrashed(GameServer gameServer): base(gameServer) { }
     public override void HostGame()
     {
-        throw new NotImplementedException();
+        gameServer.Server.Stop();
+        Console.WriteLine("Server crashed: closing...");
+        SetGameServerState();
     }
 
     public override void SetGameServerState()
     {
-        throw new NotImplementedException();
+        gameServer.ServerState = new ServerEnd(gameServer);
     }
 }

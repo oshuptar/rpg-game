@@ -46,7 +46,7 @@ public class Game
     {
         _room = mapConfigurator.GetResult();
         ObjectRenderer.GetInstance().SetMapInstructionConfigurator(mapConfigurator.GetInstructionConfiguration());
-        ConsoleView.GetInstance().SetGameState(this);
+        ClientConsoleView.GetInstance().SetGameState(this);
 
         foreach (var enemy in _room.GetRoomState().Enemies)
             enemy.OwnDeath += EnemyDeathHandler;
@@ -72,12 +72,12 @@ public class Game
 
     public void ConfigureSettings()
     {
-        _inputHandler = new KeyboardTranslator();
+        _inputHandler = new KeyboardHandler();
     }
 
     public void StartGame()
     {
-        ConsoleView view = ConsoleView.GetInstance();
+        ClientConsoleView view = ClientConsoleView.GetInstance();
         view.WelcomeRoutine();
         _gamePhase = GamePhase.Welcome;
         while (true)
@@ -108,7 +108,7 @@ public class Game
 
     public void PlayerDeathHandler(object sender, EventArgs e)
     {
-        ConsoleView.GetInstance().LogMessage(new OnPlayerDeathMessage((Player)sender));
+        ClientConsoleView.GetInstance().LogMessage(new OnPlayerDeathMessage((Player)sender));
         Thread.Sleep(3000);
         _inputHandler.DispatchRequest(new ActionRequest(new Context(this), RequestType.Quit));
     }
@@ -116,6 +116,6 @@ public class Game
     public void EnemyDeathHandler(object sender, EventArgs e)
     {
         _room.RemoveEntity((IEnemy)sender);
-        ConsoleView.GetInstance().LogMessage(new OnEnemyDeathMessage((IEnemy)sender));
+        ClientConsoleView.GetInstance().LogMessage(new OnEnemyDeathMessage((IEnemy)sender));
     }
 }

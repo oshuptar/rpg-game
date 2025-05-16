@@ -14,7 +14,7 @@ public class RoomState
     public class Cell
     {
         public CellType CellType { get; set; } = CellType.Empty;
-        public IEntity? Entity { get; set; } // Two entities cannot be on the same field at the same time
+        public IEntity? Entity { get; set; } 
 
         public List<IItem>? Items;
         public string PrintCell()
@@ -47,7 +47,9 @@ public class RoomState
         }
     };
     private Cell[,] Grid = new Cell[MapSettings.Width, MapSettings.Height];
+    
     public List<IEnemy> Enemies = new List<IEnemy>();
+
     public Cell[,] GetGrid() => Grid;
 }
 

@@ -11,7 +11,12 @@ public class ServerEnd : ServerState
     public ServerEnd(GameServer gameServer) : base(gameServer) { }
     public override void HostGame()
     {
-        throw new NotImplementedException();
+        foreach(var client in gameServer.Clients.Values)
+        {
+            client.Close();
+            client.Dispose();
+        }
+        gameServer.Server.Dispose();
     }
 
     public override void SetGameServerState()

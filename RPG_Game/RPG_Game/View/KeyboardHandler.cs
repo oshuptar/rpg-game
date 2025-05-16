@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace RPG_Game.Controller;
 
-public class KeyboardTranslator : IInputHandler
+public class KeyboardHandler : IInputHandler
 {
     public Dictionary<(ConsoleKey, ConsoleModifiers), RequestType> KeyBindings = new Dictionary<(ConsoleKey, ConsoleModifiers), RequestType>();
     public RequestType? TranslateRequest()
@@ -22,11 +22,11 @@ public class KeyboardTranslator : IInputHandler
     }
     public void DispatchRequest(ActionRequest request)
     {
-        RequestHandlerChain.GetInstance().HandleRequest(request);
+        ServerHandlerChain.GetInstance().HandleRequest(request);
     }
     // to exract the desired binding just read the key from console as usual
     // For not KeyBindings are constant, but I will provide functionality to allow user anytime during the game to change them for the desired ones
-    public KeyboardTranslator()
+    public KeyboardHandler()
     {
         KeyBindings.Add((ConsoleKey.W, ConsoleModifiers.None), RequestType.MoveUp);
         KeyBindings.Add((ConsoleKey.A, ConsoleModifiers.None), RequestType.MoveLeft);

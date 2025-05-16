@@ -42,8 +42,8 @@ public class DefaultHandler : BaseHandler
 
     public override void HandleRequest(ActionRequest request)
     {
-        ConsoleView.GetInstance().ClearLogMessage();
-        ConsoleView.GetInstance().LogMessage(new OnRequestNotSupportedMessage());
+        ClientConsoleView.GetInstance().ClearLogMessage();
+        ClientConsoleView.GetInstance().LogMessage(new OnRequestNotSupportedMessage());
     }
 }
 
@@ -89,9 +89,9 @@ public class OneWeaponAttackHandler : BaseHandler
         if (CanHandleRequest(request))
         {
             Context gameContext = request.GetContext();
-            if(ConsoleView.GetInstance().FocusOn == FocusType.Hands)
+            if(ClientConsoleView.GetInstance().FocusOn == FocusType.Hands)
             {
-                IWeapon? weapon = gameContext.GetPlayer().GetHands().GetHandState().Hands[ConsoleView.GetInstance().CurrentFocus] as IWeapon;
+                IWeapon? weapon = gameContext.GetPlayer().GetHands().GetHandState().Hands[ClientConsoleView.GetInstance().CurrentFocus] as IWeapon;
                 if (weapon == null) return;
 
                 List<IEntity>? entities = gameContext.GetRoom().RetrieveEnemiesInRadius(request.GetContext().GetPlayer(), weapon.RadiusOfAction);
@@ -136,12 +136,12 @@ public class UseItemHandler : BaseHandler
     {
         if (CanHandleRequest(request))
         {
-            if (ConsoleView.GetInstance().FocusOn == FocusType.Room)
+            if (ClientConsoleView.GetInstance().FocusOn == FocusType.Room)
                 return;
 
             Context gameContext = request.GetContext();
-            IItem? item = gameContext.GetPlayer().Retrieve(ConsoleView.GetInstance().CurrentFocus, 
-                ConsoleView.GetInstance().FocusOn == FocusType.Inventory);
+            IItem? item = gameContext.GetPlayer().Retrieve(ClientConsoleView.GetInstance().CurrentFocus, 
+                ClientConsoleView.GetInstance().FocusOn == FocusType.Inventory);
 
             item?.Use(request.GetContext().GetGame().AttackStrategy, gameContext.GetPlayer(), null);
         }
@@ -163,10 +163,10 @@ public class MoveUpHandler : BaseHandler
     {
         if (CanHandleRequest(request))
         {
-            ConsoleView.GetInstance().ClearLogMessage();
+            ClientConsoleView.GetInstance().ClearLogMessage();
             Context gameContext = request.GetContext();
             gameContext.GetPlayer().Move(Direction.North, gameContext.GetRoom());
-            ConsoleView.GetInstance().ResetFocusIndex();
+            ClientConsoleView.GetInstance().ResetFocusIndex();
         }
         else
             base.HandleRequest(request);
@@ -181,10 +181,10 @@ public class MoveDownHandler : BaseHandler
     {
         if (CanHandleRequest(request))
         {
-            ConsoleView.GetInstance().ClearLogMessage();
+            ClientConsoleView.GetInstance().ClearLogMessage();
             Context gameContext = request.GetContext();
             gameContext.GetPlayer().Move(Direction.South, gameContext.GetRoom());
-            ConsoleView.GetInstance().ResetFocusIndex();
+            ClientConsoleView.GetInstance().ResetFocusIndex();
         }
         else
             base.HandleRequest(request);
@@ -199,10 +199,10 @@ public class MoveRightHandler : BaseHandler
     {
         if (CanHandleRequest(request))
         {
-            ConsoleView.GetInstance().ClearLogMessage();
+            ClientConsoleView.GetInstance().ClearLogMessage();
             Context gameContext = request.GetContext();
             gameContext.GetPlayer().Move(Direction.East, gameContext.GetRoom());
-            ConsoleView.GetInstance().ResetFocusIndex();
+            ClientConsoleView.GetInstance().ResetFocusIndex();
         }
         else
             base.HandleRequest(request);
@@ -216,10 +216,10 @@ public class MoveLeftHandler : BaseHandler
     {
         if (CanHandleRequest(request))
         {
-            ConsoleView.GetInstance().ClearLogMessage();
+            ClientConsoleView.GetInstance().ClearLogMessage();
             Context gameContext = request.GetContext();
             gameContext.GetPlayer().Move(Direction.West, gameContext.GetRoom());
-            ConsoleView.GetInstance().ResetFocusIndex();
+            ClientConsoleView.GetInstance().ResetFocusIndex();
         }
         else
             base.HandleRequest(request);
@@ -235,8 +235,8 @@ public class QuitHadler : BaseHandler
         {
             // TODO: save state logic can be implemented
             // TODO: Add confirmation logic
-            ConsoleView.GetInstance().ClearLogMessage();
-            ConsoleView.GetInstance().ClearConsole();
+            ClientConsoleView.GetInstance().ClearLogMessage();
+            ClientConsoleView.GetInstance().ClearConsole();
             Thread.Sleep(1000);
             Environment.Exit(0);
         }
@@ -254,11 +254,11 @@ public class PickUpItemHandler : BaseHandler
     {
         if (CanHandleRequest(request))
         {
-            if (ConsoleView.GetInstance().FocusOn == FocusType.Room)
+            if (ClientConsoleView.GetInstance().FocusOn == FocusType.Room)
             {
-                ConsoleView.GetInstance().ClearLogMessage();
+                ClientConsoleView.GetInstance().ClearLogMessage();
                 Context gameContext = request.GetContext();
-                IItem? item = gameContext.GetRoom().RemoveItem(gameContext.GetPlayer().Position, ConsoleView.GetInstance().CurrentFocus);
+                IItem? item = gameContext.GetRoom().RemoveItem(gameContext.GetPlayer().Position, ClientConsoleView.GetInstance().CurrentFocus);
                 gameContext.GetPlayer().PickUp(item);
             }
         }
@@ -275,18 +275,18 @@ public class DropItemHandler : BaseHandler
     {
         if (CanHandleRequest(request))
         {
-            ConsoleView.GetInstance().ClearLogMessage();
+            ClientConsoleView.GetInstance().ClearLogMessage();
 
             Context gameContext = request.GetContext();
-            if (ConsoleView.GetInstance().FocusOn == FocusType.Inventory)
+            if (ClientConsoleView.GetInstance().FocusOn == FocusType.Inventory)
             {
-                gameContext.GetPlayer().Drop(gameContext.GetRoom(), ConsoleView.GetInstance().CurrentFocus, true);
-                ConsoleView.GetInstance().ShiftCurrentFocus(Direction.East);
+                gameContext.GetPlayer().Drop(gameContext.GetRoom(), ClientConsoleView.GetInstance().CurrentFocus, true);
+                ClientConsoleView.GetInstance().ShiftCurrentFocus(Direction.East);
             }
-            else if (ConsoleView.GetInstance().FocusOn == FocusType.Hands)
+            else if (ClientConsoleView.GetInstance().FocusOn == FocusType.Hands)
             {
-                gameContext.GetPlayer().Drop(gameContext.GetRoom(), ConsoleView.GetInstance().CurrentFocus, false);
-                ConsoleView.GetInstance().ShiftCurrentFocus(Direction.East);
+                gameContext.GetPlayer().Drop(gameContext.GetRoom(), ClientConsoleView.GetInstance().CurrentFocus, false);
+                ClientConsoleView.GetInstance().ShiftCurrentFocus(Direction.East);
             }
         }
         else
@@ -300,15 +300,15 @@ public class EquipItemHandler : BaseHandler
     {
         if (CanHandleRequest(request))
         {
-            ConsoleView.GetInstance().ClearLogMessage();
+            ClientConsoleView.GetInstance().ClearLogMessage();
 
             Context gameContext = request.GetContext();
             Player player = gameContext.GetPlayer();
-            ConsoleView displayer = ConsoleView.GetInstance();
+            ClientConsoleView displayer = ClientConsoleView.GetInstance();
             Room room = gameContext.GetRoom();
             IItem? item = null;
 
-            switch (ConsoleView.GetInstance().FocusOn)
+            switch (ClientConsoleView.GetInstance().FocusOn)
             {
                 case FocusType.Inventory:
                     item = player.Retrieve(displayer.CurrentFocus, true);
@@ -337,11 +337,11 @@ public class EmptyInventoryHandler : BaseHandler
     {
         if (CanHandleRequest(request))
         {
-            if (ConsoleView.GetInstance().FocusOn == FocusType.Inventory)
+            if (ClientConsoleView.GetInstance().FocusOn == FocusType.Inventory)
             {
                 Context gameContext = request.GetContext();
                 gameContext.GetPlayer().EmptyInventory(gameContext.GetRoom());
-                ConsoleView.GetInstance().ResetFocusType();
+                ClientConsoleView.GetInstance().ResetFocusType();
             }
         }
         else
@@ -355,8 +355,8 @@ public class ScopeInventoryHandler : BaseHandler
     {
         if (CanHandleRequest(request))
         {
-            ConsoleView.GetInstance().ClearLogMessage();
-            ConsoleView.GetInstance().SetInventoryFocus();
+            ClientConsoleView.GetInstance().ClearLogMessage();
+            ClientConsoleView.GetInstance().SetInventoryFocus();
         }
         else
             base.HandleRequest(request);
@@ -370,8 +370,8 @@ public class ScopeHandsHandler : BaseHandler
     {
         if (CanHandleRequest(request))
         {
-            ConsoleView.GetInstance().ClearLogMessage();
-            ConsoleView.GetInstance().SetHandsFocus();
+            ClientConsoleView.GetInstance().ClearLogMessage();
+            ClientConsoleView.GetInstance().SetHandsFocus();
         }
         else
             base.HandleRequest(request);
@@ -385,8 +385,8 @@ public class ScopeRoomHandler : BaseHandler
     {
         if (CanHandleRequest(request))
         {
-            ConsoleView.GetInstance().ClearLogMessage();
-            ConsoleView.GetInstance().ResetFocusType();
+            ClientConsoleView.GetInstance().ClearLogMessage();
+            ClientConsoleView.GetInstance().ResetFocusType();
         }
         else
             base.HandleRequest(request);
@@ -400,8 +400,8 @@ public class HideControlsHandler : BaseHandler
     {
         if (CanHandleRequest(request))
         {
-            ConsoleView.GetInstance().ClearLogMessage();
-            ConsoleView.GetInstance().ChangeControlsVisibility();
+            ClientConsoleView.GetInstance().ClearLogMessage();
+            ClientConsoleView.GetInstance().ChangeControlsVisibility();
         }
         else
             base.HandleRequest(request);
@@ -415,8 +415,8 @@ public class NextItemHandler : BaseHandler
     {
         if (CanHandleRequest(request))
         {
-            ConsoleView.GetInstance().ClearLogMessage();
-            ConsoleView.GetInstance().ShiftCurrentFocus(Direction.East);
+            ClientConsoleView.GetInstance().ClearLogMessage();
+            ClientConsoleView.GetInstance().ShiftCurrentFocus(Direction.East);
         }
         else
             base.HandleRequest(request);
@@ -430,8 +430,8 @@ public class PrevItemHandler : BaseHandler
     {
         if (CanHandleRequest(request))
         {
-            ConsoleView.GetInstance().ClearLogMessage();
-            ConsoleView.GetInstance().ShiftCurrentFocus(Direction.West);
+            ClientConsoleView.GetInstance().ClearLogMessage();
+            ClientConsoleView.GetInstance().ShiftCurrentFocus(Direction.West);
         }
         else
             base.HandleRequest(request);
