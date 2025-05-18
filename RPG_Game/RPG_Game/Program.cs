@@ -1,5 +1,6 @@
 ﻿using RPG_Game.Controller;
 using System;
+using System.Diagnostics;
 using System.Net;
 
 namespace RPG_Game;
@@ -8,6 +9,32 @@ internal class Program
 {
     static async Task Main(string[] args)
     {
+        IPAddress? ipAddress;
+        if (args.Length == 2 && args[0] == "--server")
+        {
+            if (!int.TryParse(args[1], out int serverPort))
+            {
+                Console.WriteLine("Usage: --server <port>");
+                return;
+            }
+            using (HttpClient client = new HttpClient())
+            {
+                try
+                {
+                    string sIpAddress = await client.GetStringAsync("https://api.ipify.org");
+                    IPAddress.TryParse(sIpAddress, out ipAddress);
+                    Console.WriteLine($"Server starting on public IP: {sIpAddress}:{serverPort}");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Failed to get public IP address: {ex.Message}\nTry Again Later!");
+                }
+            }
+            GameSession session = new GameSession();
+            session.SetServer(new GameServer(IPAddress.Any, serverPort));
+            return;
+        }
+
         bool isServer = false;
         GameSession gameSession = new GameSession();
 
@@ -34,26 +61,19 @@ internal class Program
             return;
         }
 
-        IPAddress? ipAddress;
         if (isServer)
         {
-            using (HttpClient client = new HttpClient())
+            ipAddress = IPAddress.Any;
+            string processPath = Environment.ProcessPath!;
+            Process.Start(new ProcessStartInfo
             {
-                try
-                {
-                    string sIpAddress = await client.GetStringAsync("https://api.ipify.org");
-                    IPAddress.TryParse(sIpAddress, out ipAddress);
-                    Console.WriteLine($"Server starting on public IP: {sIpAddress}:{port}");
+                FileName = processPath,
+                Arguments = $"--server {port}",
+                UseShellExecute = true,
+                CreateNoWindow = false
+            });
 
-                    ipAddress = IPAddress.Any;
-                    gameSession.SetServer(new GameServer(ipAddress, port));
-                    gameSession.SetClient(new GameClient(IPAddress.Loopback, port));
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Failed to get public IP address: {ex.Message}\nTry Again Later!");
-                }
-            }
+            gameSession.SetClient(new GameClient(IPAddress.Loopback, port));
         }
         else
         {
@@ -69,8 +89,7 @@ internal class Program
 
             Console.WriteLine($"Connecting to {ipAddress.ToString()}:{port}");
 
-            // TODO: Comment
-            gameSession.SetClient(new GameClient(IPAddress.Loopback, port));
+            gameSession.SetClient(new GameClient(ipAddress, port));
         }
     }
 }

@@ -11,5 +11,5 @@ public class HandsState
 {
     public const int MaxCapacity = 2;
     public int Capacity { get; set; } = 0;
-    public List<IItem> Hands { get; } = new List<IItem>();
+    public List<Item> Hands { get; } = new List<Item>();
 }

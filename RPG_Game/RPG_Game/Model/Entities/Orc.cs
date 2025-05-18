@@ -10,47 +10,43 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using RPG_Game.Model;
+using RPG_Game.Model.Entities;
 
 namespace RPG_Game.Entities;
 
-public class Orc : IEnemy
+public class Orc : Entity
 {
-    public event EventHandler? EntityMoved;
-    public Position Position { get; set; }
     private EnemyStats orcStats = new EnemyStats();
-    public IWeapon Weapon = new PowerWeaponDecorator(new Hammer());
+
+    public Weapon Weapon = new Dagger();
     public AttackStrategy AttackStrategy { get; set; } = new NormalAttackStrategy();
-    public event EventHandler? OwnDeath;
-    public bool Move(Direction direction, Room room)
+    public override bool Move(Direction direction, Room room)
     {
         throw new NotImplementedException();
     }
-    public void Attack(IEntity target)
+    public void Attack(Entity target)
     {
-        Weapon.Use(AttackStrategy, this, new List<IEntity>() { target });
+        Weapon.Use(AttackStrategy, this, new List<Entity>() { target });
     }
-    public void ReceiveDamage(int damage, IEntity? source)
+    public override void ReceiveDamage(int damage, Entity? source)
     {
         orcStats.ModifyEntityAttribute(PlayerAttributes.Health, -damage);
         if (source != null)
         {
-            ClientConsoleView.GetInstance().LogMessage(new OnAttackMessage(source, this, damage));
-            ClientConsoleView.GetInstance().LogMessage(new OnEnemyDetectionMessage(this));
+            //ClientConsoleView.GetInstance().LogMessage(new OnAttackMessage(source, this, damage));
+            //ClientConsoleView.GetInstance().LogMessage(new OnEnemyDetectionMessage(this));
             Attack(source);
         }
     }
     public Orc() 
     {
-        this.orcStats.Died += OwnDeathHandler;
+        this.orcStats.Died += OnDeath;
     }
     public override string ToString() => "Orc";
-    public EntityStats GetEntityStats() => this.orcStats;
-    public object Copy()
+    public override EntityStats GetEntityStats() => this.orcStats;
+    public override object Copy()
     {
         return new Orc();
-    }
-    protected void OwnDeathHandler(object sender, EventArgs e)
-    {
-        this.OwnDeath?.Invoke(this, EventArgs.Empty);
     }
 }

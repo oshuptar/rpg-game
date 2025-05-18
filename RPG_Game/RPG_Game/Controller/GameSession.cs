@@ -16,7 +16,6 @@ public class GameSession
         GameClient = gameClient;
         GameServer = gameServer;
     }
-
     public void SetClient(GameClient gameClient) => GameClient = gameClient;
     public void SetServer(GameServer gameServer) => GameServer = gameServer;
 }

@@ -25,7 +25,7 @@ public class ServerConfigureMap : ServerState
         map.PlaceEnemies();
         map.PlacePotions();
 
-        gameServer.Room = map.GetResult();
+        gameServer.ServerController.SetGameState(map.GetResult());
         this.SetGameServerState();
     }
     public override void SetGameServerState()

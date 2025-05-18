@@ -9,7 +9,7 @@ namespace RPG_Game.LogMessages;
 
 public class OnItemDropMessage : OnItemActionMessage
 {
-    public OnItemDropMessage(IItem item, string name) : base(item, name)
+    public OnItemDropMessage(Item item, string name) : base(item, name)
     {
     }
 }

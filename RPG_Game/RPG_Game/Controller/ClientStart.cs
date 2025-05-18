@@ -6,17 +6,19 @@ using System.Threading.Tasks;
 
 namespace RPG_Game.Controller;
 
-public class ClientRun : ClientState
+public class ClientStart : ClientState
 {
-    public ClientRun(GameClient client) : base(client) { }
+    public ClientStart(GameClient gameClient) : base(gameClient)
+    {
+    }
     public override void HostGame()
     {
-        // Main client loop
-        gameClient.ClientController.ClientRun();
+        gameClient.ClientController.BuildChain();
         SetGameClientState();
     }
     public override void SetGameClientState()
     {
-        gameClient.ClientState = new ClientEnd(gameClient);
+        gameClient.ClientState = new ClientConnect(gameClient);
     }
 }
+

@@ -2,6 +2,7 @@
 using RPG_Game.Entities;
 using RPG_Game.Enums;
 using RPG_Game.LogMessages;
+using RPG_Game.Model;
 using RPG_Game.UIHandlers;
 using System;
 using System.Collections.Generic;
@@ -36,14 +37,13 @@ public class GameClient
     {
         IpAddress = ipAddress;
         PortNumber = portNumber;
-        ClientController = new ClientController(ClientConsoleView.GetInstance(), new GameStateViewProxy());
+        ClientController = new ClientController(ClientConsoleView.GetInstance(), new Room(new RoomState()));
         ClientController.SetViewController();
-        ClientState = new ClientConnect(this);
+        ClientState = new ClientStart(this);
     }
-
-    private Player _player = new Player();
     public AttackType AttackType { get; set; } = AttackType.NormalAttack;
     public AttackStrategy AttackStrategy { get; set; } = new NormalAttackStrategy();
+
     //
     //private IView GameView;
     //private IInputHandler GameInputHandler;
@@ -52,15 +52,15 @@ public class GameClient
     //    GameInputHandler = new KeyboardTranslator();
     //}
 
-    public void PlayerDeathHandler(object sender, EventArgs e)
-    {
-        ClientConsoleView.GetInstance().LogMessage(new OnPlayerDeathMessage((Player)sender));
-        Thread.Sleep(3000);
-        //GameInputHandler.DispatchRequest(new ActionRequest(new Context(this), RequestType.Quit));
-    }
-    public void EnemyDeathHandler(object sender, EventArgs e)
-    {
-        //Room.RemoveEntity((IEnemy)sender);
-        ClientConsoleView.GetInstance().LogMessage(new OnEnemyDeathMessage((IEnemy)sender));
-    }
+    //public void PlayerDeathHandler(object sender, EventArgs e)
+    //{
+    //    ClientConsoleView.GetInstance().LogMessage(new OnPlayerDeathMessage((Player)sender));
+    //    Thread.Sleep(3000);
+    //    //GameInputHandler.DispatchRequest(new ActionRequest(new Context(this), RequestType.Quit));
+    //}
+    //public void EnemyDeathHandler(object sender, EventArgs e)
+    //{
+    //    //Room.RemoveEntity((IEnemy)sender);
+    //    ClientConsoleView.GetInstance().LogMessage(new OnEnemyDeathMessage((IEnemy)sender));
+    //}
 }

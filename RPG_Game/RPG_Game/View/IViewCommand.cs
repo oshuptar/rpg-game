@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RPG_Game.Model;
+namespace RPG_Game.View;
 
-public class GameStateViewProxy : GameState
+public interface IViewCommand
 {
+    public void Execute();
 }

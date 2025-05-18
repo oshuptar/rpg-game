@@ -1,4 +1,5 @@
 ﻿using RPG_Game.Entities;
+using RPG_Game.Model.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,10 +10,10 @@ namespace RPG_Game.LogMessages;
 
 public class OnEnemyDetectionMessage
 {
-    public IEnemy? enemy { get; set; }
+    public Entity? Entity { get; set; }
 
-    public OnEnemyDetectionMessage(IEnemy? enemy)
+    public OnEnemyDetectionMessage(Entity? entity)
     {
-        this.enemy = enemy;
+        this.Entity = entity;
     }
 }

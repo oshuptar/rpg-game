@@ -2,6 +2,7 @@
 using RPG_Game.Entiities;
 using RPG_Game.Entities;
 using RPG_Game.Interfaces;
+using RPG_Game.Model.Entities;
 using RPG_Game.Potions;
 using RPG_Game.UnusableItems;
 using RPG_Game.Weapons;
@@ -15,7 +16,7 @@ namespace RPG_Game.HelperClasses;
 
 public class ItemLists
 {
-    public List<IItem> ItemList = new List<IItem>()
+    public List<Item> ItemList = new List<Item>()
     {
         new Gold(),
         new Coin(),
@@ -23,7 +24,7 @@ public class ItemLists
         new Note(),
         new Lore()
     };
-    public List<IItem> DecoratedItemList = new List<IItem>()
+    public List<Item> DecoratedItemList = new List<Item>()
     {
         new LuckItemDecorator(new Key()),
         new LuckItemDecorator(new Gold()),
@@ -31,14 +32,14 @@ public class ItemLists
         new LuckItemDecorator(new LuckItemDecorator(new Lore())),
         new LuckItemDecorator(new LuckItemDecorator (new Coin())),
     };
-    public List<IItem> WeaponList = new List<IItem>()
+    public List<Item> WeaponList = new List<Item>()
     {
         new Hammer(),
         new Sword(),
         new Dagger(),
         new Sword()
     };
-    public List<IItem> DecoratedWeaponList = new List<IItem>()
+    public List<Item> DecoratedWeaponList = new List<Item>()
     {
         new PowerWeaponDecorator(new Hammer()),
         new PowerWeaponDecorator(new PowerWeaponDecorator(new Hammer())),
@@ -48,12 +49,12 @@ public class ItemLists
         new PowerWeaponDecorator(new Sword()),
         new PowerWeaponDecorator(new PowerWeaponDecorator(new Sword())),
     };
-    public List<IEnemy> EnemyList = new List<IEnemy>()
+    public List<Entity> EnemyList = new List<Entity>()
     {
         new Goblin(),
         new Orc(),
     };
-    public List<IPotion> PotionList = new List<IPotion>()
+    public List<Potion> PotionList = new List<Potion>()
     {
         new HealPotion(),
         new AggressionPotion(),

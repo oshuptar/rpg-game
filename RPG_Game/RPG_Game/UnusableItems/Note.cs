@@ -9,13 +9,14 @@ using System.Text;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 using RPG_Game.UIHandlers;
+using RPG_Game.Model.Entities;
 
 namespace RPG_Game.UnusableItems;
 
 public class Note : ILoot
 {
     public override string Name => "A mysterious note";
-    public override void Use(AttackStrategy strategy, IEntity? source, List<IEntity>? target) => ClientConsoleView.GetInstance().LogMessage("Hmm.. Exploration - is the KEY to finding treasures");
+    public override void Use(AttackStrategy strategy, Entity? source, List<Entity>? target) => ClientConsoleView.GetInstance().LogMessage("Hmm.. Exploration - is the KEY to finding treasures");
     public override string Description => "(Ancient note)";
     public override object Copy() => new Note();
 }

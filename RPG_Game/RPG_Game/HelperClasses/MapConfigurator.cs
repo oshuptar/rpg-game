@@ -5,6 +5,8 @@ using RPG_Game.Entities;
 using RPG_Game.Enums;
 using RPG_Game.HelperClasses;
 using RPG_Game.Interfaces;
+using RPG_Game.Model;
+using RPG_Game.Model.Entities;
 using RPG_Game.UnusableItems;
 using RPG_Game.Weapons;
 using System;
@@ -40,7 +42,7 @@ public class MapConfigurator : IConfigurator
   
     public void ResetMapConfiguration()
     {
-        this._room = new Room();
+        this._room = new Room(new RoomState());
         this._instructionConfigurator = new MapInstructionConfigurator();
     }
     public Room GetResult() => _room;
@@ -50,8 +52,7 @@ public class MapConfigurator : IConfigurator
         for (int i = 0; i < MapSettings.Width; i++)
             for (int j = 0; j < MapSettings.Height; j++)
             {
-                _room.GetRoomState().GetGrid()[i, j] = new RoomState.Cell();
-                _room.GetRoomState().GetGrid()[i, j].CellType = _room.GetRoomState().GetGrid()[i, j].CellType | CellType.Empty & ~CellType.Wall;
+                _room.GetRoomState().Grid[i, j].CellType = _room.GetRoomState().Grid[i, j].CellType | CellType.Empty & ~CellType.Wall;
             }
         this._instructionConfigurator.CreateEmptyDungeon();
     }
@@ -79,7 +80,7 @@ public class MapConfigurator : IConfigurator
     public void DFS(int startX, int startY, bool[,] visited, Random random)
     {
         visited[startX, startY] = true;
-        _room.GetRoomState().GetGrid()[startX, startY].CellType &= ~CellType.Wall;
+        _room.GetRoomState().Grid[startX, startY].CellType &= ~CellType.Wall;
 
         List<(int x, int y)> directions = new List<(int, int)> { (-2, 0), (2, 0), (0, -2), (0, 2) };
         // Shuffles a list
@@ -96,19 +97,14 @@ public class MapConfigurator : IConfigurator
             if (IsInRange((newPosition.x, newPosition.y)) && !visited[newPosition.x, newPosition.y])
             {
                 (int x, int y)midPoint = (startX + (direction.x)/2,  startY + (direction.y)/2);
-                _room.GetRoomState().GetGrid()[midPoint.x, midPoint.y].CellType &= ~CellType.Wall;
+                _room.GetRoomState().Grid[midPoint.x, midPoint.y].CellType &= ~CellType.Wall;
                 DFS(newPosition.x, newPosition.y, visited, random);
             }
         }
     }
     public bool IsInRange((int x, int y)position)
     {
-        if (position.x >= MapSettings.FrameSize 
-            && position.x < MapSettings.Width - MapSettings.FrameSize
-            && position.y >= MapSettings.FrameSize 
-            && position.y < MapSettings.Height - MapSettings.FrameSize)
-            return true;
-        return false;
+        return _room.IsInRange(new Position(position.x, position.y));
     }
     public void AddChambers()
     {
@@ -127,7 +123,7 @@ public class MapConfigurator : IConfigurator
 
                 for (int k = x; k < x + width; k++)
                     for (int m = y; m < y + height; m++)
-                        _room.GetRoomState().GetGrid()[k, m].CellType &= ~CellType.Wall;
+                        _room.GetRoomState().Grid[k, m].CellType &= ~CellType.Wall;
             }
         }
         this._instructionConfigurator.AddChambers();
@@ -140,25 +136,25 @@ public class MapConfigurator : IConfigurator
 
         for (int i = left; i < left + MapConfigurator._centralRoomWidth; i++)
             for (int j = top; j < top + MapConfigurator._centralRoomHeight; j++)
-                _room.GetRoomState().GetGrid()[i, j].CellType &= ~CellType.Wall;
+                _room.GetRoomState().Grid[i, j].CellType &= ~CellType.Wall;
 
         this._instructionConfigurator.AddCentralRoom();
     }
     // Must work because of covariance
-    public void RandomizeItemsPlacement(IEnumerable<IItem> items, int factor)
+    public void RandomizeItemsPlacement(IEnumerable<Item> items, int factor)
     {
         Random random = new Random();
-        List<IItem> itemList = items.ToList();
+        List<Item> itemList = items.ToList();
         for (int i = 0; i < MapSettings.DefaultWidth * MapSettings.DefaultHeight / factor; i++)
         {
             int X = MapSettings.FrameSize + random.Next() % (MapSettings.DefaultWidth - MapSettings.FrameSize);
             int Y = MapSettings.FrameSize + random.Next() % (MapSettings.DefaultHeight - MapSettings.FrameSize);
 
             int randomIndex = random.Next() % itemList.Count;
-            _room.AddItem((IItem)itemList[randomIndex].Copy(), new Position(X, Y));
+            _room.AddItem((Item)itemList[randomIndex].Copy(), new Position(X, Y));
         }
     }
-    public void SpawnPlayer(Player player) => player.PlacePlayer(_room);
+    public void SpawnPlayer(Player player) => _room.AddPlayer(player, new Position(1, 1));
     public void PlaceItems()
     {
         RandomizeItemsPlacement(_items.ItemList, 15);
@@ -193,8 +189,8 @@ public class MapConfigurator : IConfigurator
             int Y = MapSettings.FrameSize + random.Next(0, MapSettings.DefaultHeight);
 
             int randomIndex = random.Next(0, _items.EnemyList.Count);
-            IEnemy? enemy = _items.EnemyList[randomIndex];
-            _room.AddEnemy((IEnemy)enemy.Copy(), new Position(X, Y));
+            Entity? entity = _items.EnemyList[randomIndex];
+            _room.AddEntity((Entity)entity.Copy(), new Position(X, Y));
         }
         this._instructionConfigurator.PlaceEnemies();
     }

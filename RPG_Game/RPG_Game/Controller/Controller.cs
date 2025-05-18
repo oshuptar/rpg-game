@@ -1,4 +1,5 @@
-﻿using RPG_Game.UIHandlers;
+﻿using RPG_Game.Model;
+using RPG_Game.UIHandlers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,24 +10,30 @@ namespace RPG_Game.Controller;
 
 public abstract class Controller : IController
 {
-    protected IView View { get; set; }
-    protected IGameState GameState { get; set; }
-    public Controller(IView view, IGameState gameState)
+    protected View.View View { get; set; }
+    protected Room Room { get; set; }
+    public Controller(View.View view, Room room)
     {
         View = view;
-        GameState = gameState;
+        Room = room;
     }
-    public virtual void SetView(IView view)
+    public virtual void SetView(View.View view)
     {
         View = view;
     }
-    public virtual void SetGameState(IGameState gameState)
+    public virtual void SetGameState(Room room)
     {
-        GameState = gameState;
+        Room = room;
     }
-
     public virtual void SetViewController()
     {
         View.SetController(this);
     }
+    public abstract void HandleRequest(CancellationToken cancellationToken);
+    public abstract void SendRequest(IRequest request);
+    public virtual GameState GetGameState()
+    {
+        return Room.GetGameState();
+    }
+    public abstract void HandleResponse(IResponse response);
 }

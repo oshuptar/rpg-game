@@ -14,9 +14,9 @@ public class ClientEnd : ClientState
         gameClient.Client.Close();
         gameClient.Client.Dispose();
     }
-
     public override void SetGameClientState()
     {
-        throw new NotImplementedException();
+        //ClientController.Vi
+        Environment.Exit(0);
     }
 }

@@ -6,6 +6,6 @@ using System.Threading.Tasks;
 
 namespace RPG_Game.Interfaces;
 
-public abstract class ILoot : IItem
+public abstract class ILoot : Item
 {
 }

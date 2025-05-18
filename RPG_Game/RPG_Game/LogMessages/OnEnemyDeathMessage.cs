@@ -1,4 +1,5 @@
 ﻿using RPG_Game.Entities;
+using RPG_Game.Model.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,9 +10,8 @@ namespace RPG_Game.LogMessages;
 
 public class OnEnemyDeathMessage
 {
-    public IEnemy enemy;
-
-    public OnEnemyDeathMessage(IEnemy enemy)
+    public Entity enemy;
+    public OnEnemyDeathMessage(Entity enemy)
     {
         this.enemy = enemy;
     }  

@@ -8,6 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using RPG_Game.Enums;
 using RPG_Game.Controller;
+using System.Text.Json.Serialization;
+using RPG_Game.Model.Entities;
 
 namespace RPG_Game.Potions;
 
@@ -18,7 +20,8 @@ namespace RPG_Game.Potions;
 public class AggressionPotion : TemporaryPotion
 {
     public override string Name => $"Aggresion Potion { (IsDisposed ? "(Disposed)" : "") }";
-    public int Aggression = 10;
+    [JsonInclude]
+    public int Aggression => 10;
     protected override int ActiveTime { get; set; } = 0;
     public override int Lifetime => 10;
     public override void ApplyEffect(EntityStats? entityStats) 
@@ -30,7 +33,7 @@ public class AggressionPotion : TemporaryPotion
         entityStats?.ModifyEntityAttribute(PlayerAttributes.Aggression, -Aggression);
     }
     public override string Description => $"(Adds {Aggression} Aggression)";
-    public override void Use(AttackStrategy strategy, IEntity? source, List<IEntity>? target)
+    public override void Use(AttackStrategy strategy, Entity? source, List<Entity>? target)
     {
         if (IsDisposed)
             return;
@@ -40,7 +43,7 @@ public class AggressionPotion : TemporaryPotion
         ApplyEffect(source?.GetEntityStats());
         IsDisposed = true;
     }
-    public override void Dispose(IEntity? entity)
+    public override void Dispose(Entity? entity)
     {
         RevertEffect(entity?.GetEntityStats());
         if (entity != null)
@@ -50,7 +53,7 @@ public class AggressionPotion : TemporaryPotion
     {
         ActiveTime++;
         if (ActiveTime > Lifetime)
-            Dispose(sender as IEntity);
+            Dispose(sender as Entity);
     }
     public override object Copy() => new AggressionPotion();
 }

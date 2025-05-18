@@ -10,5 +10,5 @@ namespace RPG_Game.Entities;
 // Implement as Dictionary
 public class InventoryState
 {
-    public List<IItem> Inventory { get; } = new List<IItem>();
+    public List<Item> Inventory { get; } = new List<Item>();
 }

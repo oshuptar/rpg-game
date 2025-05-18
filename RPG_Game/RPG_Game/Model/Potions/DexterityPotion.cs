@@ -8,6 +8,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using RPG_Game.Controller;
+using System.Text.Json.Serialization;
+using RPG_Game.Model.Entities;
 namespace RPG_Game.Potions;
 
 // The ability of hero dodging attacks
@@ -16,7 +18,8 @@ public class DexterityPotion : TemporaryPotion
     public override string Name => $"Dexterity Potion {(IsDisposed ? "(Disposed)" : "")}";
     protected override int ActiveTime { get; set; } = 0;
     public override int Lifetime => 10;
-    public int Dexterity = 10;
+    [JsonInclude]
+    public static int Dexterity => 10;
     public override string Description => $"(Adds {Dexterity} to the ability of dodging attacks)";
 
     public override void RevertEffect(EntityStats? entityStats)
@@ -27,7 +30,7 @@ public class DexterityPotion : TemporaryPotion
     {
         entityStats?.ModifyEntityAttribute(PlayerAttributes.Dexterity, Dexterity);
     }
-    public override void Use(AttackStrategy strategy, IEntity? source, List<IEntity>? target)
+    public override void Use(AttackStrategy strategy, Entity? source, List<Entity>? target)
     {
         if (IsDisposed) return;
 
@@ -37,7 +40,7 @@ public class DexterityPotion : TemporaryPotion
 
         IsDisposed = true;
     }
-    public override void Dispose(IEntity? entity)
+    public override void Dispose(Entity? entity)
     {
         if (entity != null)
             entity.EntityMoved -= OnMoveHandler;
@@ -47,10 +50,10 @@ public class DexterityPotion : TemporaryPotion
         ActiveTime++;
         if (ActiveTime > Lifetime)
         {
-            Dispose(sender as IEntity);
+            Dispose(sender as Entity);
             return;
         }
-        RevertEffect((sender as IEntity)?.GetEntityStats());
+        RevertEffect((sender as Entity)?.GetEntityStats());
     }
     public override object Copy() => new DexterityPotion();
 }

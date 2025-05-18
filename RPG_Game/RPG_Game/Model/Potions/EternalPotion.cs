@@ -6,6 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace RPG_Game.Potions;
-public abstract class EternalPotion : IPotion
+public abstract class EternalPotion : Potion
 {
 }

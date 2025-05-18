@@ -1,103 +1,151 @@
-﻿using RPG_Game.Entities;
+﻿using RPG_Game.Controller;
+using RPG_Game.Entities;
 using RPG_Game.Enums;
 using RPG_Game.HelperClasses;
 using RPG_Game.Interfaces;
+using RPG_Game.Model.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RPG_Game.Entiities;
+namespace RPG_Game.Model;
 
-public class Room
+public class Room : IGameState
 {
-    private RoomState _roomState;
-    public Room()
+    private RoomState RoomState;
+    public int PlayerId { get; set; }
+    public Room() { }
+    public Room(RoomState roomState)
     {
-        _roomState = new RoomState();
-    }
-    public bool IsPosAvailable(Position position)
-    {
-        if (position.X < 0 || position.Y < 0 
-            || position.X > MapSettings.Width - MapSettings.FrameSize 
-            || position.Y > MapSettings.Height - MapSettings.FrameSize)
-            return false;
-        return _roomState.GetGrid()[position.X, position.Y].IsWalkable();
+        RoomState = roomState;
     }
     public bool AddObject(CellType cellType, Position position)
     {
-        _roomState.GetGrid()[position.X, position.Y].CellType |= cellType;
+        RoomState.Grid[position.X, position.Y].CellType |= cellType;
         return true;
     }
-    public void AddEnemy(IEnemy enemy, Position position)
+    public bool RemoveObject(CellType cellType, Position position)
     {
-        if (!IsPosAvailable(position) || _roomState.GetGrid()[position.X, position.Y].CellType == CellType.Player)
-            return;
+        if ((RoomState.Grid[position.X, position.Y].CellType & cellType) == 0)
+            return false;
 
-        if (_roomState.GetGrid()[position.X, position.Y].Entity != null)
-            return;
+        if (RoomState.Grid[position.X, position.Y].Items?.Count == 0 || (cellType & CellType.Item) == 0)
+            RoomState.Grid[position.X, position.Y].CellType &= ~cellType;
+
+        return true;
+    }
+    public bool AddEntity(Entity entity, Position position)
+    {
+        if (!IsPosAvailable(position))
+            return false;
+
+        if (RoomState.Grid[position.X, position.Y].Entity != null)
+            return false;
 
         AddObject(CellType.Enemy, position);
-        enemy.Position = position;
-        _roomState.Enemies.Add(enemy);
-        _roomState.GetGrid()[position.X, position.Y].Entity = enemy; // this ensures a deep copy of enemy attributes
-    }
-    public bool RemoveObject(CellType cellType, Position position) //assuming the position is the position of the player
-    {
-        if ((_roomState.GetGrid()[position.X, position.Y].CellType & cellType) == 0)
-            return false;
-        if (_roomState.GetGrid()[position.X, position.Y].Items?.Count == 0 || (cellType & CellType.Item) == 0)
-            _roomState.GetGrid()[position.X, position.Y].CellType &= ~cellType;
-
+        entity.SetPosition(position);
+        RoomState.Entities.Add(entity);
+        RoomState.Grid[position.X, position.Y].Entity = entity;
         return true;
     }
-    public void AddItem(IItem? item, Position position)
+    public void RemoveEntity(Entity entity)
     {
-        if (!IsPosAvailable(position) || item == null)
+        Entity? removedEntity = RoomState.Grid[entity.Position.X, entity.Position.Y].Entity;
+        if (removedEntity != null && removedEntity.Equals(entity))
+        {
+            RoomState.Grid[entity.Position.X, entity.Position.Y].Entity = null;
+            RemoveObject(CellType.Enemy, entity.Position);
+            RoomState.Entities.Remove(entity);
+        }
+    }
+    public bool AddPlayer(Player player, Position position)
+    {
+        if (!IsPosAvailable(position))
+            return false;
+
+        if (RoomState.Grid[position.X, position.Y].Entity != null)
+            return false;
+
+        AddObject(CellType.Player, position);
+        player.SetPosition(position);
+        RoomState.ActivePlayers.TryAdd(player.PlayerId, player);
+        RoomState.Grid[position.X, position.Y].Entity = player;
+        return true;
+    }
+    public void RemovePlayer(Player player)
+    {
+        RoomState.ActivePlayers.TryGetValue(player.PlayerId, out Player? removedPlayer);
+        if (removedPlayer != null && removedPlayer.Equals(player))
+        {
+            RoomState.Grid[player.Position.X, player.Position.Y].Entity = null;
+            RemoveObject(CellType.Player, player.Position);
+            RoomState.ActivePlayers.Remove(player.PlayerId);
+        }
+    }
+    public void AddItem(Item? item, Position position)
+    {
+        if (RoomState.Grid[position.X, position.Y].IsWall() || item == null)
             return;
 
         AddObject(CellType.Item, position);
 
-        if (_roomState.GetGrid()[position.X, position.Y].Items == null)
-            _roomState.GetGrid()[position.X, position.Y].Items = new List<IItem>();
+        if (RoomState.Grid[position.X, position.Y].Items == null)
+            RoomState.Grid[position.X, position.Y].Items = new List<Item>();
 
-        _roomState.GetGrid()[position.X, position.Y].Items!.Add(item);
+        RoomState.Grid[position.X, position.Y].Items!.Add(item);
     }
-    public void RemoveEntity(IEnemy enemy)
+    public Item? RemoveItem(Position position, int index = 0)
     {
-        IEntity? entity = _roomState.GetGrid()[enemy.Position.X, enemy.Position.Y].Entity;
-        if (entity != null && entity.Equals(enemy))
-        {
-            _roomState.GetGrid()[enemy.Position.X, enemy.Position.Y].Entity = null;
-            this.RemoveObject(CellType.Enemy, enemy.Position);
-            _roomState.Enemies.Remove(enemy);
-        }
-    }
-    // index denotes the index of the item from the list to be removed
-    public IItem? RemoveItem(Position position, int index = 0)
-    {
-        if (_roomState.GetGrid()[position.X, position.Y].Items == null 
-            || _roomState.GetGrid()[position.X, position.Y].Items?.Count == 0)
+        if (RoomState.Grid[position.X, position.Y].Items == null 
+            || RoomState.Grid[position.X, position.Y].Items?.Count == 0)
             return null;
 
-        IItem tempItem = _roomState.GetGrid()[position.X, position.Y].Items!.ElementAt(index);
-        _roomState.GetGrid()[position.X, position.Y].Items!.RemoveAt(index);
+        Item tempItem = RoomState.Grid[position.X, position.Y].Items!.ElementAt(index);
+        RoomState.Grid[position.X, position.Y].Items!.RemoveAt(index);
+        RemoveObject(CellType.Item, position);
+        return tempItem;
+    }
+    public Item? RemoveItem(Position position, Item item)
+    {
+        var items = RoomState.Grid[position.X, position.Y].Items;
+        if (items == null
+            || items?.Count == 0)
+            return null;
+
+        Item? tempItem = items?.FirstOrDefault(i => i.Equals(item));
+        if (tempItem == null) return null;
+
+        items!.Remove(tempItem);
         RemoveObject(CellType.Item, position);
 
         return tempItem;
     }
+    public bool IsPosAvailable(Position position)
+    {
+        if (!IsInRange(position))
+            return false;
+        return RoomState.Grid[position.X, position.Y].IsWalkable();
+    }
     public bool IsInRange(Position position)
     {
-        if (position.X >= MapSettings.FrameSize && position.X < MapSettings.Width - MapSettings.FrameSize
-            && position.Y >= MapSettings.FrameSize && position.Y < MapSettings.Height - MapSettings.FrameSize)
+        if (position.X >= MapSettings.FrameSize
+            && position.X < MapSettings.Width - MapSettings.FrameSize
+            && position.Y >= MapSettings.FrameSize 
+            && position.Y < MapSettings.Height - MapSettings.FrameSize)
             return true;
         return false;
     }
-
-    // BFS will be used to retrieve enemies around the player
-    public void BFS(List<IEntity> entities, bool[,] visited, List<(int x, int y)> directions,
-        int maxDepth, Queue<(Position position, int depth)> bfsQueue)
+    public Entity? GetClosestEntity(Player source)
+    {
+        return RoomState.Entities
+            .Concat(RoomState.ActivePlayers.Values
+            .Where((player) => player.PlayerId != source.PlayerId))
+            .MinBy((entity) => Math.Sqrt(Math.Pow(source.Position.X - entity.Position.X, 2) + Math.Pow(source.Position.Y - entity.Position.Y, 2)));
+    }
+    public void BFS(List<Entity> entities, bool[,] visited, List<(int x, int y)> directions,
+        int maxDepth, Queue<(Position position, int depth)> bfsQueue, Entity? source)
     {
         while (bfsQueue.Count > 0)
         {
@@ -105,13 +153,13 @@ public class Room
             if (depth > maxDepth)
                 continue;
 
-            IEntity? entity = _roomState.GetGrid()[positon.X, positon.Y].Entity;
-            if (entity != null)
+            Entity? entity = RoomState.Grid[positon.X, positon.Y].Entity;
+            if (entity != null && !entity.Equals(source))
                 entities.Add(entity);
             foreach (var direction in directions)
             {
                 Position newPosition = new Position(positon.X + direction.x, positon.Y + direction.y);
-                if (IsInRange(newPosition) && !_roomState.GetGrid()[newPosition.X, newPosition.Y].IsWall() && !visited[newPosition.X, newPosition.Y])
+                if (IsInRange(newPosition) && !RoomState.Grid[newPosition.X, newPosition.Y].IsWall() && !visited[newPosition.X, newPosition.Y])
                 {
                     bfsQueue.Enqueue((newPosition, depth + 1));
                     visited[newPosition.X, newPosition.Y] = true;
@@ -119,10 +167,10 @@ public class Room
             }
         }
     }
-    public List<IEntity>? RetrieveEnemiesInRadius(IEntity entity, int radius)
+    public List<Entity>? RetrieveEntitiesInRadius(Entity entity, int radius)
     {
         List<(int x, int y)> directions = new List<(int, int)> { (-1, 0), (1, 0), (0, 1), (0, -1) };
-        List<IEntity> entities = new List<IEntity>();
+        List<Entity> entities = new List<Entity>();
         bool[,] visited = new bool[MapSettings.Width + 1, MapSettings.Height + 1];
 
         for (int i = 0; i < MapSettings.Width; i++)
@@ -131,9 +179,37 @@ public class Room
 
         Queue<(Position, int)> bfsQueue = new Queue<(Position, int)>();
         bfsQueue.Enqueue((new Position(entity.Position.X, entity.Position.Y), 0));
-        BFS(entities, visited, directions, radius, bfsQueue);
+        BFS(entities, visited, directions, radius, bfsQueue, entity);
         return entities;
     }
-    public RoomState GetRoomState() => _roomState;
+    // Note that no Copy was done, hence the references are dynamic
+    // Introduce locking mechanism on printing
+    public GameState GetGameState()
+    {
+        return new GameState(RoomState);
+    }
+
+    public RoomState GetRoomState() => RoomState;
+
+    public Player GetPlayer()
+    {
+        return RoomState.ActivePlayers[PlayerId];
+    }
+
+    public List<Entity> GetVisibleEntities()
+    {
+        return RoomState.Entities.Concat(RoomState.ActivePlayers.Values
+            .Where((player) => player.PlayerId != PlayerId))
+            .ToList();
+    }
+
+    public List<Item>? GetItems(Position pos)
+    {
+        return RoomState.Grid[pos.X, pos.Y].Items;
+    }
+    public StringBuilder RenderMap()
+    {
+        return RoomState.RenderMap();
+    }
 }
 

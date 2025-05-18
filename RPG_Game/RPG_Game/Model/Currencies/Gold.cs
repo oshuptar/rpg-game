@@ -7,12 +7,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Text.Json.Serialization;
 
 namespace RPG_Game.Currencies;
 
 public class Gold : ICurrency
 {
     public override string Name => "Gold";
+    [JsonInclude]
     public static int Value => 50;
     public override void ApplyChanges(EntityStats entityStats) => entityStats.ModifyEntityAttribute(PlayerAttributes.Gold, 1);
     public override void RevertChanges(EntityStats entityStats) => entityStats.ModifyEntityAttribute(PlayerAttributes.Gold, -1);

@@ -116,7 +116,6 @@ public class StealthAttackStrategy : AttackStrategy
         return CalculateDodgingDefense(entityStats.Attributes[PlayerAttributes.Dexterity].GetCurrentValue() / 10, AttackDamage);
     }
 }
-
 public class NormalAttackStrategy : AttackStrategy
 {
     public override int AttackRequestHandler(MagicWeapon magicWeapon, IEntity entity, int Damage)

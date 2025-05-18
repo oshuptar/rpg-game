@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RPG_Game.View;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,7 @@ namespace RPG_Game.Controller;
 // We can use a Linked List data structure, however I decided to write my own
 public class ServerHandlerChain
 {
+    public ServerController ServerController { get; private set; }
     public static ServerHandlerChain? Chain = null;
     private IRequestHandler? _firstHandler;
     private IRequestHandler? _lastHandler;
@@ -24,9 +26,9 @@ public class ServerHandlerChain
             Chain = new ServerHandlerChain();
         return Chain;
     }
-    public void HandleRequest(ActionRequest request)
+    public List<IViewCommand>? HandleRequest(Request request)
     {
-        _firstHandler?.HandleRequest(request);
+        return _firstHandler?.HandleRequest(request);
     }
 
     // Fix implementation, make more concise
@@ -36,10 +38,10 @@ public class ServerHandlerChain
         {
             _firstHandler = handler;
             _lastHandler = handler;
-            _firstHandler.SetNext(new DefaultHandler());
+            _firstHandler.SetNext(new ServerRequestHandler());
         }
         _lastHandler?.SetNext(handler);
         _lastHandler = handler;
-        _lastHandler.SetNext(new DefaultHandler());
+        _lastHandler.SetNext(new ServerRequestHandler());
     }
 }

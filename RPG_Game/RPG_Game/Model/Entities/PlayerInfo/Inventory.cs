@@ -1,6 +1,7 @@
 ﻿using RPG_Game.Entiities;
 using RPG_Game.HelperClasses;
 using RPG_Game.Interfaces;
+using RPG_Game.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,9 +13,9 @@ namespace RPG_Game.Entities;
 public class Inventory : StorageManager
 {
     private InventoryState InventoryState { get; set; } = new InventoryState();
-    public IItem? DropFromInventory(Room room, int index, Player player)
+    public Item? DropFromInventory(Room room, int index, Player player)
     {
-        IItem? item = Drop(room, index, InventoryState.Inventory, player);
+        Item? item = Drop(room, index, InventoryState.Inventory, player);
         return item;
     }
     public void EmptyInventory(Room room, Player player)
@@ -23,14 +24,14 @@ public class Inventory : StorageManager
         for(int i = 0; i < itemCount; i++)
             DropFromInventory(room, 0, player);
     }
-    public void PickUp(IItem? item, Player player)
+    public void PickUp(Item? item, Player player)
     {
         if (item == null)
             return;
         InventoryState.Inventory.Add(item);
         item.PickUp(player);
     }
-    public void AddItem(IItem? item)
+    public void AddItem(Item? item)
     {
         if (item == null) return;
         InventoryState.Inventory.Add(item);

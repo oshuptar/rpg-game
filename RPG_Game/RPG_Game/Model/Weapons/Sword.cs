@@ -1,6 +1,7 @@
 ﻿using RPG_Game.Controller;
 using RPG_Game.Entities;
 using RPG_Game.Interfaces;
+using RPG_Game.Model.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,11 +17,11 @@ public class Sword : LightWeapon
     public override string Name => "Sword";
     public override string Description => $"(Damage: {Damage}; Radius-Of-Action: {RadiusOfAction}; One-Handed;)";
     public override int RadiusOfAction => 1;
-    public override void Use(AttackStrategy strategy, IEntity? source, List<IEntity>? target)
+    public override void Use(AttackStrategy strategy, Entity? source, List<Entity>? target)
     {
         DispatchAttack(strategy, source, target, this.Damage);   
     }
-    public override void DispatchAttack(AttackStrategy strategy, IEntity? source, List<IEntity>? target, int damage)
+    public override void DispatchAttack(AttackStrategy strategy, Entity? source, List<Entity>? target, int damage)
     {
         if (target == null) return;
         foreach (var entity in target)

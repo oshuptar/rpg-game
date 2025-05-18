@@ -1,6 +1,8 @@
 ﻿using RPG_Game.Entiities;
 using RPG_Game.Entities;
 using RPG_Game.Interfaces;
+using RPG_Game.Model;
+using RPG_Game.Model.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,9 +13,9 @@ namespace RPG_Game.HelperClasses;
 
 public abstract class StorageManager
 {
-    public IItem? Drop(Room room, int index, List<IItem> list, IEntity entity)
+    public Item? Drop(Room room, int index, List<Item> list, Entity entity)
     {
-        IItem? item = Remove(index, list);
+        Item? item = Remove(index, list);
         if (item != null)
         {
             room.AddItem(item, entity.Position);
@@ -21,16 +23,16 @@ public abstract class StorageManager
         }
         return item;
     }
-    public IItem? Retrieve(int index, List<IItem> list)
+    public Item? Retrieve(int index, List<Item> list)
     {
         if (list.Count == 0)
             return null;
-        IItem item = list.ElementAt(index);
+        Item item = list.ElementAt(index);
         return item;
     }
-    public IItem? Remove(int index, List<IItem> list)
+    public Item? Remove(int index, List<Item> list)
     {
-        IItem? item = Retrieve(index, list);
+        Item? item = Retrieve(index, list);
         if (item != null)
             list.RemoveAt(index);
         return item;

@@ -9,10 +9,10 @@ namespace RPG_Game.LogMessages;
 
 public class OnItemActionMessage
 {
-    public IItem Item { get; set; }
+    public Item Item { get; set; }
     public string Name { get; set; }
 
-    public OnItemActionMessage(IItem item, string name)
+    public OnItemActionMessage(Item item, string name)
     {
         this.Item = item;
         this.Name = name;

@@ -11,15 +11,13 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
-
 using RPG_Game.View;
+using RPG_Game.Model;
 
 namespace RPG_Game.Controller;
-
+//TcpClient.GetStream() always returns the same stream instance tied to the connection. You don't create a new stream every time.
 public class GameServer
 {
-    public ConcurrentQueue<(int, IRequest)> RequestQueue = new();
-    public ConcurrentDictionary<int, TcpClient> Clients = new (); 
     public IPAddress IpAddress { get; set; }
     public int PortNumber { get;set; }
 
@@ -36,13 +34,12 @@ public class GameServer
     public ServerController ServerController { get; set; }
     public TcpListener Server { get; set; }
     public MapConfigurator Map { get; set; }
-    public Room Room { get; set; }
     public GameServer(IPAddress ipAddress, int portNumber) 
     { 
         IpAddress = ipAddress;
         PortNumber = portNumber;
         Map = new MapConfigurator();
-        ServerController = new ServerController(new ServerConsoleView(), new GameStateAuthorityProxy());
+        ServerController = new ServerController(new ServerConsoleView(), new Room());
         ServerController.SetViewController();
 
         ServerState = new ServerStart(this);

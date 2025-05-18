@@ -1,12 +1,12 @@
 ﻿using RPG_Game.Entiities;
 using RPG_Game.Entities;
 using RPG_Game.Interfaces;
+using RPG_Game.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static RPG_Game.Entiities.Room;
 
 namespace RPG_Game.HelperClasses;
 
@@ -23,7 +23,7 @@ public class ObjectRenderer
     }
     private ObjectRenderer() { }
     public void SetMapInstructionConfigurator(MapInstructionConfigurator mapIstructions) => _mapInstructionConfigurator = mapIstructions;
-    public StringBuilder RenderItemList(List<IItem>? list, string name)
+    public StringBuilder RenderItemList(List<Item>? list, string name)
     {
         StringBuilder sb = new StringBuilder();
 
@@ -32,20 +32,9 @@ public class ObjectRenderer
             output = string.Join(", ", list.Select(item => item.Name));
         return sb.Append(String.Format($"{name}: {output ?? "None"}"));
     }
-    public StringBuilder RenderGrid(Room room)
+    public StringBuilder RenderMap(IGameState gameState)
     {
-        StringBuilder sb = new StringBuilder();
-        RoomState.Cell[,] grid = room.GetRoomState().GetGrid();
-
-        for (int i = 0; i < MapSettings.Height; i++)
-        {
-            for (int j = 0; j < MapSettings.Width; j++)
-            {
-                sb.Append(grid[j, i].PrintCell());
-            }
-            sb.Append('\n');
-        }
-        return sb;
+        return gameState.RenderMap();
     }
     public StringBuilder RenderControls(bool isControlsVisible)
     {

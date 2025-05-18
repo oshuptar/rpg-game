@@ -16,30 +16,23 @@ using RPG_Game.HelperClasses;
 using System.Xml.Xsl;
 using RPG_Game.Controller;
 using RPG_Game.Entities;
+using RPG_Game.Model;
 
 namespace RPG_Game.UIHandlers;
 
-// state of the game in the console object displayer
 public class ClientConsoleView : View.View
 {
-    // Divide the console output
     private static ClientConsoleView? ConsoleViewInstance;
     private const int _verticalSpaceSize = MapSettings.Height / 10;
     private const int _horizontalSpaceSize = MapSettings.Width / 10;
-    private Game Game;
     private int _noOfAttributes = 8; // hardcoded value; to change
     private int _noOfLists = 4; // hardcoded value; to change
-    public int CurrentFocus { get; private set; }
-    public FocusType FocusOn { get; private set; }
     private (int left, int top) CursorPosition { get; set; } = (0, 0);
     private bool IsControlsVisible { get; set; }
-    private ClientConsoleView()
+    private ClientConsoleView() : base(false)
     {
-        CurrentFocus = 0;
-        FocusOn = FocusType.Room;
         IsControlsVisible = true;
     }
-    public void SetGameState(Game game) => Game = game;
     public static ClientConsoleView GetInstance()
     {
         if (ConsoleViewInstance == null)
@@ -55,29 +48,28 @@ public class ClientConsoleView : View.View
         if(FocusOn == FocusType.Room)
             CurrentFocus = 0;
     }
-    public void SetInventoryFocus()
+    public override void SetInventoryFocus()
     {
         FocusOn = FocusType.Inventory;
         CurrentFocus = 0;
     }
-    public void SetHandsFocus()
+    public override void SetHandsFocus()
     {
         FocusOn = FocusType.Hands;
         CurrentFocus = 0;
     }
-    public void ResetFocusType()
+    public override void ResetFocusType()
     {
         FocusOn = FocusType.Room;
         CurrentFocus = 0;
-        
     }
     public void DisplayControls(bool isControlsVisible = true) => Console.Write(ObjectRenderer.GetInstance().RenderControls(isControlsVisible));
     public StringBuilder DisplayInventory(Player player) => ObjectRenderer.GetInstance().RenderItemList(player.GetInventory().GetInventoryState().Inventory, "Inventory");
     public StringBuilder DisplayEquipped(Player player) => ObjectRenderer.GetInstance().RenderItemList(player.GetHands().GetHandState().Hands, "Equipped");
-    public StringBuilder DisplayTileItems(Position position) => ObjectRenderer.GetInstance().RenderItemList(Game.GetRoom().GetRoomState().GetGrid()[position.X, position.Y].Items, "Items");
-    public void ChangeControlsVisibility() => IsControlsVisible = !IsControlsVisible;
+    public StringBuilder DisplayTileItems(Position position) => ObjectRenderer.GetInstance().RenderItemList(GameState.GetItems(position), "Items");
+    public override void HideControls() => IsControlsVisible = !IsControlsVisible;
     public void FillLine() => Console.Write(ObjectRenderer.GetInstance().RenderEmptyLine());
-    public void DisplayCurrent(List<IItem>? list, string Object)
+    public void DisplayCurrent(List<Item>? list, string Object)
     {
         string? output = null;
         if (list != null && list.Count != 0)
@@ -95,32 +87,32 @@ public class ClientConsoleView : View.View
         switch (FocusOn)
         {
             case FocusType.Inventory:
-                DisplayCurrent(Game.GetPlayer().GetInventory().GetInventoryState().Inventory, "Inventory");
+                DisplayCurrent(GameState.GetPlayer().GetInventory().GetInventoryState().Inventory, "Inventory");
                 break;
             case FocusType.Hands:
-                DisplayCurrent(Game.GetPlayer().GetHands().GetHandState().Hands, "Hands");
+                DisplayCurrent(GameState.GetPlayer().GetHands().GetHandState().Hands, "Hands");
                 break;
             case FocusType.Room:
-                DisplayCurrent(Game.GetRoom().GetRoomState().GetGrid()[Game.GetPlayer().Position.X, Game.GetPlayer().Position.Y].Items, "Room");
+                DisplayCurrent(GameState.GetItems(GameState.GetPlayer().Position), "Room");
                 break;
         }
     }
-    public void ShiftCurrentFocus(Direction direction)
+    public override void ShiftCurrentFocus(Direction direction)
     {
         switch (FocusOn)
         {
             case FocusType.Inventory:
-                ShiftFocus(Game.GetPlayer().GetInventory().GetInventoryState().Inventory, direction);
+                ShiftFocus(GameState.GetPlayer().GetInventory().GetInventoryState().Inventory, direction);
                 break;
             case FocusType.Hands:
-                ShiftFocus(Game.GetPlayer().GetHands().GetHandState().Hands, direction);
+                ShiftFocus(GameState.GetPlayer().GetHands().GetHandState().Hands, direction);
                 break;
             case FocusType.Room:
-                ShiftFocus(Game.GetRoom().GetRoomState().GetGrid()[Game.GetPlayer().Position.X, Game.GetPlayer().Position.Y].Items, direction);
+                ShiftFocus(GameState.GetItems(GameState.GetPlayer().Position), direction);
                 break;
         }
     }
-    public void ShiftFocus(List<IItem>? list, Direction direction)
+    public void ShiftFocus(List<Item>? list, Direction direction)
     {
         if (list is null)
             return;
@@ -137,14 +129,14 @@ public class ClientConsoleView : View.View
     }
     public void DisplayPlayerAttributes()
     {
-        foreach (var key in Game.GetPlayer().GetEntityStats().Attributes.Keys)
+        foreach (var key in GameState.GetPlayer().GetEntityStats().Attributes.Keys)
         {
-            Console.Write($"{key}: {Game.GetPlayer().GetEntityStats().Attributes[key]}");
+            Console.Write($"{key}: {GameState.GetPlayer().GetEntityStats().Attributes[key]}");
             FillLine();
             CursorPosition = (CursorPosition.left, CursorPosition.top + 1);
             Console.SetCursorPosition(CursorPosition.left, CursorPosition.top);
         }
-        Console.Write($"Attack Strategy: {Game.AttackType.ToString()}");
+        Console.Write($"Attack Strategy: {GameState.GetPlayer().AttackType.ToString()}");
         FillLine();
     }
 
@@ -154,47 +146,35 @@ public class ClientConsoleView : View.View
         Console.WriteLine(" - To Start the Game press any key");
         Console.WriteLine("Have fun!");
     }
-    // We are overriding previous contents on Enemy type cells
-    public void DisplayEnemies()
+    public override void ClearLogMessage()
     {
-        Console.ForegroundColor = ConsoleColor.DarkRed;
-        for (int i = 0; i < MapSettings.Width; i++)
-        {
-            for (int j = 0; j < MapSettings.Height; j++)
-            {
-                if ((Game.GetRoom().GetRoomState().GetGrid()[i, j].CellType & CellType.Enemy) != 0)
-                {
-                    Console.SetCursorPosition(i, j);
-                    Console.Write(Game.GetRoom().GetRoomState().GetGrid()[i, j].PrintCell());
-                }
-            }
-        }
-        Console.ForegroundColor = ConsoleColor.White;
+        LogMessage(" ");
     }
-
-    // Fix implementation
+    public override void EndRoutine(bool flag)
+    {
+        throw new NotImplementedException();
+    }
     public override void DisplayRoutine()
     {
         Console.SetCursorPosition(0, 0);
-        Console.Write(ObjectRenderer.GetInstance().RenderGrid(Game.GetRoom()));
+        Console.Write(ObjectRenderer.GetInstance().RenderMap(GameState));
 
         (int X, int Y) oldPosition = Console.GetCursorPosition();
-
-        DisplayEnemies();
+        //DisplayEnemies();
 
         int horizontalPosition = MapSettings.Width + _horizontalSpaceSize;
         int verticalPosition = _verticalSpaceSize;
 
         Console.SetCursorPosition(horizontalPosition, verticalPosition);
-        Console.Write(DisplayTileItems(Game.GetPlayer().Position));
+        Console.Write(DisplayTileItems(GameState.GetPlayer().Position));
         FillLine();
 
         Console.SetCursorPosition(horizontalPosition, verticalPosition + 1);
-        Console.Write(DisplayEquipped(Game.GetPlayer()));
+        Console.Write(DisplayEquipped(GameState.GetPlayer()));
         FillLine();
 
         Console.SetCursorPosition(horizontalPosition, verticalPosition + 2);
-        Console.Write(DisplayInventory(Game.GetPlayer()));
+        Console.Write(DisplayInventory(GameState.GetPlayer()));
         FillLine();
 
         Console.SetCursorPosition(horizontalPosition, verticalPosition + 3);
@@ -219,75 +199,90 @@ public class ClientConsoleView : View.View
         Console.Write($"{message}");
         FillLine();
     }
-    public void LogMessage(OnPlayerDeathMessage messageInfo)
-    {
-        this.ClearConsole();
-        Console.SetCursorPosition(0, 0);
-        Console.Write($"{messageInfo.Player.Name} was killed. End of Game!");
-    }
-    private void LogWarning(string message)
-    {
-        Console.SetCursorPosition(MapSettings.Width + _horizontalSpaceSize, _noOfLists + _noOfAttributes + 4 * _verticalSpaceSize);
-        Console.ForegroundColor = ConsoleColor.Red;
-        Console.Write($"\"{message}\"");
-        Console.ForegroundColor = ConsoleColor.White;
-        FillLine();
-    }
-    public void LogMessage(OnEnemyDetectionMessage messageInfo)
-    {
-        if (messageInfo.enemy != null)
-            LogWarning($"Enemy Warning: {messageInfo.enemy} " +
-                $"{messageInfo.enemy.GetEntityStats().Attributes[PlayerAttributes.Health].GetCurrentValue()}HP" +
-                $" at x:{messageInfo.enemy.Position.X}, y:{messageInfo.enemy.Position.Y}");
-    }
 
-    public void LogMessage(OnEmptyDirectory messageInfo)
-    {
-        LogMessage($"{messageInfo.Name} emptied his inventory");
-    }
-    public void LogMessage(OnMoveMessage messageInfo)
-    {
-        LogMessage($"{messageInfo.Name} moved to the {messageInfo.direction}");
-    }
+    // We are overriding previous contents on Enemy type cells
+    //public void DisplayEnemies()
+    //{
+    //    Console.ForegroundColor = ConsoleColor.DarkRed;
+    //    for (int i = 0; i < MapSettings.Width; i++)
+    //    {
+    //        for (int j = 0; j < MapSettings.Height; j++)
+    //        {
+    //            if ((Game.GetRoom().GetRoomState().GetGrid()[i, j].CellType & CellType.Enemy) != 0)
+    //            {
+    //                Console.SetCursorPosition(i, j);
+    //                Console.Write(Game.GetRoom().GetRoomState().GetGrid()[i, j].PrintCell());
+    //            }
+    //        }
+    //    }
+    //    Console.ForegroundColor = ConsoleColor.White;
+    //}
 
-    public void LogMessage(OnItemUnequipMessage messageInfo)
-    {
-        LogMessage($"{messageInfo.Name} unequipped {messageInfo.Item.Name}");
-    }
+    // Fix implementation
+    //public void LogMessage(OnPlayerDeathMessage messageInfo)
+    //{
+    //    this.ClearConsole();
+    //    Console.SetCursorPosition(0, 0);
+    //    Console.Write($"{messageInfo.Player.Name} was killed. End of Game!");
+    //}
+    //private void LogWarning(string message)
+    //{
+    //    Console.SetCursorPosition(MapSettings.Width + _horizontalSpaceSize, _noOfLists + _noOfAttributes + 4 * _verticalSpaceSize);
+    //    Console.ForegroundColor = ConsoleColor.Red;
+    //    Console.Write($"\"{message}\"");
+    //    Console.ForegroundColor = ConsoleColor.White;
+    //    FillLine();
+    //}
+    //public void LogMessage(OnEnemyDetectionMessage messageInfo)
+    //{
+    //    if (messageInfo.enemy != null)
+    //        LogWarning($"Enemy Warning: {messageInfo.enemy} " +
+    //            $"{messageInfo.enemy.GetEntityStats().Attributes[PlayerAttributes.Health].GetCurrentValue()}HP" +
+    //            $" at x:{messageInfo.enemy.Position.X}, y:{messageInfo.enemy.Position.Y}");
+    //}
 
-    public void LogMessage(OnItemEquipMessage messageInfo)
-    {
-        LogMessage($"{messageInfo.Name} equipped {messageInfo.Item.Name} {messageInfo.Item.Description}");
-    }
+    //public void LogMessage(OnEmptyDirectory messageInfo)
+    //{
+    //    LogMessage($"{messageInfo.Name} emptied his inventory");
+    //}
+    //public void LogMessage(OnMoveMessage messageInfo)
+    //{
+    //    LogMessage($"{messageInfo.Name} moved to the {messageInfo.direction}");
+    //}
 
-    public void LogMessage(OnItemDropMessage messageInfo)
-    {
-        LogMessage($"{messageInfo.Name} dropped {messageInfo.Item.Name}");
-    }
+    //public void LogMessage(OnItemUnequipMessage messageInfo)
+    //{
+    //    LogMessage($"{messageInfo.Name} unequipped {messageInfo.Item.Name}");
+    //}
 
-    public void LogMessage(OnItemPickUpMessage messageInfo)
-    {
-        LogMessage($"{messageInfo.Name} picked up {messageInfo.Item.Name} {messageInfo.Item.Description}");
-    }
+    //public void LogMessage(OnItemEquipMessage messageInfo)
+    //{
+    //    LogMessage($"{messageInfo.Name} equipped {messageInfo.Item.Name} {messageInfo.Item.Description}");
+    //}
 
-    public void LogMessage(OnRequestNotSupportedMessage messageInfo)
-    {
-        LogMessage($"{messageInfo.Description}");
-    }
+    //public void LogMessage(OnItemDropMessage messageInfo)
+    //{
+    //    LogMessage($"{messageInfo.Name} dropped {messageInfo.Item.Name}");
+    //}
 
-    public void LogMessage(OnEnemyDeathMessage messageInfo)
-    {
-        LogMessage($"{messageInfo.enemy.ToString()} was killed");
-    }
+    //public void LogMessage(OnItemPickUpMessage messageInfo)
+    //{
+    //    LogMessage($"{messageInfo.Name} picked up {messageInfo.Item.Name} {messageInfo.Item.Description}");
+    //}
 
-    public void LogMessage(OnAttackMessage messageInfo)
-    {
-        LogMessage($"{messageInfo.source} attacked {messageInfo.target}: -{messageInfo.Damage}HP");
-    }
-    public void ClearConsole() => Console.Clear();
+    //public void LogMessage(OnRequestNotSupportedMessage messageInfo)
+    //{
+    //    LogMessage($"{messageInfo.Description}");
+    //}
 
-    public void ClearLogMessage()
-    {
-        LogMessage(" ");
-    }
+    //public void LogMessage(OnEnemyDeathMessage messageInfo)
+    //{
+    //    LogMessage($"{messageInfo.enemy.ToString()} was killed");
+    //}
+
+    //public void LogMessage(OnAttackMessage messageInfo)
+    //{
+    //    LogMessage($"{messageInfo.source} attacked {messageInfo.target}: -{messageInfo.Damage}HP");
+    //}
+    //public void ClearConsole() => Console.Clear();
 }

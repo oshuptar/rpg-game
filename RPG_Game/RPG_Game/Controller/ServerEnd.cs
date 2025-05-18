@@ -11,7 +11,7 @@ public class ServerEnd : ServerState
     public ServerEnd(GameServer gameServer) : base(gameServer) { }
     public override void HostGame()
     {
-        foreach(var client in gameServer.Clients.Values)
+        foreach(var client in gameServer.ServerController.ActiveClients.Values)
         {
             client.Close();
             client.Dispose();

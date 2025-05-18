@@ -8,4 +8,5 @@ namespace RPG_Game.Controller;
 
 public interface IRequest
 {
+    public void SendRequest();
 }

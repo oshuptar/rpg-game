@@ -18,6 +18,7 @@ public class ServerStart : ServerState
         var ipAddress = this.gameServer.IpAddress;
 
         gameServer.Server = new TcpListener(ipAddress, port);
+        gameServer.ServerController.SetTcpListener(gameServer.Server);
         gameServer.Server.Start();
         this.SetGameServerState();
     }

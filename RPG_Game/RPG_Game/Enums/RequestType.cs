@@ -31,4 +31,6 @@ public enum RequestType
     EnemyAttack,
     Quit,
     Ignore,
+    ServerStop,
+    ClientJoined,
 }

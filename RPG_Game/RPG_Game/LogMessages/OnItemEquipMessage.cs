@@ -9,7 +9,7 @@ namespace RPG_Game.LogMessages;
 
 public class OnItemEquipMessage :OnItemActionMessage
 {
-    public OnItemEquipMessage(IItem item, string name) : base(item, name)
+    public OnItemEquipMessage(Item item, string name) : base(item, name)
     {
     }
 }

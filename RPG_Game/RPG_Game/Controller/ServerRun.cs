@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RPG_Game.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
@@ -9,24 +10,12 @@ namespace RPG_Game.Controller;
 
 public class ServerRun : ServerState
 {
-    static int playerId = 1;
     public ServerRun(GameServer gameServer) : base(gameServer) { }
     public override void HostGame()
     {
         // Accepts new connections
         // Runs Game Loop
-        TcpListener server = gameServer.Server;
-
-        while (true)
-        {
-            Console.WriteLine("Waiting for connection...");
-            TcpClient client = server.AcceptTcpClient();
-
-            Console.WriteLine($"Client {playerId} connected");
-
-            gameServer.Clients.TryAdd(playerId, client);
-            playerId++;
-        }
+        //Task.Run(() => AcceptConnections());
 
         //Console.WriteLine("Waiting for connection...");
         //TcpClient client = server.AcceptTcpClient();
@@ -38,9 +27,11 @@ public class ServerRun : ServerState
         //string message = Encoding.UTF8.GetString(buffer, 0, bytesRead);
 
         //Console.WriteLine($"Received: {message}");
+        gameServer.ServerController.ServerRun();
+        SetGameServerState();
     }
     public override void SetGameServerState()
     {
-        throw new NotImplementedException();
+        gameServer.ServerState = new ServerEnd(gameServer);
     }
 }
