@@ -8,11 +8,14 @@ using RPG_Game.HelperClasses;
 using RPG_Game.Entiities;
 using RPG_Game.Entities;
 using RPG_Game.Model;
+using System.Text.Json.Serialization;
 
 namespace RPG_Game.Entities;
 public class Hands : StorageManager
 {
-    private HandsState HandsState = new HandsState();
+    [JsonInclude]
+    public HandsState HandsState { get; private set; } = new HandsState();
+    public Hands() { }
     public bool Equip(Item? item, Player player ,bool isInInventory = true)
     {
         if (item == null || item.Capacity + HandsState.Capacity > HandsState.MaxCapacity)

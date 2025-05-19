@@ -47,21 +47,26 @@ public class ClientConsoleView : View.View
     {
         if(FocusOn == FocusType.Room)
             CurrentFocus = 0;
+        //DisplayCurrentItem();
     }
     public override void SetInventoryFocus()
     {
         FocusOn = FocusType.Inventory;
         CurrentFocus = 0;
+        DisplayRoutine();
     }
     public override void SetHandsFocus()
     {
+        // FIx to only update needed parts
         FocusOn = FocusType.Hands;
         CurrentFocus = 0;
+        DisplayRoutine();
     }
     public override void ResetFocusType()
     {
         FocusOn = FocusType.Room;
         CurrentFocus = 0;
+        DisplayRoutine();
     }
     public void DisplayControls(bool isControlsVisible = true) => Console.Write(ObjectRenderer.GetInstance().RenderControls(isControlsVisible));
     public StringBuilder DisplayInventory(Player player) => ObjectRenderer.GetInstance().RenderItemList(player.GetInventory().GetInventoryState().Inventory, "Inventory");
@@ -74,7 +79,7 @@ public class ClientConsoleView : View.View
         string? output = null;
         if (list != null && list.Count != 0)
         {
-            output = list[CurrentFocus].Name;
+            output = list[Math.Min(CurrentFocus,list.Count - 1)].Name;
         }
 
         Console.Write($"Current Focus (in {Object}): ");
@@ -111,6 +116,7 @@ public class ClientConsoleView : View.View
                 ShiftFocus(GameState.GetItems(GameState.GetPlayer().Position), direction);
                 break;
         }
+        DisplayRoutine();
     }
     public void ShiftFocus(List<Item>? list, Direction direction)
     {

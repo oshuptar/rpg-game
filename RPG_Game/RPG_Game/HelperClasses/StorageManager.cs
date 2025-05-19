@@ -3,14 +3,19 @@ using RPG_Game.Entities;
 using RPG_Game.Interfaces;
 using RPG_Game.Model;
 using RPG_Game.Model.Entities;
+using RPG_Game.Potions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace RPG_Game.HelperClasses;
 
+[JsonPolymorphic(TypeDiscriminatorPropertyName = "$discriminator")]
+[JsonDerivedType(typeof(Hands), "Hands")]
+[JsonDerivedType(typeof(Inventory), "Inventory")]
 public abstract class StorageManager
 {
     public Item? Drop(Room room, int index, List<Item> list, Entity entity)

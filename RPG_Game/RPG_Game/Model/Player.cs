@@ -14,21 +14,28 @@ using RPG_Game.UIHandlers;
 using RPG_Game.Model;
 using RPG_Game.Model.Entities;
 using RPG_Game.Controller;
+using System.Text.Json.Serialization;
 
 namespace RPG_Game.Model;
 
 public class Player : Entity
 {
+    [JsonInclude]
     public AttackType AttackType { get; set; } = AttackType.NormalAttack;
+    [JsonInclude]
     public AttackStrategy AttackStrategy { get; set; } = new NormalAttackStrategy();
+    [JsonInclude]
     public int PlayerId { get; set; }
+    [JsonInclude]
     public string Name { get; private set; }
-
-    private Hands Hands = new Hands();
-
-    private Inventory Inventory = new Inventory();
-
-    private PlayerStats PlayerStats = new PlayerStats();
+    [JsonInclude]
+    public Hands Hands { get; private set; } = new Hands();
+    [JsonInclude]
+    public Inventory Inventory { get; private set; } = new Inventory();
+    [JsonInclude]
+    public PlayerStats PlayerStats { get; private set; } = new PlayerStats();
+    public Player() : base()
+    {}
     public Player(int playerId) : base()
     {
         this.PlayerStats.Died += OnDeath;
@@ -72,8 +79,8 @@ public class Player : Entity
         if ((tempPos = IsMovable(direction, room)) != null)
         {
             room.RemovePlayer(this);
-            room.AddPlayer(this, tempPos);
-            OnMove();
+            room.AddPlayer(this, tempPos.Value);
+            //OnMove();
 
             Entity? entity = room.GetClosestEntity(this);
 
@@ -169,7 +176,6 @@ public class Player : Entity
     {
         return this.Name;
     }
-
     public void SetAttackMode(AttackType attackType, AttackStrategy attackStrategy)
     {
         AttackType = attackType;

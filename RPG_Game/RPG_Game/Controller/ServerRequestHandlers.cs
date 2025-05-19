@@ -54,14 +54,16 @@ public class UseItemServerHandler : ServerRequestHandler
             if (items.Count == 0) return null;
             Item? item = player.Retrieve(request.CurrentFocus,
                 request.FocusOn == FocusType.Inventory);
-            if (item != null && item.Equals(items[0]))
+            if (item != null /*&& item.Equals(items[0])*/)
                 item?.Use(player.AttackStrategy, player, null);
 
             // Perform some logging of the action
 
-            new Response(RequestType.UseItem,
-                request.PlayerId,
-                ServerHandlerChain.GetInstance().ServerController.GetGameState()).HandleResponse();
+            Response response = new Response(RequestType.UseItem,
+                null,
+                ServerHandlerChain.GetInstance().ServerController.GetGameState());
+            response.Controller = ServerHandlerChain.GetInstance().ServerController;
+            response.HandleResponse();
             return null;
         }
         else
@@ -78,9 +80,11 @@ public class MoveUpServerHandler : ServerRequestHandler
             Player player = request.GameState.GetPlayer();
             player.Move(Direction.North, (Room)request.GameState); // think how to overcome this casting
 
-            new Response(RequestType.UseItem,
-                request.PlayerId,
-                ServerHandlerChain.GetInstance().ServerController.GetGameState()).HandleResponse();
+            Response response = new Response(RequestType.MoveUp,
+                null,
+                ServerHandlerChain.GetInstance().ServerController.GetGameState());
+            response.Controller = ServerHandlerChain.GetInstance().ServerController;
+            response.HandleResponse();
             return null;
         }
         else
@@ -98,9 +102,11 @@ public class MoveDownServerHandler : ServerRequestHandler
             Player player = request.GameState.GetPlayer();
             player.Move(Direction.South, (Room)request.GameState);
 
-            new Response(RequestType.UseItem,
-                request.PlayerId,
-                ServerHandlerChain.GetInstance().ServerController.GetGameState()).HandleResponse();
+            Response response = new Response(RequestType.MoveDown,
+                null,
+                ServerHandlerChain.GetInstance().ServerController.GetGameState());
+            response.Controller = ServerHandlerChain.GetInstance().ServerController;
+            response.HandleResponse();
             return null;
         }
         else
@@ -117,9 +123,11 @@ public class MoveRightServerHandler : ServerRequestHandler
             Player player = request.GameState.GetPlayer();
             player.Move(Direction.East, (Room)request.GameState);
 
-            new Response(RequestType.UseItem,
-                request.PlayerId,
-                ServerHandlerChain.GetInstance().ServerController.GetGameState()).HandleResponse();
+            Response response = new Response(RequestType.MoveRight,
+                null,
+                ServerHandlerChain.GetInstance().ServerController.GetGameState());
+            response.Controller = ServerHandlerChain.GetInstance().ServerController;
+            response.HandleResponse();
             return null;
         }
         else
@@ -136,9 +144,11 @@ public class MoveLeftServerHandler : ServerRequestHandler
             Player player = request.GameState.GetPlayer();
             player.Move(Direction.West, (Room)request.GameState);
 
-            new Response(RequestType.UseItem,
-                request.PlayerId,
-                ServerHandlerChain.GetInstance().ServerController.GetGameState()).HandleResponse();
+            Response response = new Response(RequestType.MoveLeft,
+                null,
+                ServerHandlerChain.GetInstance().ServerController.GetGameState());
+            response.Controller = ServerHandlerChain.GetInstance().ServerController;
+            response.HandleResponse();
             return null;
         }
         else
@@ -153,9 +163,11 @@ public class QuitServerHadler : ServerRequestHandler
         if (CanHandleRequest(request))
         {
             // Handle player removal
-            new Response(RequestType.UseItem,
-                request.PlayerId,
-                ServerHandlerChain.GetInstance().ServerController.GetGameState()).HandleResponse();
+            Response response = new Response(RequestType.Quit,
+                null,
+                ServerHandlerChain.GetInstance().ServerController.GetGameState());
+            response.Controller = ServerHandlerChain.GetInstance().ServerController;
+            response.HandleResponse();
             return new List<IViewCommand>() { new QuitCommand(false) };
         }
         else
@@ -176,14 +188,18 @@ public class PickUpItemServerHandler : ServerRequestHandler
             if (items.Count == 0) return null;
             // Validation Logic
 
-            Item? item = ((Room)request.GameState).RemoveItem(player.Position, items[0]);
+            // Implement Value Checkers for types, or specify a unique ID to each item
+            // Improve validation
+            Item? item = ((Room)request.GameState).RemoveItem(player.Position, request.CurrentFocus);
             if (item == null) return null;
             player.PickUp(item);
             //Log action
 
-            new Response(RequestType.UseItem,
-                request.PlayerId,
-                ServerHandlerChain.GetInstance().ServerController.GetGameState()).HandleResponse();
+            Response response = new Response(RequestType.PickUpItem,
+                null,
+                ServerHandlerChain.GetInstance().ServerController.GetGameState());
+            response.Controller = ServerHandlerChain.GetInstance().ServerController;
+            response.HandleResponse();
             return null;
         }
         else
@@ -201,12 +217,14 @@ public class DropItemServerHandler : ServerRequestHandler
             // Fix to remove by reference not by index
             Player player = request.GameState.GetPlayer();
             ItemActionRequest itemActionRequest = (ItemActionRequest)request;
-            player.Drop((Room)request.GameState, itemActionRequest.Items[0], request.FocusOn == FocusType.Inventory);
-            //player.Drop((Room)request.GameState, request.CurrentFocus, request.FocusOn == FocusType.Inventory);
+            //player.Drop((Room)request.GameState, itemActionRequest.Items[0], request.FocusOn == FocusType.Inventory);
+            player.Drop((Room)request.GameState, request.CurrentFocus, request.FocusOn == FocusType.Inventory);
 
-            new Response(RequestType.UseItem,
-                request.PlayerId,
-                ServerHandlerChain.GetInstance().ServerController.GetGameState()).HandleResponse();
+            Response response = new Response(RequestType.DropItem,
+                null,
+                ServerHandlerChain.GetInstance().ServerController.GetGameState());
+            response.Controller = ServerHandlerChain.GetInstance().ServerController;
+            response.HandleResponse();
             return null;
         }
         else
@@ -238,15 +256,17 @@ public class EquipItemServerHandler : ServerRequestHandler
                     break;
                 case FocusType.Room:
                     Room room = ((Room)request.GameState);
-                    item = room.RemoveItem(player.Position, items[0]);
-                    if (item == null || !item.Equals(items[0])) return null;
+                    item = room.RemoveItem(player.Position, request.CurrentFocus);
+                    if (item == null /*|| !item.Equals(items[0])*/) return null;
                     if (!player.Equip(item))
                         room.AddItem(item, player.Position);
                     break;
             }
-            new Response(RequestType.UseItem,
-                request.PlayerId,
-                ServerHandlerChain.GetInstance().ServerController.GetGameState()).HandleResponse();
+            Response response = new Response(RequestType.EquipItem,
+                null,
+                ServerHandlerChain.GetInstance().ServerController.GetGameState());
+            response.Controller = ServerHandlerChain.GetInstance().ServerController;
+            response.HandleResponse();
             return null;
         }
         else
@@ -263,9 +283,11 @@ public class EmptyInventoryServerHandler : ServerRequestHandler
             Player player = request.GameState.GetPlayer();
             player.EmptyInventory(((Room)request.GameState));
 
-            new Response(RequestType.UseItem,
-                request.PlayerId,
-                ServerHandlerChain.GetInstance().ServerController.GetGameState()).HandleResponse();
+            Response response = new Response(RequestType.EmptyInventory,
+                null,
+                ServerHandlerChain.GetInstance().ServerController.GetGameState());
+            response.Controller = ServerHandlerChain.GetInstance().ServerController;
+            response.HandleResponse();
             return null;
         }
         else
@@ -280,7 +302,12 @@ public class NormalAttackModeServerHandler : ServerRequestHandler
     {
         if (CanHandleRequest(request))
         {
-            request.GameState.GetPlayer().SetAttackMode(AttackType.NormalAttack, new NormalAttackStrategy());
+            ((Room)request.GameState).GetPlayer().SetAttackMode(AttackType.NormalAttack, new NormalAttackStrategy());
+            Response response = new Response(RequestType.NormalAttack,
+                null,
+                ServerHandlerChain.GetInstance().ServerController.GetGameState());
+            response.Controller = ServerHandlerChain.GetInstance().ServerController;
+            response.HandleResponse();
             return null;
         }
         else
@@ -295,7 +322,12 @@ public class StealthAttackModeServerHandler : ServerRequestHandler
     {
         if (CanHandleRequest(request))
         {
-            request.GameState.GetPlayer().SetAttackMode(AttackType.StealthAttack, new StealthAttackStrategy());
+            ((Room)request.GameState).GetPlayer().SetAttackMode(AttackType.StealthAttack, new StealthAttackStrategy());
+            Response response = new Response(RequestType.StealthAttack,
+                null,
+                ServerHandlerChain.GetInstance().ServerController.GetGameState());
+            response.Controller = ServerHandlerChain.GetInstance().ServerController;
+            response.HandleResponse();
             return null;
         }
         else
@@ -309,7 +341,12 @@ public class MagicAttackModeServerHandler : ServerRequestHandler
     {
         if (CanHandleRequest(request))
         {
-            request.GameState.GetPlayer().SetAttackMode(AttackType.MagicAttack, new MagicAttackStrategy());
+            ((Room)request.GameState).GetPlayer().SetAttackMode(AttackType.MagicAttack, new MagicAttackStrategy());
+            Response response = new Response(RequestType.MagicAttack,
+                null,
+                ServerHandlerChain.GetInstance().ServerController.GetGameState());
+            response.Controller = ServerHandlerChain.GetInstance().ServerController;
+            response.HandleResponse();
             return null;
         }
         else
@@ -339,9 +376,11 @@ public class OneWeaponAttackServerHandler : ServerRequestHandler
                 }
             }
 
-            new Response(RequestType.UseItem,
-                request.PlayerId,
-                ServerHandlerChain.GetInstance().ServerController.GetGameState()).HandleResponse();
+            Response response = new Response(RequestType.OneWeaponAttack,
+                null,
+                ServerHandlerChain.GetInstance().ServerController.GetGameState());
+            response.Controller = ServerHandlerChain.GetInstance().ServerController;
+            response.HandleResponse();
             return null;
         }
         else
@@ -371,9 +410,11 @@ public class TwoWeaponAttackServerHandler : ServerRequestHandler
                 }
             }
 
-            new Response(RequestType.UseItem,
-                request.PlayerId,
-                ServerHandlerChain.GetInstance().ServerController.GetGameState()).HandleResponse();
+            Response response = new Response(RequestType.TwoWeaponAttack,
+                null,
+                ServerHandlerChain.GetInstance().ServerController.GetGameState());
+            response.Controller = ServerHandlerChain.GetInstance().ServerController;
+            response.HandleResponse();
             return null;
         }
         else

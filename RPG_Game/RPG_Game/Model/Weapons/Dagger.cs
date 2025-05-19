@@ -32,4 +32,5 @@ public class Dagger : LightWeapon
         }
     }
     public override object Copy() => new Dagger();
+    public Dagger(): base() { }
 }

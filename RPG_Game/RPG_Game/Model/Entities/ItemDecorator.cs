@@ -15,20 +15,20 @@ namespace RPG_Game.Entiities;
 public class ItemDecorator : Item
 {
     [JsonInclude]
-    protected Item item;
-    public override string Name => item.Name;
-    public override int Capacity => item.Capacity; //reccursively callls this function until it reaches some concrete object
-    public override void ApplyChanges(EntityStats entityStats) => item.ApplyChanges(entityStats);
-    public override void RevertChanges(EntityStats entityStats) => item.RevertChanges(entityStats);
+    public Item Item { get; private set; }
+    public override string Name => Item.Name;
+    public override int Capacity => Item.Capacity; //reccursively callls this function until it reaches some concrete object
+    public override void ApplyChanges(EntityStats entityStats) => Item.ApplyChanges(entityStats);
+    public override void RevertChanges(EntityStats entityStats) => Item.RevertChanges(entityStats);
     public override void Use(AttackStrategy strategy, Entity? source, List<Entity>? target)
     {
-        item.Use(strategy,source, target);
+        Item.Use(strategy,source, target);
     }
-    public override string Description => item.Description;
-   
+    public override string Description => Item.Description;
+    public ItemDecorator() { }
     public ItemDecorator(Item item)
     {
-        this.item = item;
+        this.Item = item;
     }
-    public override object Copy() => new ItemDecorator((Item)item.Copy());
+    public override object Copy() => new ItemDecorator((Item)Item.Copy());
 }

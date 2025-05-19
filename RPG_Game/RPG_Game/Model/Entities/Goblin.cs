@@ -11,16 +11,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace RPG_Game.Entities;
 
 public class Goblin : Entity
 {
-    private EnemyStats goblinStats = new EnemyStats();
+    [JsonInclude]
+    public EnemyStats goblinStats { get; private set; } = new EnemyStats();
+    [JsonInclude]
     public AttackStrategy AttackStrategy { get; set; } = new NormalAttackStrategy();
-
-    public Weapon Weapon = new Sword();
+    [JsonInclude]
+    public Weapon Weapon { get; set; } = new Sword();
     public override bool Move(Direction direction, Room room)
     {
         throw new NotImplementedException();
@@ -41,7 +44,7 @@ public class Goblin : Entity
     }
     public Goblin() 
     {
-        this.goblinStats.Died += OnDeath;
+        //this.goblinStats.Died += OnDeath;
     }
     public override object Copy()
     {

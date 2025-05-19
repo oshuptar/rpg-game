@@ -14,6 +14,7 @@ public class ClientStart : ClientState
     public override void HostGame()
     {
         gameClient.ClientController.BuildChain();
+        ClientHandlerChain.GetInstance().SetClientController(gameClient.ClientController);
         SetGameClientState();
     }
     public override void SetGameClientState()

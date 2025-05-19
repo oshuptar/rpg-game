@@ -30,9 +30,25 @@ internal class Program
                     Console.WriteLine($"Failed to get public IP address: {ex.Message}\nTry Again Later!");
                 }
             }
+            //Process.Start(new ProcessStartInfo
+            //{
+            //    FileName = Environment.ProcessPath!,
+            //    Arguments = $"--client 127.0.0.1 {serverPort}",
+            //    UseShellExecute = true
+            //});
             GameSession session = new GameSession();
             session.SetServer(new GameServer(IPAddress.Any, serverPort));
             return;
+        }
+        else if(args.Length == 3 && args[0] == "--client")
+        {
+            if (!IPAddress.TryParse(args[1], out ipAddress) || !int.TryParse(args[2], out int serverPort))
+            {
+                Console.WriteLine("Usage: --server <ipaddress> <port>");
+                return;
+            }
+            Console.WriteLine($"Connecting to {ipAddress.ToString()}:{serverPort}");
+            (new GameSession()).SetClient(new GameClient(ipAddress, serverPort));
         }
 
         bool isServer = false;

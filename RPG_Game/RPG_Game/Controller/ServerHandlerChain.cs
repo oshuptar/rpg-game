@@ -44,4 +44,9 @@ public class ServerHandlerChain
         _lastHandler = handler;
         _lastHandler.SetNext(new ServerRequestHandler());
     }
+
+    public void SetServerController(ServerController serverController)
+    {
+        ServerController = serverController;
+    }
 }

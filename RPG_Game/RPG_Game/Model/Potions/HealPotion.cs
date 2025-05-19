@@ -15,7 +15,7 @@ namespace RPG_Game.Potions;
 public class HealPotion : EternalPotion
 {
     public override string Name => $"Healing Potion {(IsDisposed ? "(Disposed)" : "")}";
-    [JsonInclude]
+    //[JsonInclude]
     public static int HP => 5;
     public override void ApplyEffect(EntityStats? entityStats)
     {

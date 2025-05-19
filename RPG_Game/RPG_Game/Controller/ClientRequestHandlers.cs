@@ -19,8 +19,7 @@ public class ClientRequestHandler : IRequestHandler
     protected IRequestHandler? NextHandler { get; set; } = null;
     public virtual List<IViewCommand>? HandleRequest(Request request)
     {
-        NextHandler?.HandleRequest(request);
-        return null;
+        return NextHandler?.HandleRequest(request);
     }
     public virtual bool CanHandleRequest(Request request)
     {
@@ -33,13 +32,23 @@ public class ClientRequestHandler : IRequestHandler
         NextHandler = controller;
     }
 }
+public class DefaultHandler : ClientRequestHandler
+{
+    protected override RequestType RequestType => RequestType.Ignore;
+
+    public override List<IViewCommand>? HandleRequest(Request request)
+    {
+        // Should notify the user that the key is not supported
+        return null;
+    }
+}
 public class ScopeInventoryHandler : ClientRequestHandler
 {
     protected override RequestType RequestType => RequestType.ScopeInventory;
     public override List<IViewCommand>? HandleRequest(Request request)
     {
         if (CanHandleRequest(request))
-            return new List<IViewCommand>() { new ClearLogCommand(), new InventoryFocusCommand() };
+            return new List<IViewCommand>() {  new InventoryFocusCommand() };
         else
             return base.HandleRequest(request);
     }
@@ -50,7 +59,7 @@ public class ScopeHandsHandler : ClientRequestHandler
     public override List<IViewCommand>? HandleRequest(Request request)
     {
         if (CanHandleRequest(request))
-            return new List<IViewCommand>() { new ClearLogCommand(), new HandsFocusCommand() };
+            return new List<IViewCommand>() { new HandsFocusCommand() };
         else
             return base.HandleRequest(request);
     }
@@ -61,7 +70,7 @@ public class ScopeRoomHandler : ClientRequestHandler
     public override List<IViewCommand>? HandleRequest(Request request)
     {
         if (CanHandleRequest(request))
-            return new List<IViewCommand>() { new ClearLogCommand(), new RoomFocusCommand() };
+            return new List<IViewCommand>() { new RoomFocusCommand() };
         else
             return base.HandleRequest(request);
     }
@@ -72,7 +81,7 @@ public class HideControlsHandler : ClientRequestHandler
     public override List<IViewCommand>? HandleRequest(Request request)
     {
         if (CanHandleRequest(request))
-            return new List<IViewCommand>() { new ClearLogCommand(), new HideControlsCommand() };
+            return new List<IViewCommand>() { new HideControlsCommand() };
         else
             return base.HandleRequest(request);
     }
@@ -83,7 +92,7 @@ public class NextItemHandler : ClientRequestHandler
     public override List<IViewCommand>? HandleRequest(Request request)
     {
         if (CanHandleRequest(request))
-            return new List<IViewCommand>() { new ClearLogCommand(), new ShiftFocusCommand(Direction.East) };
+            return new List<IViewCommand>() { new ShiftFocusCommand(Direction.East) };
         else
             return base.HandleRequest(request);
     }
@@ -94,7 +103,7 @@ public class PrevItemHandler : ClientRequestHandler
     public override List<IViewCommand>? HandleRequest(Request request)
     {
         if (CanHandleRequest(request))
-            return new List<IViewCommand>() { new ClearLogCommand(), new ShiftFocusCommand(Direction.West) };
+            return new List<IViewCommand>() { new ShiftFocusCommand(Direction.West) };
         else
             return base.HandleRequest(request);
     }
@@ -108,7 +117,8 @@ public class NormalAttackModeClientHandler : ClientRequestHandler
         // Modification of state predictively
         if (CanHandleRequest(request))
         {
-            request.GameState.GetPlayer().SetAttackMode(AttackType.NormalAttack, new NormalAttackStrategy());
+            //request.GameState.GetPlayer().SetAttackMode(AttackType.NormalAttack, new NormalAttackStrategy());
+            ClientHandlerChain.GetInstance().ClientController.SendNetworkRequest(request);
             return null;
         }
         else
@@ -123,7 +133,8 @@ public class StealthAttackModeClientHandler : ClientRequestHandler
     {
         if (CanHandleRequest(request))
         {
-            request.GameState.GetPlayer().SetAttackMode(AttackType.StealthAttack, new StealthAttackStrategy());
+            //request.GameState.GetPlayer().SetAttackMode(AttackType.StealthAttack, new StealthAttackStrategy());
+            ClientHandlerChain.GetInstance().ClientController.SendNetworkRequest(request);
             return null;
         }
         else
@@ -137,7 +148,8 @@ public class MagicAttackModeClientHandler : ClientRequestHandler
     {
         if (CanHandleRequest(request))
         {
-            request.GameState.GetPlayer().SetAttackMode(AttackType.MagicAttack, new MagicAttackStrategy());
+            //request.GameState.GetPlayer().SetAttackMode(AttackType.MagicAttack, new MagicAttackStrategy());
+            ClientHandlerChain.GetInstance().ClientController.SendNetworkRequest(request);
             return null;
         }
         else

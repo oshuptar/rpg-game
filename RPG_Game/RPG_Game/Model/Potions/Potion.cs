@@ -13,7 +13,7 @@ namespace RPG_Game.Interfaces;
 public abstract class Potion : Item
 {
     [JsonInclude]
-    protected bool IsDisposed = false;
+    public bool IsDisposed { get; protected set; } = false;
     public abstract void ApplyEffect(EntityStats? entityStats);
     public abstract void Dispose(Entity? entity);
 }

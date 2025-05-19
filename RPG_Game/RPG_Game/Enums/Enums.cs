@@ -6,6 +6,53 @@ using System.Threading.Tasks;
 
 namespace RPG_Game.Enums;
 
+public enum PlayerAttributes
+{
+    Health,
+    Strength,
+    Luck,
+    Aggression,
+    Dexterity,
+    Coins,
+    Gold,
+    Money,
+    Attack,
+    Armor,
+    Wisdom,
+};
+
+public enum AttackType
+{
+    NormalAttack,
+    StealthAttack,
+    MagicAttack,
+};
+
+[Flags] // This allows combining the enum values using bitwise operators
+public enum CellType
+{
+    Empty = 0,
+    Wall = 1,
+    Player = 2,
+    Item = 4,
+    Enemy = 8,
+};
+
+public enum Direction
+{
+    West,
+    East,
+    North,
+    South
+};
+
+public enum FocusType
+{
+    Room,
+    Inventory,
+    Hands,
+};
+
 public enum RequestType
 {
     MoveUp,
@@ -33,4 +80,4 @@ public enum RequestType
     Ignore,
     ServerStop,
     ClientJoined,
-}
+};

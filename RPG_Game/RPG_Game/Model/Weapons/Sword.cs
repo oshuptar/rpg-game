@@ -33,4 +33,5 @@ public class Sword : LightWeapon
         }
     }
     public override object Copy() => new Sword();
+    public Sword(): base() { }
 }

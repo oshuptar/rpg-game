@@ -12,14 +12,17 @@ using System.Text;
 using System.Threading.Tasks;
 using RPG_Game.Model;
 using RPG_Game.Model.Entities;
+using System.Text.Json.Serialization;
 
 namespace RPG_Game.Entities;
 
 public class Orc : Entity
 {
-    private EnemyStats orcStats = new EnemyStats();
-
-    public Weapon Weapon = new Dagger();
+    [JsonInclude]
+    public EnemyStats orcStats { get; private set; } = new EnemyStats();
+    [JsonInclude]
+    public Weapon Weapon { get; set; } = new Dagger();
+    [JsonInclude]
     public AttackStrategy AttackStrategy { get; set; } = new NormalAttackStrategy();
     public override bool Move(Direction direction, Room room)
     {
@@ -39,9 +42,9 @@ public class Orc : Entity
             Attack(source);
         }
     }
-    public Orc() 
+    public Orc() : base()
     {
-        this.orcStats.Died += OnDeath;
+        //this.orcStats.Died += OnDeath;
     }
     public override string ToString() => "Orc";
     public override EntityStats GetEntityStats() => this.orcStats;

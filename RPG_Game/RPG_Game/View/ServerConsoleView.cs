@@ -59,4 +59,8 @@ public class ServerConsoleView : View
         base.EndRoutine(flag);
         Console.WriteLine("Stopping server...");
     }
+    public override void ReadInput(CancellationToken cancellationToken)
+    {
+        while (true) { }
+    }
 }

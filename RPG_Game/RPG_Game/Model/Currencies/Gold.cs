@@ -1,25 +1,25 @@
-﻿using RPG_Game.Entiities;
-using RPG_Game.Entities;
-using RPG_Game.Interfaces;
-using RPG_Game.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Text.Json.Serialization;
+﻿//using RPG_Game.Entiities;
+//using RPG_Game.Entities;
+//using RPG_Game.Interfaces;
+//using RPG_Game.Enums;
+//using System;
+//using System.Collections.Generic;
+//using System.Linq;
+//using System.Text;
+//using System.Threading.Tasks;
+//using System.Text.Json.Serialization;
 
-namespace RPG_Game.Currencies;
+//namespace RPG_Game.Currencies;
 
-public class Gold : ICurrency
-{
-    public override string Name => "Gold";
-    [JsonInclude]
-    public static int Value => 50;
-    public override void ApplyChanges(EntityStats entityStats) => entityStats.ModifyEntityAttribute(PlayerAttributes.Gold, 1);
-    public override void RevertChanges(EntityStats entityStats) => entityStats.ModifyEntityAttribute(PlayerAttributes.Gold, -1);
+//public class Gold : Currency
+//{
+//    public override string Name => "Gold";
+//    //[JsonInclude]
+//    public static int Value => 50;
+//    public override void ApplyChanges(EntityStats entityStats) => entityStats.ModifyEntityAttribute(PlayerAttributes.Gold, 1);
+//    public override void RevertChanges(EntityStats entityStats) => entityStats.ModifyEntityAttribute(PlayerAttributes.Gold, -1);
 
-    public override string Description => "";
+//    public override string Description => "";
 
-    public override object Copy() => new Gold();
-}
+//    public override object Copy() => new Gold();
+//}

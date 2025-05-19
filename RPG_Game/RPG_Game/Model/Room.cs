@@ -21,18 +21,23 @@ public class Room : IGameState
     {
         RoomState = roomState;
     }
+    public Room(RoomState roomState, int playerID)
+    {
+        RoomState = roomState;
+        PlayerId = playerID;
+    }
     public bool AddObject(CellType cellType, Position position)
     {
-        RoomState.Grid[position.X, position.Y].CellType |= cellType;
+        RoomState.Grid[position.X][position.Y].CellType |= cellType;
         return true;
     }
     public bool RemoveObject(CellType cellType, Position position)
     {
-        if ((RoomState.Grid[position.X, position.Y].CellType & cellType) == 0)
+        if ((RoomState.Grid[position.X][position.Y].CellType & cellType) == 0)
             return false;
 
-        if (RoomState.Grid[position.X, position.Y].Items?.Count == 0 || (cellType & CellType.Item) == 0)
-            RoomState.Grid[position.X, position.Y].CellType &= ~cellType;
+        if (RoomState.Grid[position.X][position.Y].Items?.Count == 0 || (cellType & CellType.Item) == 0)
+            RoomState.Grid[position.X][position.Y].CellType &= ~cellType;
 
         return true;
     }
@@ -41,21 +46,21 @@ public class Room : IGameState
         if (!IsPosAvailable(position))
             return false;
 
-        if (RoomState.Grid[position.X, position.Y].Entity != null)
+        if (RoomState.Grid[position.X][position.Y].Entity != null)
             return false;
 
         AddObject(CellType.Enemy, position);
         entity.SetPosition(position);
         RoomState.Entities.Add(entity);
-        RoomState.Grid[position.X, position.Y].Entity = entity;
+        RoomState.Grid[position.X][position.Y].Entity = entity;
         return true;
     }
     public void RemoveEntity(Entity entity)
     {
-        Entity? removedEntity = RoomState.Grid[entity.Position.X, entity.Position.Y].Entity;
+        Entity? removedEntity = RoomState.Grid[entity.Position.X][entity.Position.Y].Entity;
         if (removedEntity != null && removedEntity.Equals(entity))
         {
-            RoomState.Grid[entity.Position.X, entity.Position.Y].Entity = null;
+            RoomState.Grid[entity.Position.X][entity.Position.Y].Entity = null;
             RemoveObject(CellType.Enemy, entity.Position);
             RoomState.Entities.Remove(entity);
         }
@@ -65,51 +70,52 @@ public class Room : IGameState
         if (!IsPosAvailable(position))
             return false;
 
-        if (RoomState.Grid[position.X, position.Y].Entity != null)
+        if (RoomState.Grid[position.X][position.Y].Entity != null)
             return false;
 
         AddObject(CellType.Player, position);
         player.SetPosition(position);
         RoomState.ActivePlayers.TryAdd(player.PlayerId, player);
-        RoomState.Grid[position.X, position.Y].Entity = player;
+        RoomState.Grid[position.X][position.Y].Entity = player;
         return true;
     }
     public void RemovePlayer(Player player)
     {
         RoomState.ActivePlayers.TryGetValue(player.PlayerId, out Player? removedPlayer);
-        if (removedPlayer != null && removedPlayer.Equals(player))
+        if (removedPlayer != null /*&& removedPlayer.Equals(player)*/)
         {
-            RoomState.Grid[player.Position.X, player.Position.Y].Entity = null;
-            RemoveObject(CellType.Player, player.Position);
+            RoomState.Grid[player.Position.X][player.Position.Y].Entity = null;
+            //RemoveObject(CellType.Player, player.Position);
+            RoomState.Grid[player.Position.X][player.Position.Y].CellType &= ~CellType.Player;
             RoomState.ActivePlayers.Remove(player.PlayerId);
         }
     }
     public void AddItem(Item? item, Position position)
     {
-        if (RoomState.Grid[position.X, position.Y].IsWall() || item == null)
+        if (RoomState.Grid[position.X][position.Y].IsWall() || item == null)
             return;
 
         AddObject(CellType.Item, position);
 
-        if (RoomState.Grid[position.X, position.Y].Items == null)
-            RoomState.Grid[position.X, position.Y].Items = new List<Item>();
+        if (RoomState.Grid[position.X][position.Y].Items == null)
+            RoomState.Grid[position.X][position.Y].Items = new List<Item>();
 
-        RoomState.Grid[position.X, position.Y].Items!.Add(item);
+        RoomState.Grid[position.X][position.Y].Items!.Add(item);
     }
     public Item? RemoveItem(Position position, int index = 0)
     {
-        if (RoomState.Grid[position.X, position.Y].Items == null 
-            || RoomState.Grid[position.X, position.Y].Items?.Count == 0)
+        if (RoomState.Grid[position.X][position.Y].Items == null 
+            || RoomState.Grid[position.X][position.Y].Items?.Count == 0)
             return null;
 
-        Item tempItem = RoomState.Grid[position.X, position.Y].Items!.ElementAt(index);
-        RoomState.Grid[position.X, position.Y].Items!.RemoveAt(index);
+        Item tempItem = RoomState.Grid[position.X][position.Y].Items!.ElementAt(index);
+        RoomState.Grid[position.X][position.Y].Items!.RemoveAt(index);
         RemoveObject(CellType.Item, position);
         return tempItem;
     }
     public Item? RemoveItem(Position position, Item item)
     {
-        var items = RoomState.Grid[position.X, position.Y].Items;
+        var items = RoomState.Grid[position.X][position.Y].Items;
         if (items == null
             || items?.Count == 0)
             return null;
@@ -126,7 +132,7 @@ public class Room : IGameState
     {
         if (!IsInRange(position))
             return false;
-        return RoomState.Grid[position.X, position.Y].IsWalkable();
+        return RoomState.Grid[position.X][position.Y].IsWalkable();
     }
     public bool IsInRange(Position position)
     {
@@ -153,13 +159,13 @@ public class Room : IGameState
             if (depth > maxDepth)
                 continue;
 
-            Entity? entity = RoomState.Grid[positon.X, positon.Y].Entity;
+            Entity? entity = RoomState.Grid[positon.X][positon.Y].Entity;
             if (entity != null && !entity.Equals(source))
                 entities.Add(entity);
             foreach (var direction in directions)
             {
                 Position newPosition = new Position(positon.X + direction.x, positon.Y + direction.y);
-                if (IsInRange(newPosition) && !RoomState.Grid[newPosition.X, newPosition.Y].IsWall() && !visited[newPosition.X, newPosition.Y])
+                if (IsInRange(newPosition) && !RoomState.Grid[newPosition.X][newPosition.Y].IsWall() && !visited[newPosition.X, newPosition.Y])
                 {
                     bfsQueue.Enqueue((newPosition, depth + 1));
                     visited[newPosition.X, newPosition.Y] = true;
@@ -186,7 +192,7 @@ public class Room : IGameState
     // Introduce locking mechanism on printing
     public GameState GetGameState()
     {
-        return new GameState(RoomState);
+        return new GameState(RoomState, PlayerId);
     }
 
     public RoomState GetRoomState() => RoomState;
@@ -202,10 +208,9 @@ public class Room : IGameState
             .Where((player) => player.PlayerId != PlayerId))
             .ToList();
     }
-
     public List<Item>? GetItems(Position pos)
     {
-        return RoomState.Grid[pos.X, pos.Y].Items;
+        return RoomState.Grid[pos.X][pos.Y].Items;
     }
     public StringBuilder RenderMap()
     {

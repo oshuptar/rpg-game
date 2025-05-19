@@ -22,7 +22,7 @@ public class ClientController : Controller
     public BlockingCollection<IRequest> Requests = new BlockingCollection<IRequest>(new ConcurrentQueue<IRequest>());
     private ClientHandlerChain ClientChain = ClientHandlerChain.GetInstance();
     public ClientController(View.View view, Room gameState) : base(view, gameState)
-    {}
+    { }
     public override void SendRequest(IRequest request)
     {
         Requests.Add(request);
@@ -31,22 +31,22 @@ public class ClientController : Controller
     {
         while (!cancellationToken.IsCancellationRequested)
         {
-            if (Requests.TryTake(out IRequest? request))
+            IRequest request = Requests.Take();
+            if (request != null)
             {
-                if (request != null)
+                Request handledRequest = (Request)request;
+                handledRequest.GameState = GetGameState();
+                List<IViewCommand>? Commands = ClientChain.HandleRequest(handledRequest);
+                if (Commands != null)
                 {
-                    Request handledRequest = (Request)request;
-                    handledRequest.GameState = GetGameState();
-                    List<IViewCommand>? Commands = ClientChain.HandleRequest(handledRequest);
-                    if (Commands != null)
+                    foreach (IViewCommand command in Commands)
                     {
-                        foreach (IViewCommand command in Commands)
-                        {
-                            View.SendCommand(command);
-                        }
+                        command.SetView(View);
+                        View.SendCommand(command);
                     }
                 }
             }
+
         }
     }
     public void ClientRun()
@@ -60,7 +60,6 @@ public class ClientController : Controller
     }
     public void Listen(CancellationToken cancellationToken)
     {
-        Console.WriteLine("Listening...");
         while (!cancellationToken.IsCancellationRequested)
         {
             byte[] payloadLengthBuffer = new byte[4];
@@ -74,27 +73,31 @@ public class ClientController : Controller
 
             string json = Encoding.UTF8.GetString(payload);
 
-            Console.WriteLine("Deserializing");
-            Response? response = JsonSerializer.Deserialize<Response>(json);
-            Console.WriteLine($"Deserialized");
+            Response? response = JsonSerializer.Deserialize<Response>(json, new JsonSerializerOptions
+            { ReferenceHandler = ReferenceHandler.Preserve });
+
             if (response == null) return;
 
+            response.GameState.PlayerId = response.PlayerId.Value;
             response.Controller = this;
+            SetGameState(response.GameState.CreateRoom());
             response.HandleResponse();
         }
     }
     public override void HandleResponse(IResponse response)
     {
-        View.SendCommand(new ResponseCommand(response.GetGameState()));
+        ResponseCommand responseCommand = new ResponseCommand(response.GetGameState());
+        responseCommand.SetView(View);
+        View.SendCommand(responseCommand);
     }
     public void SendNetworkRequest(Request request)
     {
-        string json = JsonSerializer.Serialize<Request>(request, new JsonSerializerOptions() 
+        string json = JsonSerializer.Serialize<Request>(request, new JsonSerializerOptions()
         { ReferenceHandler = ReferenceHandler.Preserve, WriteIndented = true });
         var payload = Encoding.UTF8.GetBytes(json);
         int payloadLength = payload.Length;
 
-        payloadLength = IPAddress.HostToNetworkOrder(payloadLength); 
+        payloadLength = IPAddress.HostToNetworkOrder(payloadLength);
         byte[] payloadLengthBuffer = BitConverter.GetBytes(payloadLength);
 
         TcpClient.GetStream().Write(payloadLengthBuffer, 0, payloadLengthBuffer.Length);
@@ -104,7 +107,7 @@ public class ClientController : Controller
     {
         // Cancelling threads and handling cleanup
         // Set State to ClientEnd
-        
+
     }
     public void SetNetworkStream(TcpClient tcpClient)
     {

@@ -26,6 +26,8 @@ public class ServerConfigureMap : ServerState
         map.PlacePotions();
 
         gameServer.ServerController.SetGameState(map.GetResult());
+        //Console.WriteLine(map.GetResult().RenderMap());
+        ServerHandlerChain.GetInstance().SetServerController(gameServer.ServerController);
         this.SetGameServerState();
     }
     public override void SetGameServerState()

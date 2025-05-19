@@ -7,27 +7,22 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace RPG_Game.Model;
 
 public class GameState : IGameState
 {
-    private int _playerId;
-    public int PlayerId 
-    {
-        get => _playerId;
-        set
-        {
-            PlayerStats = RoomState.ActivePlayers[value].GetEntityStats();
-            _playerId = value;
-        }
-    }
+    [JsonInclude]
+    public int PlayerId { get; set; }
+    [JsonInclude]
     private RoomState RoomState { get; set; }
-    private EntityStats PlayerStats { get; set; }
-    public GameState(RoomState roomState)
+    public GameState() { }
+    public GameState(RoomState roomState, int playerId)
     {
         RoomState = roomState;
+        PlayerId = playerId;
     }
     public Player GetPlayer()
     {
@@ -40,11 +35,15 @@ public class GameState : IGameState
     }
     public List<Item>? GetItems(Position pos)
     {
-        return RoomState.Grid[pos.X, pos.Y].Items;
+        return RoomState.Grid[pos.X][pos.Y].Items;
     }
 
     public StringBuilder RenderMap()
     {
         return RoomState.RenderMap();
+    }
+    public Room CreateRoom()
+    {
+        return new Room(this.RoomState, PlayerId);
     }
 }

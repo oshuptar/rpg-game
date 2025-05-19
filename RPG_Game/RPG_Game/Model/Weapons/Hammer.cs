@@ -33,4 +33,5 @@ public class Hammer : HeavyWeapon
         }
     }
     public override object Copy() => new Hammer();
+    public Hammer(): base() { }
 }

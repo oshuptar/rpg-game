@@ -52,7 +52,7 @@ public class MapConfigurator : IConfigurator
         for (int i = 0; i < MapSettings.Width; i++)
             for (int j = 0; j < MapSettings.Height; j++)
             {
-                _room.GetRoomState().Grid[i, j].CellType = _room.GetRoomState().Grid[i, j].CellType | CellType.Empty & ~CellType.Wall;
+                _room.GetRoomState().Grid[i][j].CellType = _room.GetRoomState().Grid[i][j].CellType | CellType.Empty & ~CellType.Wall;
             }
         this._instructionConfigurator.CreateEmptyDungeon();
     }
@@ -80,7 +80,7 @@ public class MapConfigurator : IConfigurator
     public void DFS(int startX, int startY, bool[,] visited, Random random)
     {
         visited[startX, startY] = true;
-        _room.GetRoomState().Grid[startX, startY].CellType &= ~CellType.Wall;
+        _room.GetRoomState().Grid[startX][startY].CellType &= ~CellType.Wall;
 
         List<(int x, int y)> directions = new List<(int, int)> { (-2, 0), (2, 0), (0, -2), (0, 2) };
         // Shuffles a list
@@ -97,7 +97,7 @@ public class MapConfigurator : IConfigurator
             if (IsInRange((newPosition.x, newPosition.y)) && !visited[newPosition.x, newPosition.y])
             {
                 (int x, int y)midPoint = (startX + (direction.x)/2,  startY + (direction.y)/2);
-                _room.GetRoomState().Grid[midPoint.x, midPoint.y].CellType &= ~CellType.Wall;
+                _room.GetRoomState().Grid[midPoint.x][midPoint.y].CellType &= ~CellType.Wall;
                 DFS(newPosition.x, newPosition.y, visited, random);
             }
         }
@@ -123,7 +123,7 @@ public class MapConfigurator : IConfigurator
 
                 for (int k = x; k < x + width; k++)
                     for (int m = y; m < y + height; m++)
-                        _room.GetRoomState().Grid[k, m].CellType &= ~CellType.Wall;
+                        _room.GetRoomState().Grid[k][m].CellType &= ~CellType.Wall;
             }
         }
         this._instructionConfigurator.AddChambers();
@@ -136,7 +136,7 @@ public class MapConfigurator : IConfigurator
 
         for (int i = left; i < left + MapConfigurator._centralRoomWidth; i++)
             for (int j = top; j < top + MapConfigurator._centralRoomHeight; j++)
-                _room.GetRoomState().Grid[i, j].CellType &= ~CellType.Wall;
+                _room.GetRoomState().Grid[i][j].CellType &= ~CellType.Wall;
 
         this._instructionConfigurator.AddCentralRoom();
     }

@@ -1,6 +1,7 @@
-﻿using RPG_Game.Entiities;
+﻿using RPG_Game.Controller;
 using RPG_Game.Interfaces;
-using RPG_Game.Entities;
+using RPG_Game.Model.Entities;
+using RPG_Game.UIHandlers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,17 @@ using System.Threading.Tasks;
 
 namespace RPG_Game.UnusableItems;
 
-public class Lore : ILoot
+public abstract class Loot : Item
+{
+}
+public class Key : Loot
+{
+    public override string Name => "Key";
+    //public override void Use(IEntity? entity = null) { }
+    public override string Description => $"(This is a old rusty key. Maybe it opens a chest...?)";
+    public override object Copy() => new Key();
+}
+public class Lore : Loot
 {
     public override string Name => "Lore";
 
@@ -26,4 +37,11 @@ public class Lore : ILoot
     public override string Description => "(An old abandoned letter)";
 
     public override object Copy() => new Lore();
+}
+public class Note : Loot
+{
+    public override string Name => "A mysterious note";
+    public override void Use(AttackStrategy strategy, Entity? source, List<Entity>? target) => ClientConsoleView.GetInstance().LogMessage("Hmm.. Exploration - is the KEY to finding treasures");
+    public override string Description => "(Ancient note)";
+    public override object Copy() => new Note();
 }

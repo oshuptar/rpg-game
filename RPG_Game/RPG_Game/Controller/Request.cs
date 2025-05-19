@@ -13,7 +13,7 @@ namespace RPG_Game.Controller;
 
 // These are value types, hence are copied
 [JsonPolymorphic(TypeDiscriminatorPropertyName = "$discriminator")]
-[JsonDerivedType(typeof(Weapon), "ItemActionRequest")]
+[JsonDerivedType(typeof(ItemActionRequest), "ItemActionRequest")]
 public class Request : IRequest
 {
     [JsonIgnore]
@@ -25,11 +25,10 @@ public class Request : IRequest
     // GameState is attaced by controller
     [JsonIgnore]
     public IGameState GameState { get; set; }
-
     [JsonInclude]
-    public RequestType RequestType { get; }
+    public RequestType RequestType { get; private set; }
     [JsonInclude]
-    public int PlayerId { get; }
+    public int PlayerId { get; set; }
     public Request(
         RequestType requestType,
         IController receiver,
@@ -43,6 +42,7 @@ public class Request : IRequest
         CurrentFocus = currentFocus;
         FocusOn = focusOn;
     }
+    public Request() { }
     public virtual void SendRequest()
     {
         Receiver.SendRequest(this);

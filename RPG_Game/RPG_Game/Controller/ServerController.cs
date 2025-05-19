@@ -12,6 +12,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
 
 namespace RPG_Game.Controller;
 
@@ -38,7 +39,10 @@ public class ServerController : Controller
                 if (Commands != null)
                 {
                     foreach (IViewCommand command in Commands)
+                    {
+                        command.SetView(View);
                         View.SendCommand(command);
+                    }
                 }
             }
         }
@@ -47,6 +51,7 @@ public class ServerController : Controller
     {
         Task.Run(() => AcceptConnections(View.CancellationTokenSource.Token));
         Task.Run(() => SendResponse(View.CancellationTokenSource.Token));
+        Task.Run(() => HandleRequest(View.CancellationTokenSource.Token));
         Task.Run(() => View.ReadInput(View.CancellationTokenSource.Token));
         View.HandleCommand();
     }
@@ -54,28 +59,28 @@ public class ServerController : Controller
     {
         while (!cancellationToken.IsCancellationRequested)
         {
-            Console.WriteLine("Waiting for response... in SendResponse");
-
             var response = OutputResponses.Take();
-            List<TcpClient> clients = new List<TcpClient>();
+            List<int> clients = new List<int>();
 
             if (response.Item1 == null)
-                clients = ActiveClients.Values.ToList();
+                clients = ActiveClients.Keys.ToList();
             else
-                clients.Add(ActiveClients[response.Item1.Value]);
-            foreach (var client in clients)
+                clients.Add(response.Item1.Value);
+            foreach (var clientId in clients)
             {
                 Response sentResponse = (Response)response.Item2;
+                sentResponse.PlayerId = clientId;
+
                 string json = JsonSerializer.Serialize<Response>(sentResponse, new JsonSerializerOptions
-                {WriteIndented = true, ReferenceHandler = ReferenceHandler.Preserve });
+                { WriteIndented = true, ReferenceHandler = ReferenceHandler.Preserve });
                 byte[] payload = Encoding.UTF8.GetBytes(json);
                 int payloadLength = payload.Length;
 
                 payloadLength = IPAddress.HostToNetworkOrder(payloadLength);
                 byte[] payloadLengthBuffer = BitConverter.GetBytes(payloadLength);
 
-                client.GetStream().Write(payloadLengthBuffer, 0, payloadLengthBuffer.Length);
-                client.GetStream().Write(payload, 0, payload.Length);
+                ActiveClients[clientId].GetStream().Write(payloadLengthBuffer, 0, payloadLengthBuffer.Length);
+                ActiveClients[clientId].GetStream().Write(payload, 0, payload.Length);
             }
         }
     }
@@ -96,8 +101,11 @@ public class ServerController : Controller
             TcpClient client = Server.AcceptTcpClient();
             Console.WriteLine($"Client {playerId} connected");
             ActiveClients.TryAdd(playerId, client);
+
+            //playerId is captured by reference in the lambda — and its value changes before the lambda executes.
             Room.AddPlayer(new Player(playerId), new Position(2 * (playerId - 1) + 1, 1));
-            Task.Run(() => Listen(playerId, View.CancellationTokenSource.Token));
+            int clientId = playerId;
+            Task.Run(() => Listen(clientId, View.CancellationTokenSource.Token));
             playerId++;
 
             if (playerId > 9) return;
@@ -106,19 +114,16 @@ public class ServerController : Controller
 
     public void Listen(int playerID, CancellationToken cancellationToken)
     {
-        //Send room state
-        // Flood to everyone the new connection and room state
-
-        Console.WriteLine("Sending first response");
-        new Response(RequestType.ClientJoined,
+        Response response = new Response(RequestType.ClientJoined,
                 null,
-                GetGameState()).HandleResponse();
-        Console.WriteLine($"Flooding room state to all clients");
+                GetGameState());
+        response.Controller = this;
+        response.HandleResponse();
+
+        ActiveClients.TryGetValue(playerID, out var client);
+        if (client == null) return;
         while (!cancellationToken.IsCancellationRequested)
         {
-            ActiveClients.TryGetValue(playerID, out TcpClient? client);
-            if (client == null) return;
-
             byte[] payloadLengthBuffer = new byte[4];
             client.GetStream().ReadExactly(payloadLengthBuffer, 0, 4);
 
@@ -129,11 +134,14 @@ public class ServerController : Controller
             client.GetStream().ReadExactly(payload, 0, payloadLength);
 
             string json = Encoding.UTF8.GetString(payload);
-            Request? request = JsonSerializer.Deserialize<Request>(json);
-            if (request == null) return;
+            Request? request = JsonSerializer.Deserialize<Request>(json,
+                new JsonSerializerOptions { ReferenceHandler = ReferenceHandler.Preserve, WriteIndented = true });
+            //if (request == null) return;
 
             request.Receiver = this;
             request.GameState = Room;
+            request.GameState.PlayerId = playerID;
+            request.PlayerId = playerID;
             request.SendRequest();
         }
     }

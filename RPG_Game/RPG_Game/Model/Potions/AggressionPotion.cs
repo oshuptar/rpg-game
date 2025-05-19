@@ -20,9 +20,10 @@ namespace RPG_Game.Potions;
 public class AggressionPotion : TemporaryPotion
 {
     public override string Name => $"Aggresion Potion { (IsDisposed ? "(Disposed)" : "") }";
-    [JsonInclude]
+    //[JsonInclude]
     public int Aggression => 10;
-    protected override int ActiveTime { get; set; } = 0;
+    [JsonInclude]
+    public override int ActiveTime { get; protected set; } = 0;
     public override int Lifetime => 10;
     public override void ApplyEffect(EntityStats? entityStats) 
     {

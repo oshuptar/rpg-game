@@ -7,10 +7,17 @@ using System.Threading.Tasks;
 using RPG_Game.Enums;
 using RPG_Game.Weapons;
 using RPG_Game.Interfaces;
+using System.Text.Json.Serialization;
+using RPG_Game.Potions;
 
 namespace RPG_Game.Controller;
 
 // this class is used for the purpose of calculating default damage values for different kinds of weapons
+
+[JsonPolymorphic(TypeDiscriminatorPropertyName = "$discriminator")]
+[JsonDerivedType(typeof(MagicAttackStrategy), "MagicAttackStrategy")]
+[JsonDerivedType(typeof(StealthAttackStrategy), "StealthAttackStrategy")]
+[JsonDerivedType(typeof(NormalAttackStrategy), "NormalAttackStrategy")]
 public abstract class AttackStrategy : IAttackStrategy
 {
     public virtual int AttackRequestHandler(MagicWeapon magicWeapon, IEntity entity, int Damage)

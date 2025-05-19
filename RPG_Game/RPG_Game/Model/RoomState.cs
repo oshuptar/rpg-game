@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace RPG_Game.Model;
@@ -16,6 +17,8 @@ public class RoomState
     {
         public CellType CellType { get; set; } = CellType.Empty;
         public Entity? Entity { get; set; }
+
+        [JsonInclude]
         public List<Item>? Items;
         public string PrintCell()
         {
@@ -48,15 +51,21 @@ public class RoomState
             return false;
         }
     };
+    [JsonInclude]
     public Dictionary<int, Player> ActivePlayers = new Dictionary<int, Player>();
+    [JsonInclude]
     public List<Entity> Entities = new List<Entity>();
-    public Cell[,] Grid = new Cell[MapSettings.Width, MapSettings.Height];
+    [JsonInclude]
+    public Cell[][] Grid = new Cell[MapSettings.Width][];
 
     public RoomState()
     {
         for (int i = 0; i < MapSettings.Width; i++)
+        {
+            Grid[i] = new Cell[MapSettings.Height];
             for (int j = 0; j < MapSettings.Height; j++)
-                Grid[i, j] = new Cell();
+                Grid[i][j] = new Cell();
+        }
     }
     public StringBuilder RenderMap()
     {
@@ -65,7 +74,7 @@ public class RoomState
         {
             for (int j = 0; j < MapSettings.Width; j++)
             {
-                sb.Append(Grid[j, i].PrintCell());
+                sb.Append(Grid[j][i].PrintCell());
             }
             sb.Append('\n');
         }
@@ -73,10 +82,13 @@ public class RoomState
     }
 }
 
-public class Position
+// Ensures that this is value type
+public struct Position
 {
-    public int X;
-    public int Y;
+    [JsonInclude]
+    public int X { get; set; }
+    [JsonInclude]
+    public int Y { get; set; }
     public Position(int x, int y)
     {
         X = x;
@@ -87,6 +99,7 @@ public class Position
         X = position.x;
         Y = position.y;
     }
+    public Position() { }
 }
 
 public class MapSettings
@@ -95,5 +108,5 @@ public class MapSettings
     public const int DefaultHeight = 21;
     public const int FrameSize = 1;
     public const int Width = DefaultWidth + 2 * FrameSize;
-    public const int Height = DefaultWidth + 2 * FrameSize;
+    public const int Height = DefaultHeight + 2 * FrameSize;
 }
