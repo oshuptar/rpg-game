@@ -11,5 +11,5 @@ namespace RPG_Game.Interfaces;
 
 public interface ICanMove
 {
-    public bool Move(Direction direction, Room room);
+    public bool Move(Direction direction, AuthorityGameState room);
 }

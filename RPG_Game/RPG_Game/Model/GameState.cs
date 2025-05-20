@@ -30,7 +30,7 @@ public class GameState : IGameState
     }
     public List<Entity> GetVisibleEntities()
     {
-        // Cange to Bfd where visibility would depend on the position
+        // Cange to Bfs where visibility would depend on the position
         return RoomState.Entities;
     }
     public List<Item>? GetItems(Position pos)
@@ -42,8 +42,12 @@ public class GameState : IGameState
     {
         return RoomState.RenderMap();
     }
-    public Room CreateRoom()
+    public AuthorityGameState CreateRoom()
     {
-        return new Room(this.RoomState, PlayerId);
+        return new AuthorityGameState(this.RoomState, PlayerId);
+    }
+    public GameState GetGameState()
+    {
+        return this;
     }
 }

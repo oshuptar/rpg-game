@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace RPG_Game.Controller;
-
 public interface IAttackStrategy
 {
     public int AttackRequestHandler(MagicWeapon magicWeapon, IEntity entity, int Damage);

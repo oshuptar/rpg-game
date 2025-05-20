@@ -40,7 +40,7 @@ public class Hands : StorageManager
 
         return item;
     }
-    public Item? DropFromHands(Room room, int index, Player player)
+    public Item? DropFromHands(AuthorityGameState room, int index, Player player)
     {
         Item? item = Drop(room, index, HandsState.Hands, player);
 

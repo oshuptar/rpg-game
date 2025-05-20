@@ -16,10 +16,10 @@ public class ClientConnect : ClientState
         int portNumber = gameClient.PortNumber;
         IPAddress ipAddress = gameClient.IpAddress;
 
-        Console.WriteLine("Connecting to server...");
+        //Console.WriteLine("Connecting to server...");
         gameClient.Client = new TcpClient(ipAddress.ToString(), portNumber);
         gameClient.ClientController.SetNetworkStream(gameClient.Client);
-        Console.WriteLine("Connected to server!");
+        //Console.WriteLine("Connected to server!");
 
         SetGameClientState();
     }
@@ -28,11 +28,3 @@ public class ClientConnect : ClientState
         gameClient.ClientState = new ClientRun(gameClient);
     }
 }
-
-//using NetworkStream stream = gameClient.Client.GetStream();
-
-//string message = "Hello";
-//byte[] data = Encoding.UTF8.GetBytes(message);
-//stream.Write(data, 0, data.Length);
-
-//Console.WriteLine("Message sent.");

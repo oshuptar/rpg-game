@@ -1,4 +1,5 @@
 ﻿using RPG_Game.Entities;
+using RPG_Game.Model.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,10 +10,10 @@ namespace RPG_Game.LogMessages;
 
 public class OnAttackMessage
 {
-    public IEntity source;
-    public IEntity target;
+    public Entity source;
+    public Entity target;
     public int Damage;
-    public OnAttackMessage(IEntity source, IEntity target, int damage)
+    public OnAttackMessage(Entity source, Entity target, int damage)
     {
         this.source = source;
         this.target = target;

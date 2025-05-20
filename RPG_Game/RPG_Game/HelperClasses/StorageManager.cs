@@ -18,7 +18,7 @@ namespace RPG_Game.HelperClasses;
 [JsonDerivedType(typeof(Inventory), "Inventory")]
 public abstract class StorageManager
 {
-    public Item? Drop(Room room, int index, List<Item> list, Entity entity)
+    public Item? Drop(AuthorityGameState room, int index, List<Item> list, Entity entity)
     {
         Item? item = Remove(index, list);
         if (item != null)

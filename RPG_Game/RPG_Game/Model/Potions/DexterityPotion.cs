@@ -19,7 +19,6 @@ public class DexterityPotion : TemporaryPotion
     [JsonInclude]
     public override int ActiveTime { get; protected set; } = 0;
     public override int Lifetime => 10;
-    //[JsonInclude]
     public static int Dexterity => 10;
     public override string Description => $"(Adds {Dexterity} to the ability of dodging attacks)";
 

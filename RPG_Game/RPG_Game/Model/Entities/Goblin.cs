@@ -24,7 +24,7 @@ public class Goblin : Entity
     public AttackStrategy AttackStrategy { get; set; } = new NormalAttackStrategy();
     [JsonInclude]
     public Weapon Weapon { get; set; } = new Sword();
-    public override bool Move(Direction direction, Room room)
+    public override bool Move(Direction direction, AuthorityGameState room)
     {
         throw new NotImplementedException();
     }

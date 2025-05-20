@@ -20,11 +20,10 @@ using System.Threading.Tasks;
 namespace RPG_Game.HelperClasses;
 
 // Map configurator is responsible for configuring the proper chain of input keys handling
-// Implement a proper MVC model
 // Serialize cofiguration and save thm in files
 public class MapConfigurator : IConfigurator
 { 
-    private Room _room;
+    private AuthorityGameState _room;
     private MapInstructionConfigurator _instructionConfigurator;
 
     private ItemLists _items = ItemLists.GetInstance();
@@ -42,10 +41,10 @@ public class MapConfigurator : IConfigurator
   
     public void ResetMapConfiguration()
     {
-        this._room = new Room(new RoomState());
+        this._room = new AuthorityGameState(new RoomState());
         this._instructionConfigurator = new MapInstructionConfigurator();
     }
-    public Room GetResult() => _room;
+    public AuthorityGameState GetResult() => _room;
     public MapInstructionConfigurator GetInstructionConfiguration() => this._instructionConfigurator;
     public void CreateEmptyDungeon()
     {

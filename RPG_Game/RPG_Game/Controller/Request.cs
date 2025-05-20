@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 
 namespace RPG_Game.Controller;
 
-// These are value types, hence are copied
 [JsonPolymorphic(TypeDiscriminatorPropertyName = "$discriminator")]
 [JsonDerivedType(typeof(ItemActionRequest), "ItemActionRequest")]
 public class Request : IRequest
@@ -22,7 +21,7 @@ public class Request : IRequest
     public int CurrentFocus { get; protected set; }
     [JsonInclude]
     public FocusType FocusOn { get; protected set; }
-    // GameState is attaced by controller
+    // GameState is attached by controller
     [JsonIgnore]
     public IGameState GameState { get; set; }
     [JsonInclude]
@@ -41,6 +40,11 @@ public class Request : IRequest
         PlayerId = playerId;
         CurrentFocus = currentFocus;
         FocusOn = focusOn;
+    }
+    public Request(RequestType requestType, IController receiver)
+    {
+        RequestType = requestType;
+        Receiver = receiver;
     }
     public Request() { }
     public virtual void SendRequest()

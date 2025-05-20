@@ -18,11 +18,11 @@ using RPG_Game.Model.Entities;
 
 namespace RPG_Game.Controller;
 
-public class ServerRequestHandler : IRequestHandler
+public class ServerRequestHandler : IServerRequestHandler
 {
     protected virtual RequestType RequestType => RequestType.Ignore;
-    protected IRequestHandler? NextHandler { get; set; } = null;
-    public virtual List<IViewCommand>? HandleRequest(Request request)
+    protected IServerRequestHandler? NextHandler { get; set; } = null;
+    public virtual List<IServerViewCommand>? HandleRequest(Request request)
     {
         NextHandler?.HandleRequest(request);
         return null;
@@ -33,7 +33,7 @@ public class ServerRequestHandler : IRequestHandler
             return true;
         return false;
     }
-    public virtual void SetNext(IRequestHandler? controller)
+    public virtual void SetNext(IServerRequestHandler? controller)
     {
         NextHandler = controller;
     }
@@ -43,7 +43,7 @@ public class UseItemServerHandler : ServerRequestHandler
 {
     protected override RequestType RequestType => RequestType.UseItem;
 
-    public override List<IViewCommand>? HandleRequest(Request request)
+    public override List<IServerViewCommand>? HandleRequest(Request request)
     {
         if (CanHandleRequest(request))
         {
@@ -73,12 +73,12 @@ public class UseItemServerHandler : ServerRequestHandler
 public class MoveUpServerHandler : ServerRequestHandler
 {
     protected override RequestType RequestType => RequestType.MoveUp;
-    public override List<IViewCommand>? HandleRequest(Request request)
+    public override List<IServerViewCommand>? HandleRequest(Request request)
     {
         if (CanHandleRequest(request))
         {
             Player player = request.GameState.GetPlayer();
-            player.Move(Direction.North, (Room)request.GameState); // think how to overcome this casting
+            player.Move(Direction.North, (AuthorityGameState)request.GameState); // think how to overcome this casting
 
             Response response = new Response(RequestType.MoveUp,
                 null,
@@ -95,12 +95,13 @@ public class MoveDownServerHandler : ServerRequestHandler
 {
     protected override RequestType RequestType => RequestType.MoveDown;
 
-    public override List<IViewCommand>? HandleRequest(Request request)
+    public override List<IServerViewCommand>? HandleRequest(Request request)
     {
         if (CanHandleRequest(request))
         {
             Player player = request.GameState.GetPlayer();
-            player.Move(Direction.South, (Room)request.GameState);
+            // Unable to cast
+            player.Move(Direction.South, (AuthorityGameState)request.GameState);
 
             Response response = new Response(RequestType.MoveDown,
                 null,
@@ -116,12 +117,12 @@ public class MoveDownServerHandler : ServerRequestHandler
 public class MoveRightServerHandler : ServerRequestHandler
 {
     protected override RequestType RequestType => RequestType.MoveRight;
-    public override List<IViewCommand>? HandleRequest(Request request)
+    public override List<IServerViewCommand>? HandleRequest(Request request)
     {
         if (CanHandleRequest(request))
         {
             Player player = request.GameState.GetPlayer();
-            player.Move(Direction.East, (Room)request.GameState);
+            player.Move(Direction.East, (AuthorityGameState)request.GameState);
 
             Response response = new Response(RequestType.MoveRight,
                 null,
@@ -137,12 +138,12 @@ public class MoveRightServerHandler : ServerRequestHandler
 public class MoveLeftServerHandler : ServerRequestHandler
 {
     protected override RequestType RequestType => RequestType.MoveLeft;
-    public override List<IViewCommand>? HandleRequest(Request request)
+    public override List<IServerViewCommand>? HandleRequest(Request request)
     {
         if (CanHandleRequest(request))
         {
             Player player = request.GameState.GetPlayer();
-            player.Move(Direction.West, (Room)request.GameState);
+            player.Move(Direction.West, (AuthorityGameState)request.GameState);
 
             Response response = new Response(RequestType.MoveLeft,
                 null,
@@ -158,7 +159,7 @@ public class MoveLeftServerHandler : ServerRequestHandler
 public class QuitServerHadler : ServerRequestHandler
 {
     protected override RequestType RequestType => RequestType.Quit;
-    public override List<IViewCommand>? HandleRequest(Request request)
+    public override List<IServerViewCommand>? HandleRequest(Request request)
     {
         if (CanHandleRequest(request))
         {
@@ -168,7 +169,8 @@ public class QuitServerHadler : ServerRequestHandler
                 ServerHandlerChain.GetInstance().ServerController.GetGameState());
             response.Controller = ServerHandlerChain.GetInstance().ServerController;
             response.HandleResponse();
-            return new List<IViewCommand>() { new QuitCommand(false) };
+            //return new List<IServerViewCommand>() { new QuitCommand(false) };
+            return null;
         }
         else
             return base.HandleRequest(request);
@@ -178,7 +180,7 @@ public class PickUpItemServerHandler : ServerRequestHandler
 {
     protected override RequestType RequestType => RequestType.PickUpItem;
 
-    public override List<IViewCommand>? HandleRequest(Request request)
+    public override List<IServerViewCommand>? HandleRequest(Request request)
     {
         if (CanHandleRequest(request))
         {
@@ -190,7 +192,7 @@ public class PickUpItemServerHandler : ServerRequestHandler
 
             // Implement Value Checkers for types, or specify a unique ID to each item
             // Improve validation
-            Item? item = ((Room)request.GameState).RemoveItem(player.Position, request.CurrentFocus);
+            Item? item = ((AuthorityGameState)request.GameState).RemoveItem(player.Position, request.CurrentFocus);
             if (item == null) return null;
             player.PickUp(item);
             //Log action
@@ -210,7 +212,7 @@ public class DropItemServerHandler : ServerRequestHandler
 {
     protected override RequestType RequestType => RequestType.DropItem;
 
-    public override List<IViewCommand>? HandleRequest(Request request)
+    public override List<IServerViewCommand>? HandleRequest(Request request)
     {
         if (CanHandleRequest(request))
         {
@@ -218,7 +220,7 @@ public class DropItemServerHandler : ServerRequestHandler
             Player player = request.GameState.GetPlayer();
             ItemActionRequest itemActionRequest = (ItemActionRequest)request;
             //player.Drop((Room)request.GameState, itemActionRequest.Items[0], request.FocusOn == FocusType.Inventory);
-            player.Drop((Room)request.GameState, request.CurrentFocus, request.FocusOn == FocusType.Inventory);
+            player.Drop((AuthorityGameState)request.GameState, request.CurrentFocus, request.FocusOn == FocusType.Inventory);
 
             Response response = new Response(RequestType.DropItem,
                 null,
@@ -234,7 +236,7 @@ public class DropItemServerHandler : ServerRequestHandler
 public class EquipItemServerHandler : ServerRequestHandler
 {
     protected override RequestType RequestType => RequestType.EquipItem;
-    public override List<IViewCommand>? HandleRequest(Request request)
+    public override List<IServerViewCommand>? HandleRequest(Request request)
     {
         if (CanHandleRequest(request))
         {
@@ -255,7 +257,7 @@ public class EquipItemServerHandler : ServerRequestHandler
                     player.UnEquip(request.CurrentFocus);
                     break;
                 case FocusType.Room:
-                    Room room = ((Room)request.GameState);
+                    AuthorityGameState room = ((AuthorityGameState)request.GameState);
                     item = room.RemoveItem(player.Position, request.CurrentFocus);
                     if (item == null /*|| !item.Equals(items[0])*/) return null;
                     if (!player.Equip(item))
@@ -276,12 +278,12 @@ public class EquipItemServerHandler : ServerRequestHandler
 public class EmptyInventoryServerHandler : ServerRequestHandler
 {
     protected override RequestType RequestType => RequestType.EmptyInventory;
-    public override List<IViewCommand>? HandleRequest(Request request)
+    public override List<IServerViewCommand>? HandleRequest(Request request)
     {
         if (CanHandleRequest(request))
         {
             Player player = request.GameState.GetPlayer();
-            player.EmptyInventory(((Room)request.GameState));
+            player.EmptyInventory(((AuthorityGameState)request.GameState));
 
             Response response = new Response(RequestType.EmptyInventory,
                 null,
@@ -298,11 +300,11 @@ public class EmptyInventoryServerHandler : ServerRequestHandler
 public class NormalAttackModeServerHandler : ServerRequestHandler
 {
     protected override RequestType RequestType => RequestType.NormalAttack;
-    public override List<IViewCommand>? HandleRequest(Request request)
+    public override List<IServerViewCommand>? HandleRequest(Request request)
     {
         if (CanHandleRequest(request))
         {
-            ((Room)request.GameState).GetPlayer().SetAttackMode(AttackType.NormalAttack, new NormalAttackStrategy());
+            ((AuthorityGameState)request.GameState).GetPlayer().SetAttackMode(AttackType.NormalAttack, new NormalAttackStrategy());
             Response response = new Response(RequestType.NormalAttack,
                 null,
                 ServerHandlerChain.GetInstance().ServerController.GetGameState());
@@ -318,11 +320,11 @@ public class StealthAttackModeServerHandler : ServerRequestHandler
 {
     protected override RequestType RequestType => RequestType.StealthAttack;
 
-    public override List<IViewCommand>? HandleRequest(Request request)
+    public override List<IServerViewCommand>? HandleRequest(Request request)
     {
         if (CanHandleRequest(request))
         {
-            ((Room)request.GameState).GetPlayer().SetAttackMode(AttackType.StealthAttack, new StealthAttackStrategy());
+            ((AuthorityGameState)request.GameState).GetPlayer().SetAttackMode(AttackType.StealthAttack, new StealthAttackStrategy());
             Response response = new Response(RequestType.StealthAttack,
                 null,
                 ServerHandlerChain.GetInstance().ServerController.GetGameState());
@@ -337,11 +339,11 @@ public class StealthAttackModeServerHandler : ServerRequestHandler
 public class MagicAttackModeServerHandler : ServerRequestHandler
 {
     protected override RequestType RequestType => RequestType.MagicAttack;
-    public override List<IViewCommand>? HandleRequest(Request request)
+    public override List<IServerViewCommand>? HandleRequest(Request request)
     {
         if (CanHandleRequest(request))
         {
-            ((Room)request.GameState).GetPlayer().SetAttackMode(AttackType.MagicAttack, new MagicAttackStrategy());
+            ((AuthorityGameState)request.GameState).GetPlayer().SetAttackMode(AttackType.MagicAttack, new MagicAttackStrategy());
             Response response = new Response(RequestType.MagicAttack,
                 null,
                 ServerHandlerChain.GetInstance().ServerController.GetGameState());
@@ -357,23 +359,20 @@ public class MagicAttackModeServerHandler : ServerRequestHandler
 public class OneWeaponAttackServerHandler : ServerRequestHandler
 {
     protected override RequestType RequestType => RequestType.OneWeaponAttack;
-    public override List<IViewCommand>? HandleRequest(Request request)
+    public override List<IServerViewCommand>? HandleRequest(Request request)
     {
         if (CanHandleRequest(request))
         {
             Player player = request.GameState.GetPlayer();
             ItemActionRequest itemActionRequest = (ItemActionRequest)request;
 
-            foreach(Item item in itemActionRequest.Items)
+            foreach (Item item in itemActionRequest.Items)
             {
-                if(player.GetHands().GetHandState().Hands.Contains(item))
-                {
-                    Weapon? weapon = item as Weapon;
-                    if (weapon == null) return null;
+                Weapon? weapon = item as Weapon;
+                if (weapon == null) return null;
 
-                    List<Entity>? entities = ((Room)request.GameState).RetrieveEntitiesInRadius(player, weapon.RadiusOfAction);
-                    weapon?.Use(player.AttackStrategy, player, entities);
-                }
+                List<Entity>? entities = ((AuthorityGameState)request.GameState).RetrieveEntitiesInRadius(player, weapon.RadiusOfAction);
+                weapon?.Use(player.AttackStrategy, player, entities);
             }
 
             Response response = new Response(RequestType.OneWeaponAttack,
@@ -391,7 +390,7 @@ public class TwoWeaponAttackServerHandler : ServerRequestHandler
 {
     protected override RequestType RequestType => RequestType.TwoWeaponAttack;
 
-    public override List<IViewCommand>? HandleRequest(Request request)
+    public override List<IServerViewCommand>? HandleRequest(Request request)
     {
         if (CanHandleRequest(request))
         {
@@ -400,14 +399,11 @@ public class TwoWeaponAttackServerHandler : ServerRequestHandler
 
             foreach (Item item in itemActionRequest.Items)
             {
-                if (player.GetHands().GetHandState().Hands.Contains(item))
-                {
-                    Weapon? weapon = item as Weapon;
-                    if (weapon == null) return null;
+                Weapon? weapon = item as Weapon;
+                if (weapon == null) return null;
 
-                    List<Entity>? entities = ((Room)request.GameState).RetrieveEntitiesInRadius(player, weapon.RadiusOfAction);
-                    weapon?.Use(player.AttackStrategy, player, entities);
-                }
+                List<Entity>? entities = ((AuthorityGameState)request.GameState).RetrieveEntitiesInRadius(player, weapon.RadiusOfAction);
+                weapon?.Use(player.AttackStrategy, player, entities);
             }
 
             Response response = new Response(RequestType.TwoWeaponAttack,
@@ -422,15 +418,14 @@ public class TwoWeaponAttackServerHandler : ServerRequestHandler
     }
 
 }
-
 public class ServerStopHandler : ServerRequestHandler
 {
     protected override RequestType RequestType => RequestType.ServerStop;
 
-    public override List<IViewCommand>? HandleRequest(Request request)
+    public override List<IServerViewCommand>? HandleRequest(Request request)
     {
         if (CanHandleRequest(request))
-            return new List<IViewCommand>() { new ServerStopCommand() };
+            return new List<IServerViewCommand>() { new ServerStopCommand() };
         else
             return base.HandleRequest(request);
     }

@@ -21,11 +21,7 @@ namespace RPG_Game.Interfaces;
 [JsonDerivedType(typeof(WeaponDecorator), "WeaponDecorator")]
 public abstract class Weapon : Item
 {
-    //[JsonInclude]
     public abstract int Damage { get; }
-    // THis field will be only accessed inside weapon classes, hence we can store it here
-    //In case I need to provide Attack method for all IItem classes, I should move it there
-    //[JsonInclude]
     public abstract int RadiusOfAction { get; }
     public abstract void DispatchAttack(AttackStrategy strategy, Entity? source, List<Entity>? target, int damage);
     public Weapon(): base() { }

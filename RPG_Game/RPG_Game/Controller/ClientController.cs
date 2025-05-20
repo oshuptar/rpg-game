@@ -16,13 +16,29 @@ using System.Threading;
 
 namespace RPG_Game.Controller;
 
-public class ClientController : Controller
+public class ClientController : Controller, IClientController
 {
+    public GameState GameState { get; private set; }
+    public ClientView ClientView { get; private set; }
     public TcpClient TcpClient { get; private set; }
-    public BlockingCollection<IRequest> Requests = new BlockingCollection<IRequest>(new ConcurrentQueue<IRequest>());
+
+    //public BlockingCollection<IRequest> Requests = new BlockingCollection<IRequest>(new ConcurrentQueue<IRequest>());
+
     private ClientHandlerChain ClientChain = ClientHandlerChain.GetInstance();
-    public ClientController(View.View view, Room gameState) : base(view, gameState)
-    { }
+    public ClientController(ClientView clientView, GameState gameState) /*: base(view, gameState)*/
+    {
+        GameState = gameState;
+        ClientView = clientView;
+        //ClientChain.SetClientController(this);
+    }
+    public void ClientRun()
+    {
+        Task.Run(() => HandleRequest(ClientView.CancellationTokenSource.Token));
+        Task.Run(() => ClientView.ReadInput(ClientView.CancellationTokenSource.Token));
+        Task.Run(() => Listen(ClientView.CancellationTokenSource.Token));
+        ClientView.HandleCommand();
+        //TcpClient.GetStream().Dispose();
+    }
     public override void SendRequest(IRequest request)
     {
         Requests.Add(request);
@@ -36,27 +52,18 @@ public class ClientController : Controller
             {
                 Request handledRequest = (Request)request;
                 handledRequest.GameState = GetGameState();
-                List<IViewCommand>? Commands = ClientChain.HandleRequest(handledRequest);
+                List<IClientViewCommand>? Commands = ClientChain.HandleRequest(handledRequest);
                 if (Commands != null)
                 {
-                    foreach (IViewCommand command in Commands)
+                    foreach (IClientViewCommand command in Commands)
                     {
-                        command.SetView(View);
-                        View.SendCommand(command);
+                        command.SetView(ClientView);
+                        ClientView.SendCommand(command);
                     }
                 }
             }
 
         }
-    }
-    public void ClientRun()
-    {
-        Task.Run(() => HandleRequest(View.CancellationTokenSource.Token));
-        Task.Run(() => View.ReadInput(View.CancellationTokenSource.Token));
-        Task.Run(() => Listen(View.CancellationTokenSource.Token));
-        View.HandleCommand();
-
-        TcpClient.GetStream().Dispose();
     }
     public void Listen(CancellationToken cancellationToken)
     {
@@ -76,19 +83,19 @@ public class ClientController : Controller
             Response? response = JsonSerializer.Deserialize<Response>(json, new JsonSerializerOptions
             { ReferenceHandler = ReferenceHandler.Preserve });
 
-            if (response == null) return;
+            if (response == null) continue;
 
             response.GameState.PlayerId = response.PlayerId.Value;
             response.Controller = this;
-            SetGameState(response.GameState.CreateRoom());
+            SetGameState(response.GameState);
             response.HandleResponse();
         }
     }
     public override void HandleResponse(IResponse response)
     {
         ResponseCommand responseCommand = new ResponseCommand(response.GetGameState());
-        responseCommand.SetView(View);
-        View.SendCommand(responseCommand);
+        responseCommand.SetView(ClientView);
+        ClientView.SendCommand(responseCommand);
     }
     public void SendNetworkRequest(Request request)
     {
@@ -108,10 +115,6 @@ public class ClientController : Controller
         // Cancelling threads and handling cleanup
         // Set State to ClientEnd
 
-    }
-    public void SetNetworkStream(TcpClient tcpClient)
-    {
-        TcpClient = tcpClient;
     }
     public void BuildChain()
     {
@@ -136,5 +139,25 @@ public class ClientController : Controller
         ClientChain.AddHandler(new EquipItemClientHandler());
         ClientChain.AddHandler(new EmptyInventoryClientHandler());
         ClientChain.AddHandler(new QuitClientHadler());
+    }
+    public void SetNetworkStream(TcpClient tcpClient)
+    {
+        TcpClient = tcpClient;
+    }
+    public override void SetViewController()
+    {
+        ClientView.SetController(this);
+    }
+    public void SetView(ClientView clientView)
+    {
+        ClientView = clientView;
+    }
+    public void SetGameState(GameState gameState)
+    {
+        GameState = gameState;
+    }
+    public GameState GetGameState()
+    {
+        return GameState.GetGameState();
     }
 }

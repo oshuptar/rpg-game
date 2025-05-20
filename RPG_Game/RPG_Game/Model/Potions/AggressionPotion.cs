@@ -20,7 +20,6 @@ namespace RPG_Game.Potions;
 public class AggressionPotion : TemporaryPotion
 {
     public override string Name => $"Aggresion Potion { (IsDisposed ? "(Disposed)" : "") }";
-    //[JsonInclude]
     public int Aggression => 10;
     [JsonInclude]
     public override int ActiveTime { get; protected set; } = 0;

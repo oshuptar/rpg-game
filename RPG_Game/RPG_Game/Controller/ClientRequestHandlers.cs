@@ -13,11 +13,11 @@ using System.Threading.Tasks;
 
 namespace RPG_Game.Controller;
 
-public class ClientRequestHandler : IRequestHandler
+public class ClientRequestHandler : IClientRequestHandler
 {
     protected virtual RequestType RequestType => RequestType.Ignore;
-    protected IRequestHandler? NextHandler { get; set; } = null;
-    public virtual List<IViewCommand>? HandleRequest(Request request)
+    protected IClientRequestHandler? NextHandler { get; set; } = null;
+    public virtual List<IClientViewCommand>? HandleRequest(Request request)
     {
         return NextHandler?.HandleRequest(request);
     }
@@ -27,7 +27,7 @@ public class ClientRequestHandler : IRequestHandler
             return true;
         return false;
     }
-    public virtual void SetNext(IRequestHandler? controller)
+    public virtual void SetNext(IClientRequestHandler? controller)
     {
         NextHandler = controller;
     }
@@ -36,7 +36,7 @@ public class DefaultHandler : ClientRequestHandler
 {
     protected override RequestType RequestType => RequestType.Ignore;
 
-    public override List<IViewCommand>? HandleRequest(Request request)
+    public override List<IClientViewCommand>? HandleRequest(Request request)
     {
         // Should notify the user that the key is not supported
         return null;
@@ -45,10 +45,10 @@ public class DefaultHandler : ClientRequestHandler
 public class ScopeInventoryHandler : ClientRequestHandler
 {
     protected override RequestType RequestType => RequestType.ScopeInventory;
-    public override List<IViewCommand>? HandleRequest(Request request)
+    public override List<IClientViewCommand>? HandleRequest(Request request)
     {
         if (CanHandleRequest(request))
-            return new List<IViewCommand>() {  new InventoryFocusCommand() };
+            return new List<IClientViewCommand>() {  new InventoryFocusCommand() };
         else
             return base.HandleRequest(request);
     }
@@ -56,10 +56,10 @@ public class ScopeInventoryHandler : ClientRequestHandler
 public class ScopeHandsHandler : ClientRequestHandler
 {
     protected override RequestType RequestType => RequestType.ScopeHands;
-    public override List<IViewCommand>? HandleRequest(Request request)
+    public override List<IClientViewCommand>? HandleRequest(Request request)
     {
         if (CanHandleRequest(request))
-            return new List<IViewCommand>() { new HandsFocusCommand() };
+            return new List<IClientViewCommand>() { new HandsFocusCommand() };
         else
             return base.HandleRequest(request);
     }
@@ -67,10 +67,10 @@ public class ScopeHandsHandler : ClientRequestHandler
 public class ScopeRoomHandler : ClientRequestHandler
 {
     protected override RequestType RequestType => RequestType.ScopeRoom;
-    public override List<IViewCommand>? HandleRequest(Request request)
+    public override List<IClientViewCommand>? HandleRequest(Request request)
     {
         if (CanHandleRequest(request))
-            return new List<IViewCommand>() { new RoomFocusCommand() };
+            return new List<IClientViewCommand>() { new RoomFocusCommand() };
         else
             return base.HandleRequest(request);
     }
@@ -78,10 +78,10 @@ public class ScopeRoomHandler : ClientRequestHandler
 public class HideControlsHandler : ClientRequestHandler
 {
     protected override RequestType RequestType => RequestType.HideControls;
-    public override List<IViewCommand>? HandleRequest(Request request)
+    public override List<IClientViewCommand>? HandleRequest(Request request)
     {
         if (CanHandleRequest(request))
-            return new List<IViewCommand>() { new HideControlsCommand() };
+            return new List<IClientViewCommand>() { new HideControlsCommand() };
         else
             return base.HandleRequest(request);
     }
@@ -89,10 +89,10 @@ public class HideControlsHandler : ClientRequestHandler
 public class NextItemHandler : ClientRequestHandler
 {
     protected override RequestType RequestType => RequestType.NextItem;
-    public override List<IViewCommand>? HandleRequest(Request request)
+    public override List<IClientViewCommand>? HandleRequest(Request request)
     {
         if (CanHandleRequest(request))
-            return new List<IViewCommand>() { new ShiftFocusCommand(Direction.East) };
+            return new List<IClientViewCommand>() { new ShiftFocusCommand(Direction.East) };
         else
             return base.HandleRequest(request);
     }
@@ -100,10 +100,10 @@ public class NextItemHandler : ClientRequestHandler
 public class PrevItemHandler : ClientRequestHandler
 {
     protected override RequestType RequestType => RequestType.PrevItem;
-    public override List<IViewCommand>? HandleRequest(Request request)
+    public override List<IClientViewCommand>? HandleRequest(Request request)
     {
         if (CanHandleRequest(request))
-            return new List<IViewCommand>() { new ShiftFocusCommand(Direction.West) };
+            return new List<IClientViewCommand>() { new ShiftFocusCommand(Direction.West) };
         else
             return base.HandleRequest(request);
     }
@@ -112,7 +112,7 @@ public class PrevItemHandler : ClientRequestHandler
 public class NormalAttackModeClientHandler : ClientRequestHandler
 {
     protected override RequestType RequestType => RequestType.NormalAttack;
-    public override List<IViewCommand>? HandleRequest(Request request)
+    public override List<IClientViewCommand>? HandleRequest(Request request)
     {
         // Modification of state predictively
         if (CanHandleRequest(request))
@@ -129,7 +129,7 @@ public class StealthAttackModeClientHandler : ClientRequestHandler
 {
     protected override RequestType RequestType => RequestType.StealthAttack;
 
-    public override List<IViewCommand>? HandleRequest(Request request)
+    public override List<IClientViewCommand>? HandleRequest(Request request)
     {
         if (CanHandleRequest(request))
         {
@@ -144,7 +144,7 @@ public class StealthAttackModeClientHandler : ClientRequestHandler
 public class MagicAttackModeClientHandler : ClientRequestHandler
 {
     protected override RequestType RequestType => RequestType.MagicAttack;
-    public override List<IViewCommand>? HandleRequest(Request request)
+    public override List<IClientViewCommand>? HandleRequest(Request request)
     {
         if (CanHandleRequest(request))
         {
@@ -159,14 +159,14 @@ public class MagicAttackModeClientHandler : ClientRequestHandler
 public class OneWeaponAttackClientHandler : ClientRequestHandler
 {
     protected override RequestType RequestType => RequestType.OneWeaponAttack;
-    public override List<IViewCommand>? HandleRequest(Request request)
+    public override List<IClientViewCommand>? HandleRequest(Request request)
     {
         if (CanHandleRequest(request))
         {
             if (request.FocusOn == FocusType.Hands)
             {
                 // Retrieve player Id and get the weapon focused
-                ClientController clientController = ClientHandlerChain.GetInstance().ClientController;
+                //ClientController clientController = ClientHandlerChain.GetInstance().ClientController;
                 //clientController.
                 //IWeapon? weapon = request.GameState;
                 //.GetPlayer().GetHands().GetHandState().Hands[request.CurrentFocus] as IWeapon;
@@ -193,7 +193,7 @@ public class TwoWeaponAttackClientHandler : ClientRequestHandler
 {
     protected override RequestType RequestType => RequestType.TwoWeaponAttack;
 
-    public override List<IViewCommand>? HandleRequest(Request request)
+    public override List<IClientViewCommand>? HandleRequest(Request request)
     {
         if (CanHandleRequest(request))
         {
@@ -215,7 +215,7 @@ public class UseItemClientHandler : ClientRequestHandler
 {
     protected override RequestType RequestType => RequestType.UseItem;
 
-    public override List<IViewCommand>? HandleRequest(Request request)
+    public override List<IClientViewCommand>? HandleRequest(Request request)
     {
         if (CanHandleRequest(request))
         {
@@ -237,7 +237,7 @@ public class UseItemClientHandler : ClientRequestHandler
 public class MoveUpClientHandler : ClientRequestHandler
 {
     protected override RequestType RequestType => RequestType.MoveUp;
-    public override List<IViewCommand>? HandleRequest(Request request)
+    public override List<IClientViewCommand>? HandleRequest(Request request)
     {
         if (CanHandleRequest(request))
         {
@@ -251,7 +251,7 @@ public class MoveUpClientHandler : ClientRequestHandler
 public class MoveDownClientHandler : ClientRequestHandler
 {
     protected override RequestType RequestType => RequestType.MoveDown;
-    public override List<IViewCommand>? HandleRequest(Request request)
+    public override List<IClientViewCommand>? HandleRequest(Request request)
     {
         if (CanHandleRequest(request))
         {
@@ -265,7 +265,7 @@ public class MoveDownClientHandler : ClientRequestHandler
 public class MoveRightClientHandler : ClientRequestHandler
 {
     protected override RequestType RequestType => RequestType.MoveRight;
-    public override List<IViewCommand>? HandleRequest(Request request)
+    public override List<IClientViewCommand>? HandleRequest(Request request)
     {
         if (CanHandleRequest(request))
         {
@@ -279,7 +279,7 @@ public class MoveRightClientHandler : ClientRequestHandler
 public class MoveLeftClientHandler : ClientRequestHandler
 {
     protected override RequestType RequestType => RequestType.MoveLeft;
-    public override List<IViewCommand>? HandleRequest(Request request)
+    public override List<IClientViewCommand>? HandleRequest(Request request)
     {
         if (CanHandleRequest(request))
         {
@@ -293,10 +293,11 @@ public class MoveLeftClientHandler : ClientRequestHandler
 public class QuitClientHadler : ClientRequestHandler
 {
     protected override RequestType RequestType => RequestType.Quit;
-    public override List<IViewCommand>? HandleRequest(Request request)
+    public override List<IClientViewCommand>? HandleRequest(Request request)
     {
         if (CanHandleRequest(request))
-            return new List<IViewCommand>() { new QuitCommand(true) };
+            //return new List<IClientViewCommand>() { new QuitCommand(true) };
+            return null;
         else
             return base.HandleRequest(request);
     }
@@ -304,7 +305,7 @@ public class QuitClientHadler : ClientRequestHandler
 public class PickUpItemClientHandler : ClientRequestHandler
 {
     protected override RequestType RequestType => RequestType.PickUpItem;
-    public override List<IViewCommand>? HandleRequest(Request request)
+    public override List<IClientViewCommand>? HandleRequest(Request request)
     {
         if (CanHandleRequest(request))
         {
@@ -327,7 +328,7 @@ public class PickUpItemClientHandler : ClientRequestHandler
 public class DropItemClientHandler : ClientRequestHandler
 {
     protected override RequestType RequestType => RequestType.DropItem;
-    public override List<IViewCommand>? HandleRequest(Request request)
+    public override List<IClientViewCommand>? HandleRequest(Request request)
     {
         if (CanHandleRequest(request))
         {
@@ -350,7 +351,7 @@ public class DropItemClientHandler : ClientRequestHandler
 public class EquipItemClientHandler : ClientRequestHandler
 {
     protected override RequestType RequestType => RequestType.EquipItem;
-    public override List<IViewCommand>? HandleRequest(Request request)
+    public override List<IClientViewCommand>? HandleRequest(Request request)
     {
         if (CanHandleRequest(request))
         {
@@ -381,7 +382,7 @@ public class EquipItemClientHandler : ClientRequestHandler
 public class EmptyInventoryClientHandler : ClientRequestHandler
 {
     protected override RequestType RequestType => RequestType.EmptyInventory;
-    public override List<IViewCommand>? HandleRequest(Request request)
+    public override List<IClientViewCommand>? HandleRequest(Request request)
     {
         if (CanHandleRequest(request))
         {

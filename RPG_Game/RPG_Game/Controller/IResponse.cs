@@ -36,7 +36,6 @@ public class Response : IResponse
     }
     public int? GetPlayerId() => PlayerId;
     public Response() { }
-
     public Response(
         RequestType requestType,
         int? playerId,

@@ -16,44 +16,94 @@ using System.Text.RegularExpressions;
 
 namespace RPG_Game.Controller;
 
-public class ServerController : Controller
+// Add exception handling
+public class ServerController : Controller, IServerController
 {
     private static int playerId = 1;
+    public AuthorityGameState GameState { get; private set; }
+    public ServerView ServerView { get; private set; }
     public TcpListener Server { get; private set; }
+
     public ConcurrentDictionary<int, TcpClient> ActiveClients = new();
-    public BlockingCollection<IRequest> Requests = new BlockingCollection<IRequest>(new ConcurrentQueue<IRequest>());
+
+    //public BlockingCollection<IRequest> Requests = new BlockingCollection<IRequest>(new ConcurrentQueue<IRequest>());
+
     private ServerHandlerChain ServerChain = ServerHandlerChain.GetInstance();
+
     public BlockingCollection<(int?, IResponse)> OutputResponses = new BlockingCollection<(int?, IResponse)>(new ConcurrentQueue<(int?, IResponse)>());
-    public ServerController(View.View view, Room gameState) : base(view, gameState)
+    public ServerController(ServerView serverView, AuthorityGameState gameState) /*: base(view, gameState)*/
     {
+        GameState = gameState;
+        ServerView = serverView;
+    }
+    public void ServerRun()
+    {
+        Task.Run(() => AcceptConnections(ServerView.CancellationTokenSource.Token));
+        Task.Run(() => SendResponse(ServerView.CancellationTokenSource.Token));
+        Task.Run(() => HandleRequest(ServerView.CancellationTokenSource.Token));
+        Task.Run(() => ServerView.ReadInput(ServerView.CancellationTokenSource.Token));
+        ServerView.HandleCommand();
+    }
+    public override void SendRequest(IRequest request)
+    {
+        Requests.Add(request);
     }
     public override void HandleRequest(CancellationToken cancellationToken)
     {
         while (!cancellationToken.IsCancellationRequested)
-        {
-            if (Requests.TryTake(out var request))
+        { 
+            // Extract this method to the abstract class
+            var request = Requests.Take();
+            Request handledRequest = (Request)request;
+            //handledRequest.GameState = GetGameState();
+            List<IServerViewCommand>? Commands = ServerChain.HandleRequest(handledRequest);
+            if (Commands != null)
             {
-                Request handledRequest = (Request)request;
-                handledRequest.GameState = Room;
-                List<IViewCommand>? Commands = ServerChain.HandleRequest(handledRequest);
-                if (Commands != null)
+                foreach (IServerViewCommand command in Commands)
                 {
-                    foreach (IViewCommand command in Commands)
-                    {
-                        command.SetView(View);
-                        View.SendCommand(command);
-                    }
+                    command.SetView(ServerView);
+                    ServerView.SendCommand(command);
                 }
             }
         }
     }
-    public void ServerRun()
+    public void Listen(CancellationToken cancellationToken, int playerID)
     {
-        Task.Run(() => AcceptConnections(View.CancellationTokenSource.Token));
-        Task.Run(() => SendResponse(View.CancellationTokenSource.Token));
-        Task.Run(() => HandleRequest(View.CancellationTokenSource.Token));
-        Task.Run(() => View.ReadInput(View.CancellationTokenSource.Token));
-        View.HandleCommand();
+        Response response = new Response(RequestType.ClientJoined,
+                null,
+                GetGameState());
+        response.Controller = this;
+        response.HandleResponse();
+
+        ActiveClients.TryGetValue(playerID, out var client);
+        if (client == null) return;
+        while (!cancellationToken.IsCancellationRequested)
+        {
+            byte[] payloadLengthBuffer = new byte[4];
+            client.GetStream().ReadExactly(payloadLengthBuffer, 0, 4);
+
+            int payloadLength = BitConverter.ToInt32(payloadLengthBuffer, 0);
+            payloadLength = IPAddress.NetworkToHostOrder(payloadLength);
+
+            byte[] payload = new byte[payloadLength];
+            client.GetStream().ReadExactly(payload, 0, payloadLength);
+
+            string json = Encoding.UTF8.GetString(payload);
+            Request? request = JsonSerializer.Deserialize<Request>(json,
+                new JsonSerializerOptions { ReferenceHandler = ReferenceHandler.Preserve, WriteIndented = true });
+
+            if (request == null) continue;
+
+            request.Receiver = this;
+            request.GameState = GameState;
+            request.GameState.PlayerId = playerID;
+            //request.PlayerId = playerID;
+            request.SendRequest();
+        }
+    }
+    public override void HandleResponse(IResponse response)
+    {
+        OutputResponses.Add((response.GetPlayerId(), response));
     }
     public void SendResponse(CancellationToken cancellationToken)
     {
@@ -84,74 +134,45 @@ public class ServerController : Controller
             }
         }
     }
-    public override void HandleResponse(IResponse response)
-    {
-        OutputResponses.Add((response.GetPlayerId(), response));
-    }
-
-    public override void SendRequest(IRequest request)
-    {
-        Requests.Add(request);
-    }
     public void AcceptConnections(CancellationToken cancellationToken)
     {
         while (!cancellationToken.IsCancellationRequested)
         {
-            Console.WriteLine("Waiting for connection...");
+            //Console.WriteLine("Waiting for connection...");
             TcpClient client = Server.AcceptTcpClient();
-            Console.WriteLine($"Client {playerId} connected");
+            //Console.WriteLine($"Client {playerId} connected");
             ActiveClients.TryAdd(playerId, client);
 
             //playerId is captured by reference in the lambda — and its value changes before the lambda executes.
-            Room.AddPlayer(new Player(playerId), new Position(2 * (playerId - 1) + 1, 1));
+            GameState.AddPlayer(new Player(playerId), new Position(2 * (playerId - 1) + 1, 1));
             int clientId = playerId;
-            Task.Run(() => Listen(clientId, View.CancellationTokenSource.Token));
+            Task.Run(() => Listen(ServerView.CancellationTokenSource.Token, clientId));
             playerId++;
 
             if (playerId > 9) return;
         }
     }
 
-    public void Listen(int playerID, CancellationToken cancellationToken)
-    {
-        Response response = new Response(RequestType.ClientJoined,
-                null,
-                GetGameState());
-        response.Controller = this;
-        response.HandleResponse();
-
-        ActiveClients.TryGetValue(playerID, out var client);
-        if (client == null) return;
-        while (!cancellationToken.IsCancellationRequested)
-        {
-            byte[] payloadLengthBuffer = new byte[4];
-            client.GetStream().ReadExactly(payloadLengthBuffer, 0, 4);
-
-            int payloadLength = BitConverter.ToInt32(payloadLengthBuffer, 0);
-            payloadLength = IPAddress.NetworkToHostOrder(payloadLength);
-
-            byte[] payload = new byte[payloadLength];
-            client.GetStream().ReadExactly(payload, 0, payloadLength);
-
-            string json = Encoding.UTF8.GetString(payload);
-            Request? request = JsonSerializer.Deserialize<Request>(json,
-                new JsonSerializerOptions { ReferenceHandler = ReferenceHandler.Preserve, WriteIndented = true });
-            //if (request == null) return;
-
-            request.Receiver = this;
-            request.GameState = Room;
-            request.GameState.PlayerId = playerID;
-            request.PlayerId = playerID;
-            request.SendRequest();
-        }
-    }
-
-    public void SendNetworkRequest()
-    {
-
-    }
     public void SetTcpListener(TcpListener tcpListener)
     {
         Server = tcpListener;
+    }
+
+    public override void SetViewController()
+    {
+        ServerView.SetController(this);
+    }
+    public void SetView(ServerView serverView)
+    {
+        ServerView = serverView;
+    }
+
+    public void SetGameState(AuthorityGameState gameState)
+    {
+        GameState = gameState;
+    }
+    public GameState GetGameState()
+    {
+        return GameState.GetGameState();
     }
 }

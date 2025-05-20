@@ -18,4 +18,5 @@ public interface IGameState
     public List<Entity> GetVisibleEntities();
     public List<Item>? GetItems(Position pos);
     public StringBuilder RenderMap();
+    public GameState GetGameState();
 }

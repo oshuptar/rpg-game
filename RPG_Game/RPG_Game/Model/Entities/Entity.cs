@@ -23,7 +23,7 @@ public abstract class Entity : IEntity
     public Entity() { }
     public abstract object Copy();
     public abstract EntityStats GetEntityStats();
-    public abstract bool Move(Direction direction, Room room);
+    public abstract bool Move(Direction direction, AuthorityGameState room);
     public abstract void ReceiveDamage(int damage, Entity? source);
     public virtual void SetPosition(Position position)
     {

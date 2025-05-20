@@ -13,8 +13,8 @@ public class ServerHandlerChain
 {
     public ServerController ServerController { get; private set; }
     public static ServerHandlerChain? Chain = null;
-    private IRequestHandler? _firstHandler;
-    private IRequestHandler? _lastHandler;
+    private IServerRequestHandler? _firstHandler;
+    private IServerRequestHandler? _lastHandler;
     private ServerHandlerChain()
     {
         _firstHandler = null;
@@ -26,13 +26,13 @@ public class ServerHandlerChain
             Chain = new ServerHandlerChain();
         return Chain;
     }
-    public List<IViewCommand>? HandleRequest(Request request)
+    public List<IServerViewCommand>? HandleRequest(Request request)
     {
         return _firstHandler?.HandleRequest(request);
     }
 
     // Fix implementation, make more concise
-    public void AddHandler(IRequestHandler handler)
+    public void AddHandler(IServerRequestHandler handler)
     {
         if (_firstHandler == null)
         {

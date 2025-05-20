@@ -41,7 +41,7 @@ public class Lore : Loot
 public class Note : Loot
 {
     public override string Name => "A mysterious note";
-    public override void Use(AttackStrategy strategy, Entity? source, List<Entity>? target) => ClientConsoleView.GetInstance().LogMessage("Hmm.. Exploration - is the KEY to finding treasures");
+    //public override void Use(AttackStrategy strategy, Entity? source, List<Entity>? target) => ClientConsoleView.GetInstance().LogMessage("Hmm.. Exploration - is the KEY to finding treasures");
     public override string Description => "(Ancient note)";
     public override object Copy() => new Note();
 }

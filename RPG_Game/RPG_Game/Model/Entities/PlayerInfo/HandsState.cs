@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace RPG_Game.Entities;
 
+// Fix HandState make more clean
 public class HandsState
 {
     public const int MaxCapacity = 2;

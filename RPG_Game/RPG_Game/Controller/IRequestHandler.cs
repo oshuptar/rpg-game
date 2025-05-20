@@ -12,13 +12,13 @@ public interface ICanHandleRequest
 {
     public bool CanHandleRequest(Request request);
 }
-public interface IRequestHandler : ICanHandleRequest
+public interface IClientRequestHandler : ICanHandleRequest
 {
-    public List<IViewCommand>? HandleRequest(Request request);
-    public void SetNext(IRequestHandler? handler);
+    public List<IClientViewCommand>? HandleRequest(Request request);
+    public void SetNext(IClientRequestHandler? handler);
 }
-//public interface IServerRequestHandler : ICanHandleRequest
-//{
-//    public void HandleRequest(Request request);
-//    public void SetNext(IServerRequestHandler? handler);
-//}
+public interface IServerRequestHandler : ICanHandleRequest
+{
+    public List<IServerViewCommand>? HandleRequest(Request request);
+    public void SetNext(IServerRequestHandler? handler);
+}

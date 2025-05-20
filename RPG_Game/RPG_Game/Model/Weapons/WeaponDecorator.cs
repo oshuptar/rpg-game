@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 
 namespace RPG_Game.Weapons;
 
-//Decorator which is specific for a weapon
 public class WeaponDecorator : Weapon
 {
     [JsonInclude]

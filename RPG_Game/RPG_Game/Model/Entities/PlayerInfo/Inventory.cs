@@ -15,12 +15,12 @@ public class Inventory : StorageManager
 {
     [JsonInclude]
     private InventoryState InventoryState { get; set; } = new InventoryState();
-    public Item? DropFromInventory(Room room, int index, Player player)
+    public Item? DropFromInventory(AuthorityGameState room, int index, Player player)
     {
         Item? item = Drop(room, index, InventoryState.Inventory, player);
         return item;
     }
-    public void EmptyInventory(Room room, Player player)
+    public void EmptyInventory(AuthorityGameState room, Player player)
     {
         int itemCount = InventoryState.Inventory.Count;
         for(int i = 0; i < itemCount; i++)

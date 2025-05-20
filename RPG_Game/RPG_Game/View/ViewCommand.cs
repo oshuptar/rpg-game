@@ -8,46 +8,79 @@ using System.Threading.Tasks;
 
 namespace RPG_Game.View;
 
-public abstract class ViewCommand : IViewCommand
+// Do not forget to set the View
+//public abstract class ViewCommand : IViewCommand
+//{
+//    public View View { get; protected set; }
+//    public ViewCommand() { }
+//    public ViewCommand(View view)
+//    {
+//        View = view;
+//    }
+//    public abstract void Execute();
+//    public virtual void SetView(View view)
+//    {
+//        View = view;
+//    }
+//}
+
+public abstract class ServerViewCommand : IServerViewCommand
 {
-    public View View { get; protected set; }
-    public ViewCommand() { }
-    public ViewCommand(View view)
+    public ServerView ServerView { get; protected set; }
+    public ServerViewCommand() { }
+    public ServerViewCommand(ServerView serverView)
     {
-        View = view;
+        ServerView = serverView;
     }
     public abstract void Execute();
-    public virtual void SetView(View view)
+    public virtual void SetView(ServerView serverView)
     {
-        View = view;
+        ServerView = serverView;
     }
 }
-public class InventoryFocusCommand : ViewCommand
+
+public abstract class ClientViewCommand : IClientViewCommand
+{
+    public ClientView ClientView { get; protected set; }
+    public ClientViewCommand() { }
+    public ClientViewCommand(ClientView clientView)
+    {
+        ClientView = clientView;
+    }
+    public abstract void Execute();
+
+    public virtual void SetView(ClientView clientView)
+    {
+        ClientView = clientView;
+    }
+}
+
+public class InventoryFocusCommand : ClientViewCommand
 {
     public InventoryFocusCommand() : base() { }
     public override void Execute()
     {
-        View.SetInventoryFocus();
+        ClientView.SetInventoryFocus();
     }
 }
-public class HandsFocusCommand : ViewCommand
+public class HandsFocusCommand : ClientViewCommand
 {
     public HandsFocusCommand() : base() { }
     public override void Execute()
     {
-        View.SetHandsFocus();
+        ClientView.SetHandsFocus();
     }
 }
 
-public class RoomFocusCommand : ViewCommand
+public class RoomFocusCommand : ClientViewCommand
 {
     public RoomFocusCommand() : base() { }
     public override void Execute()
     {
-        View.ResetFocusType();
+        ClientView.ResetFocusType();
     }
 }
-public class ShiftFocusCommand : ViewCommand
+public class ShiftFocusCommand : ClientViewCommand
 {
     public Direction Direction { get; }
     public ShiftFocusCommand(Direction direction) : base()
@@ -56,61 +89,68 @@ public class ShiftFocusCommand : ViewCommand
     }
     public override void Execute()
     {
-        View.ShiftCurrentFocus(Direction);
+        ClientView.ShiftCurrentFocus(Direction);
     }
 }
-public class ClearLogCommand : ViewCommand
-{
-    public ClearLogCommand() : base() { }
-
-    public override void Execute()
-    {
-        View.ClearLogMessage();
-    }
-}
-public class HideControlsCommand : ViewCommand
+//public class ClearLogCommand : ClientViewCommand
+//{
+//    public ClearLogCommand() : base() { }
+//    public override void Execute()
+//    {
+//        ClientView.ClearLogMessage();
+//    }
+//}
+public class HideControlsCommand : ClientViewCommand
 {
     public HideControlsCommand() : base() { }
     public override void Execute()
     {
-        View.HideControls();
+        ClientView.HideControls();
     }
 } 
 
-public class QuitCommand : ViewCommand
+public class QuitCommand : ClientViewCommand
 {
-    public bool isClient { get; }
-    public QuitCommand(bool isClient) : base()
+    public QuitCommand() : base()
     {
-        this.isClient = isClient;
     }
     public override void Execute()
     {
-        if(isClient)
-            View.EndRoutine(true);
-        if (!isClient) 
-            View.EndRoutine(false);
+        ClientView.EndRoutine(false);
     }
 }
-
-public class ServerStopCommand : ViewCommand
-{
-    public ServerStopCommand() : base() { }
-    public override void Execute()
-    {
-        View.EndRoutine(true);
-    }
-}
-
-public class ResponseCommand : ViewCommand
+public class ResponseCommand : ClientViewCommand
 {
     public IGameState GameState { get; }
-    public ResponseCommand(IGameState gameState) : base() 
+    public ResponseCommand(IGameState gameState) : base()
     {
         GameState = gameState;
     }
     public override void Execute()
     {
-        View.SetGameState(GameState);
+        ClientView.SetGameState(GameState);
     }
 }
+
+public class ServerStopCommand : ServerViewCommand
+{
+    public ServerStopCommand() : base() { }
+    public override void Execute()
+    {
+        //ServerView.EndRoutine(true);
+    }
+}
+
+//public class LogCommand : ViewCommand
+//{
+//    public ILogMessage LogMessage { get; }
+//    public LogCommand(ILogMessage logMessage) : base()
+//    {
+//        LogMessage = logMessage;
+//    }
+//    public override void Execute()
+//    {
+//        View.LogMessage(LogMessage);
+//    }
+
+//}

@@ -15,7 +15,6 @@ public class ServerCrashed : ServerState
         Console.WriteLine("Server crashed: closing...");
         SetGameServerState();
     }
-
     public override void SetGameServerState()
     {
         gameServer.ServerState = new ServerEnd(gameServer);

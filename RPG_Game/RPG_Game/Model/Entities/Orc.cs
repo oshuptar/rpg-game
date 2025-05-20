@@ -24,7 +24,7 @@ public class Orc : Entity
     public Weapon Weapon { get; set; } = new Dagger();
     [JsonInclude]
     public AttackStrategy AttackStrategy { get; set; } = new NormalAttackStrategy();
-    public override bool Move(Direction direction, Room room)
+    public override bool Move(Direction direction, AuthorityGameState room)
     {
         throw new NotImplementedException();
     }

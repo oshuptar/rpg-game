@@ -16,7 +16,6 @@ public class ClientEnd : ClientState
     }
     public override void SetGameClientState()
     {
-        //ClientController.Vi
         Environment.Exit(0);
     }
 }

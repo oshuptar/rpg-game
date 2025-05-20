@@ -8,13 +8,16 @@ using System.Threading.Tasks;
 
 namespace RPG_Game.Controller;
 
+public interface IInputHandler
+{
+    public RequestType? TranslateRequest();
+}
+
 public class KeyboardHandler : IInputHandler
 {
     public Dictionary<(ConsoleKey, ConsoleModifiers), RequestType> KeyBindings = new Dictionary<(ConsoleKey, ConsoleModifiers), RequestType>();
     public RequestType? TranslateRequest()
     {
-        if (!Console.KeyAvailable)
-            return null;
         var key = Console.ReadKey(true);
         if (!KeyBindings.TryGetValue((key.Key, key.Modifiers), out RequestType requestType))
             requestType = RequestType.Ignore;

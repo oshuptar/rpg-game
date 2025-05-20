@@ -150,5 +150,3 @@ public class NormalAttackStrategy : AttackStrategy
         return base.DefenseRequestHandler(lightWeapon ,entity, AttackDamage);
     }
 }
-
-

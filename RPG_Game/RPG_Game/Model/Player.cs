@@ -64,7 +64,7 @@ public class Player : Entity
         }
         return tempPos;
     }
-    public Position? IsMovable(Direction direction, Room room) // whether we can move in the following direction
+    public Position? IsMovable(Direction direction, AuthorityGameState room) // whether we can move in the following direction
     {
         Position tempPos = GetNewPosition(direction);
 
@@ -73,7 +73,7 @@ public class Player : Entity
 
         return tempPos;
     }
-    public override bool Move(Direction direction, Room room)
+    public override bool Move(Direction direction, AuthorityGameState room)
     {
         Position? tempPos;
         if ((tempPos = IsMovable(direction, room)) != null)
@@ -132,7 +132,7 @@ public class Player : Entity
             return Inventory.Remove(index, Inventory.GetInventoryState().Inventory);
         return Hands.Remove(index, Hands.GetHandState().Hands);
     }
-    public Item? Drop(Room room, Item item, bool fromInventory)
+    public Item? Drop(AuthorityGameState room, Item item, bool fromInventory)
     {
         Item? droppedItem = null;
         if(fromInventory)
@@ -149,7 +149,7 @@ public class Player : Entity
         }
         return droppedItem;
     }
-    public Item? Drop(Room room, int index, bool fromInventory)
+    public Item? Drop(AuthorityGameState room, int index, bool fromInventory)
     {
         Item? item;
         if (fromInventory)
@@ -160,7 +160,7 @@ public class Player : Entity
         //    ClientConsoleView.GetInstance().LogMessage(new OnItemDropMessage(item, this.Name));
         return item;
     }
-    public void EmptyInventory(Room room)
+    public void EmptyInventory(AuthorityGameState room)
     {
         Inventory.EmptyInventory(room, this);
         //ClientConsoleView.GetInstance().LogMessage(new OnEmptyDirectory(this.Name));

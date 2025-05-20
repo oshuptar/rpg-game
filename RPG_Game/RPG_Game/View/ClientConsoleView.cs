@@ -18,9 +18,9 @@ using RPG_Game.Controller;
 using RPG_Game.Entities;
 using RPG_Game.Model;
 
-namespace RPG_Game.UIHandlers;
+namespace RPG_Game.View;
 
-public class ClientConsoleView : View.View
+public class ClientConsoleView : ClientView
 {
     private static ClientConsoleView? ConsoleViewInstance;
     private const int _verticalSpaceSize = MapSettings.Height / 10;
@@ -156,10 +156,10 @@ public class ClientConsoleView : View.View
     {
         LogMessage(" ");
     }
-    public override void EndRoutine(bool flag)
-    {
-        throw new NotImplementedException();
-    }
+    //public override void EndRoutine(bool flag)
+    //{
+    //    throw new NotImplementedException();
+    //}
     public override void DisplayRoutine()
     {
         Console.SetCursorPosition(0, 0);
@@ -247,48 +247,48 @@ public class ClientConsoleView : View.View
     //            $" at x:{messageInfo.enemy.Position.X}, y:{messageInfo.enemy.Position.Y}");
     //}
 
-    //public void LogMessage(OnEmptyDirectory messageInfo)
-    //{
-    //    LogMessage($"{messageInfo.Name} emptied his inventory");
-    //}
-    //public void LogMessage(OnMoveMessage messageInfo)
-    //{
-    //    LogMessage($"{messageInfo.Name} moved to the {messageInfo.direction}");
-    //}
+    public void LogMessage(OnEmptyDirectory messageInfo)
+    {
+        LogMessage($"{messageInfo.Name} emptied his inventory");
+    }
+    public void LogMessage(OnMoveMessage messageInfo)
+    {
+        LogMessage($"{messageInfo.Name} moved to the {messageInfo.direction}");
+    }
 
-    //public void LogMessage(OnItemUnequipMessage messageInfo)
-    //{
-    //    LogMessage($"{messageInfo.Name} unequipped {messageInfo.Item.Name}");
-    //}
+    public void LogMessage(OnItemUnequipMessage messageInfo)
+    {
+        LogMessage($"{messageInfo.Name} unequipped {messageInfo.Item.Name}");
+    }
 
-    //public void LogMessage(OnItemEquipMessage messageInfo)
-    //{
-    //    LogMessage($"{messageInfo.Name} equipped {messageInfo.Item.Name} {messageInfo.Item.Description}");
-    //}
+    public void LogMessage(OnItemEquipMessage messageInfo)
+    {
+        LogMessage($"{messageInfo.Name} equipped {messageInfo.Item.Name} {messageInfo.Item.Description}");
+    }
 
-    //public void LogMessage(OnItemDropMessage messageInfo)
-    //{
-    //    LogMessage($"{messageInfo.Name} dropped {messageInfo.Item.Name}");
-    //}
+    public void LogMessage(OnItemDropMessage messageInfo)
+    {
+        LogMessage($"{messageInfo.Name} dropped {messageInfo.Item.Name}");
+    }
 
-    //public void LogMessage(OnItemPickUpMessage messageInfo)
-    //{
-    //    LogMessage($"{messageInfo.Name} picked up {messageInfo.Item.Name} {messageInfo.Item.Description}");
-    //}
+    public void LogMessage(OnItemPickUpMessage messageInfo)
+    {
+        LogMessage($"{messageInfo.Name} picked up {messageInfo.Item.Name} {messageInfo.Item.Description}");
+    }
 
-    //public void LogMessage(OnRequestNotSupportedMessage messageInfo)
-    //{
-    //    LogMessage($"{messageInfo.Description}");
-    //}
+    public void LogMessage(OnRequestNotSupportedMessage messageInfo)
+    {
+        LogMessage($"{messageInfo.Description}");
+    }
 
-    //public void LogMessage(OnEnemyDeathMessage messageInfo)
-    //{
-    //    LogMessage($"{messageInfo.enemy.ToString()} was killed");
-    //}
+    public void LogMessage(OnEnemyDeathMessage messageInfo)
+    {
+        LogMessage($"{messageInfo.enemy.ToString()} was killed");
+    }
 
-    //public void LogMessage(OnAttackMessage messageInfo)
-    //{
-    //    LogMessage($"{messageInfo.source} attacked {messageInfo.target}: -{messageInfo.Damage}HP");
-    //}
+    public void LogMessage(OnAttackMessage messageInfo)
+    {
+        LogMessage($"{messageInfo.source} attacked {messageInfo.target}: -{messageInfo.Damage}HP");
+    }
     //public void ClearConsole() => Console.Clear();
 }

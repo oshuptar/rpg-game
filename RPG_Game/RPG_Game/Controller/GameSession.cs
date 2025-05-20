@@ -8,10 +8,10 @@ namespace RPG_Game.Controller;
 
 public class GameSession
 {
-    private GameClient GameClient { get; set; }
+    private GameClient? GameClient { get; set; }
     private GameServer? GameServer { get; set; }
     public GameSession() { }
-    public GameSession(GameClient gameClient, GameServer? gameServer)
+    public GameSession(GameClient? gameClient, GameServer? gameServer)
     {
         GameClient = gameClient;
         GameServer = gameServer;

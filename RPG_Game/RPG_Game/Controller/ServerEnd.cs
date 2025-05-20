@@ -18,7 +18,6 @@ public class ServerEnd : ServerState
         }
         gameServer.Server.Dispose();
     }
-
     public override void SetGameServerState()
     {
         throw new NotImplementedException();

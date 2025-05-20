@@ -12,16 +12,16 @@ using System.Threading.Tasks;
 
 namespace RPG_Game.Model;
 
-public class Room : IGameState
+public class AuthorityGameState : IGameState
 {
     private RoomState RoomState;
     public int PlayerId { get; set; }
-    public Room() { }
-    public Room(RoomState roomState)
+    public AuthorityGameState() { }
+    public AuthorityGameState(RoomState roomState)
     {
         RoomState = roomState;
     }
-    public Room(RoomState roomState, int playerID)
+    public AuthorityGameState(RoomState roomState, int playerID)
     {
         RoomState = roomState;
         PlayerId = playerID;
@@ -194,7 +194,7 @@ public class Room : IGameState
     {
         return new GameState(RoomState, PlayerId);
     }
-
+    //public GameState GetGameState()
     public RoomState GetRoomState() => RoomState;
 
     public Player GetPlayer()

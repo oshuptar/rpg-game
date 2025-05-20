@@ -11,8 +11,8 @@ public class ClientHandlerChain
 {
     public ClientController ClientController { get; private set; }
     public static ClientHandlerChain? Chain = null;
-    private IRequestHandler? _firstHandler;
-    private IRequestHandler? _lastHandler;
+    private IClientRequestHandler? _firstHandler;
+    private IClientRequestHandler? _lastHandler;
     private ClientHandlerChain()
     {
         _firstHandler = null;
@@ -24,7 +24,7 @@ public class ClientHandlerChain
             Chain = new ClientHandlerChain();
         return Chain;
     }
-    public List<IViewCommand>? HandleRequest(Request request)
+    public List<IClientViewCommand>? HandleRequest(Request request)
     {
         return _firstHandler?.HandleRequest(request);
     }
@@ -32,7 +32,7 @@ public class ClientHandlerChain
     {
         ClientController = clientController;
     }
-    public void AddHandler(IRequestHandler handler)
+    public void AddHandler(IClientRequestHandler handler)
     {
         if (_firstHandler == null)
         {

@@ -4,6 +4,7 @@ using RPG_Game.Enums;
 using RPG_Game.LogMessages;
 using RPG_Game.Model;
 using RPG_Game.UIHandlers;
+using RPG_Game.View;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +20,7 @@ public class GameClient
     public int PlayerId { get; set; }
     public IPAddress IpAddress { get; set; }
     public int PortNumber { get; set; }
+    // GetStream() always retrieves the same instance of stream
     public TcpClient Client { get; set; }
 
     private IClientState _clientState;
@@ -37,20 +39,12 @@ public class GameClient
     {
         IpAddress = ipAddress;
         PortNumber = portNumber;
-        ClientController = new ClientController(ClientConsoleView.GetInstance(), new Room(new RoomState()));
+        ClientController = new ClientController(ClientConsoleView.GetInstance(), new GameState());
         ClientController.SetViewController();
         ClientState = new ClientStart(this);
     }
     public AttackType AttackType { get; set; } = AttackType.NormalAttack;
     public AttackStrategy AttackStrategy { get; set; } = new NormalAttackStrategy();
-
-    //
-    //private IView GameView;
-    //private IInputHandler GameInputHandler;
-    //public void ConfigureSettings()
-    //{
-    //    GameInputHandler = new KeyboardTranslator();
-    //}
 
     //public void PlayerDeathHandler(object sender, EventArgs e)
     //{
