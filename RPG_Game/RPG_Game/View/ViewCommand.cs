@@ -1,4 +1,5 @@
 ﻿using RPG_Game.Enums;
+using RPG_Game.LogMessages;
 using RPG_Game.Model;
 using System;
 using System.Collections.Generic;
@@ -23,21 +24,6 @@ namespace RPG_Game.View;
 //        View = view;
 //    }
 //}
-
-public abstract class ServerViewCommand : IServerViewCommand
-{
-    public ServerView ServerView { get; protected set; }
-    public ServerViewCommand() { }
-    public ServerViewCommand(ServerView serverView)
-    {
-        ServerView = serverView;
-    }
-    public abstract void Execute();
-    public virtual void SetView(ServerView serverView)
-    {
-        ServerView = serverView;
-    }
-}
 
 public abstract class ClientViewCommand : IClientViewCommand
 {
@@ -131,26 +117,43 @@ public class ResponseCommand : ClientViewCommand
         ClientView.SetGameState(GameState);
     }
 }
-
+public abstract class ServerViewCommand : IServerViewCommand
+{
+    public ServerView ServerView { get; protected set; }
+    public ServerViewCommand() { }
+    public ServerViewCommand(ServerView serverView)
+    {
+        ServerView = serverView;
+    }
+    public abstract void Execute();
+    public virtual void SetView(ServerView serverView)
+    {
+        ServerView = serverView;
+    }
+}
 public class ServerStopCommand : ServerViewCommand
 {
     public ServerStopCommand() : base() { }
     public override void Execute()
     {
-        //ServerView.EndRoutine(true);
+        ServerView.ServerStop();
     }
 }
 
-//public class LogCommand : ViewCommand
-//{
-//    public ILogMessage LogMessage { get; }
-//    public LogCommand(ILogMessage logMessage) : base()
-//    {
-//        LogMessage = logMessage;
-//    }
-//    public override void Execute()
-//    {
-//        View.LogMessage(LogMessage);
-//    }
-
-//}
+public class LogCommand : ServerViewCommand
+{
+    public ILogMessage LogMessage { get; }
+    public LogCommand(ILogMessage logMessage) : base()
+    {
+        LogMessage = logMessage;
+    }
+    public override void Execute()
+    {
+        LogMessage.Send();
+    }
+    public override void SetView(ServerView serverView)
+    {
+        ServerView = serverView;
+        LogMessage.SetView(ServerView);
+    }
+}

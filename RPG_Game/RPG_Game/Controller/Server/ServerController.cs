@@ -1,6 +1,5 @@
 ﻿using RPG_Game.Enums;
 using RPG_Game.Model;
-using RPG_Game.UIHandlers;
 using RPG_Game.View;
 using System;
 using System.Collections.Concurrent;
@@ -26,12 +25,10 @@ public class ServerController : Controller, IServerController
 
     public ConcurrentDictionary<int, TcpClient> ActiveClients = new();
 
-    //public BlockingCollection<IRequest> Requests = new BlockingCollection<IRequest>(new ConcurrentQueue<IRequest>());
-
     private ServerHandlerChain ServerChain = ServerHandlerChain.GetInstance();
 
     public BlockingCollection<(int?, IResponse)> OutputResponses = new BlockingCollection<(int?, IResponse)>(new ConcurrentQueue<(int?, IResponse)>());
-    public ServerController(ServerView serverView, AuthorityGameState gameState) /*: base(view, gameState)*/
+    public ServerController(ServerView serverView, AuthorityGameState gameState)
     {
         GameState = gameState;
         ServerView = serverView;
@@ -51,7 +48,7 @@ public class ServerController : Controller, IServerController
     public override void HandleRequest(CancellationToken cancellationToken)
     {
         while (!cancellationToken.IsCancellationRequested)
-        { 
+        {
             // Extract this method to the abstract class
             var request = Requests.Take();
             Request handledRequest = (Request)request;
@@ -79,26 +76,40 @@ public class ServerController : Controller, IServerController
         if (client == null) return;
         while (!cancellationToken.IsCancellationRequested)
         {
-            byte[] payloadLengthBuffer = new byte[4];
-            client.GetStream().ReadExactly(payloadLengthBuffer, 0, 4);
+            try
+            {
+                byte[] payloadLengthBuffer = new byte[4];
+                client.GetStream().ReadExactly(payloadLengthBuffer, 0, 4);
 
-            int payloadLength = BitConverter.ToInt32(payloadLengthBuffer, 0);
-            payloadLength = IPAddress.NetworkToHostOrder(payloadLength);
+                int payloadLength = BitConverter.ToInt32(payloadLengthBuffer, 0);
+                payloadLength = IPAddress.NetworkToHostOrder(payloadLength);
 
-            byte[] payload = new byte[payloadLength];
-            client.GetStream().ReadExactly(payload, 0, payloadLength);
+                byte[] payload = new byte[payloadLength];
+                client.GetStream().ReadExactly(payload, 0, payloadLength);
+                string json = Encoding.UTF8.GetString(payload);
+                Request? request = JsonSerializer.Deserialize<Request>(json,
+                    new JsonSerializerOptions { ReferenceHandler = ReferenceHandler.Preserve, WriteIndented = true });
 
-            string json = Encoding.UTF8.GetString(payload);
-            Request? request = JsonSerializer.Deserialize<Request>(json,
-                new JsonSerializerOptions { ReferenceHandler = ReferenceHandler.Preserve, WriteIndented = true });
+                if (request == null) continue;
 
-            if (request == null) continue;
+                request.Receiver = this;
+                request.GameState = GameState;
+                request.GameState.PlayerId = playerID;
+                request.SendRequest();
+            }
+            catch (Exception)
+            {
+                // Add logging
+                ActiveClients.TryRemove(playerID, out var disconnectedClient);
+                disconnectedClient?.Dispose();
 
-            request.Receiver = this;
-            request.GameState = GameState;
-            request.GameState.PlayerId = playerID;
-            //request.PlayerId = playerID;
-            request.SendRequest();
+                if (ActiveClients.Count == 0)
+                {
+                    IServerViewCommand serverViewCommand = new ServerStopCommand();
+                    serverViewCommand.SetView(ServerView);
+                    ServerView.SendCommand(serverViewCommand);
+                }
+            }
         }
     }
     public override void HandleResponse(IResponse response)
@@ -118,19 +129,34 @@ public class ServerController : Controller, IServerController
                 clients.Add(response.Item1.Value);
             foreach (var clientId in clients)
             {
-                Response sentResponse = (Response)response.Item2;
-                sentResponse.PlayerId = clientId;
+                try
+                {
+                    Response sentResponse = (Response)response.Item2;
+                    sentResponse.PlayerId = clientId;
 
-                string json = JsonSerializer.Serialize<Response>(sentResponse, new JsonSerializerOptions
-                { WriteIndented = true, ReferenceHandler = ReferenceHandler.Preserve });
-                byte[] payload = Encoding.UTF8.GetBytes(json);
-                int payloadLength = payload.Length;
+                    string json = JsonSerializer.Serialize<Response>(sentResponse, new JsonSerializerOptions
+                    { WriteIndented = true, ReferenceHandler = ReferenceHandler.Preserve });
+                    byte[] payload = Encoding.UTF8.GetBytes(json);
+                    int payloadLength = payload.Length;
 
-                payloadLength = IPAddress.HostToNetworkOrder(payloadLength);
-                byte[] payloadLengthBuffer = BitConverter.GetBytes(payloadLength);
+                    payloadLength = IPAddress.HostToNetworkOrder(payloadLength);
+                    byte[] payloadLengthBuffer = BitConverter.GetBytes(payloadLength);
 
-                ActiveClients[clientId].GetStream().Write(payloadLengthBuffer, 0, payloadLengthBuffer.Length);
-                ActiveClients[clientId].GetStream().Write(payload, 0, payload.Length);
+                    ActiveClients[clientId].GetStream().Write(payloadLengthBuffer, 0, payloadLengthBuffer.Length);
+                    ActiveClients[clientId].GetStream().Write(payload, 0, payload.Length);
+                }
+                catch (Exception)
+                {
+                    ActiveClients.TryRemove(clientId, out var client);
+                    client?.Dispose();
+
+                    if(ActiveClients.Count == 0)
+                    {
+                        IServerViewCommand serverViewCommand = new ServerStopCommand();
+                        serverViewCommand.SetView(ServerView);
+                        ServerView.SendCommand(serverViewCommand);
+                    }
+                }
             }
         }
     }
@@ -139,8 +165,9 @@ public class ServerController : Controller, IServerController
         while (!cancellationToken.IsCancellationRequested)
         {
             //Console.WriteLine("Waiting for connection...");
-            TcpClient client = Server.AcceptTcpClient();
             //Console.WriteLine($"Client {playerId} connected");
+
+            TcpClient client = Server.AcceptTcpClient();
             ActiveClients.TryAdd(playerId, client);
 
             //playerId is captured by reference in the lambda — and its value changes before the lambda executes.
@@ -152,7 +179,6 @@ public class ServerController : Controller, IServerController
             if (playerId > 9) return;
         }
     }
-
     public void SetTcpListener(TcpListener tcpListener)
     {
         Server = tcpListener;

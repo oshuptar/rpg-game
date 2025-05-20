@@ -16,11 +16,8 @@ public class ClientConnect : ClientState
         int portNumber = gameClient.PortNumber;
         IPAddress ipAddress = gameClient.IpAddress;
 
-        //Console.WriteLine("Connecting to server...");
         gameClient.Client = new TcpClient(ipAddress.ToString(), portNumber);
         gameClient.ClientController.SetNetworkStream(gameClient.Client);
-        //Console.WriteLine("Connected to server!");
-
         SetGameClientState();
     }
     public override void SetGameClientState()

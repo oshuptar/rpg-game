@@ -3,7 +3,6 @@ using RPG_Game.Entities;
 using RPG_Game.Enums;
 using RPG_Game.LogMessages;
 using RPG_Game.Model;
-using RPG_Game.UIHandlers;
 using RPG_Game.View;
 using System;
 using System.Collections.Generic;

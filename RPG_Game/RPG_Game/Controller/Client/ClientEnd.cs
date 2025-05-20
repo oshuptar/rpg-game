@@ -13,6 +13,7 @@ public class ClientEnd : ClientState
     {
         gameClient.Client.Close();
         gameClient.Client.Dispose();
+        SetGameClientState();
     }
     public override void SetGameClientState()
     {

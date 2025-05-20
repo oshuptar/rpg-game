@@ -2,7 +2,6 @@
 using RPG_Game.Entiities;
 using RPG_Game.Enums;
 using RPG_Game.Interfaces;
-using RPG_Game.UIHandlers;
 using RPG_Game.Weapons;
 using RPG_Game.LogMessages;
 using System;

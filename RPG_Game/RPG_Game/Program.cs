@@ -84,12 +84,13 @@ internal class Program
             Process.Start(new ProcessStartInfo
             {
                 FileName = processPath,
-                Arguments = $"--server {port}",
+                Arguments = $"--client \"127.0.0.1\" {port}",
                 UseShellExecute = true,
                 CreateNoWindow = false
             });
-
-            gameSession.SetClient(new GameClient(IPAddress.Loopback, port));
+            GameSession session = new GameSession();
+            session.SetServer(new GameServer(IPAddress.Any, port));
+            //gameSession.SetClient(new GameClient(IPAddress.Loopback, port));
         }
         else
         {

@@ -1,7 +1,6 @@
 ﻿using RPG_Game.Controller;
 using RPG_Game.Interfaces;
 using RPG_Game.Model.Entities;
-using RPG_Game.UIHandlers;
 using System;
 using System.Collections.Generic;
 using System.Linq;

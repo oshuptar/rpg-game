@@ -3,7 +3,6 @@ using RPG_Game.Enums;
 using RPG_Game.Interfaces;
 using RPG_Game.LogMessages;
 using RPG_Game.Model;
-using RPG_Game.UIHandlers;
 using RPG_Game.View;
 using System;
 using System.Collections.Generic;
@@ -117,7 +116,6 @@ public class NormalAttackModeClientHandler : ClientRequestHandler
         // Modification of state predictively
         if (CanHandleRequest(request))
         {
-            //request.GameState.GetPlayer().SetAttackMode(AttackType.NormalAttack, new NormalAttackStrategy());
             ClientHandlerChain.GetInstance().ClientController.SendNetworkRequest(request);
             return null;
         }
@@ -133,7 +131,6 @@ public class StealthAttackModeClientHandler : ClientRequestHandler
     {
         if (CanHandleRequest(request))
         {
-            //request.GameState.GetPlayer().SetAttackMode(AttackType.StealthAttack, new StealthAttackStrategy());
             ClientHandlerChain.GetInstance().ClientController.SendNetworkRequest(request);
             return null;
         }
@@ -148,7 +145,6 @@ public class MagicAttackModeClientHandler : ClientRequestHandler
     {
         if (CanHandleRequest(request))
         {
-            //request.GameState.GetPlayer().SetAttackMode(AttackType.MagicAttack, new MagicAttackStrategy());
             ClientHandlerChain.GetInstance().ClientController.SendNetworkRequest(request);
             return null;
         }
@@ -165,14 +161,6 @@ public class OneWeaponAttackClientHandler : ClientRequestHandler
         {
             if (request.FocusOn == FocusType.Hands)
             {
-                // Retrieve player Id and get the weapon focused
-                //ClientController clientController = ClientHandlerChain.GetInstance().ClientController;
-                //clientController.
-                //IWeapon? weapon = request.GameState;
-                //.GetPlayer().GetHands().GetHandState().Hands[request.CurrentFocus] as IWeapon;
-                //List<IEntity>? entities = gameContext.GetRoom().RetrieveEntitiesInRadius(request.GetContext().GetPlayer(), weapon.RadiusOfAction);
-                //weapon?.Use(request.GetContext().GetGame().AttackStrategy, gameContext.GetPlayer(), entities);
-
                 Player player = request.GameState.GetPlayer();
                 // Make it more safe
                 Weapon? weapon = player.GetHands().GetHandState().Hands[request.CurrentFocus] as Weapon;
@@ -180,7 +168,6 @@ public class OneWeaponAttackClientHandler : ClientRequestHandler
                 if(weapon == null) return null;
                 itemRequest.Items.Add(weapon);
 
-                // Serialize and send request
                 ClientHandlerChain.GetInstance().ClientController.SendNetworkRequest(itemRequest);
             }
             return null;
@@ -296,8 +283,7 @@ public class QuitClientHadler : ClientRequestHandler
     public override List<IClientViewCommand>? HandleRequest(Request request)
     {
         if (CanHandleRequest(request))
-            //return new List<IClientViewCommand>() { new QuitCommand(true) };
-            return null;
+            return new List<IClientViewCommand>() { new QuitCommand() };
         else
             return base.HandleRequest(request);
     }

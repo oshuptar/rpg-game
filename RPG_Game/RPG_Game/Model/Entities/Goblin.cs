@@ -5,7 +5,6 @@ using RPG_Game.Interfaces;
 using RPG_Game.LogMessages;
 using RPG_Game.Model;
 using RPG_Game.Model.Entities;
-using RPG_Game.UIHandlers;
 using RPG_Game.Weapons;
 using System;
 using System.Collections.Generic;

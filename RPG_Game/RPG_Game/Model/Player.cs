@@ -10,7 +10,6 @@ using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
-using RPG_Game.UIHandlers;
 using RPG_Game.Model;
 using RPG_Game.Model.Entities;
 using RPG_Game.Controller;
