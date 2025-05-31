@@ -1,0 +1,22 @@
+# Stage 6: Enemy Behavior Modification
+
+## Task Objective
+
+Implement the logic for various enemy behaviors.
+
+## Requirements
+
+### Enemy Behavior Modification
+
+The goal of this task is to extend the enemy logic by adding behavior patterns. These behaviors determine how an enemy moves through the maze and whether it attacks the player.
+
+Example behaviors:
+- **Calm enemy**: Does not move through the maze and does not attack unless provoked.
+- **Aggressive enemy**: If the player is nearby, moves toward the player and attacks if within range.
+- **Skittish enemy**: When the player is nearby, tries to flee by moving away from the player’s current position.
+
+Adding new behaviors or changing an enemy’s behavior at runtime should be easy (e.g., when an enemy’s health drops below a certain threshold, it can switch to a fleeing behavior).
+
+Each enemy should be able to exhibit any of these behavior types.
+
+To implement this task, use the Strategy pattern.

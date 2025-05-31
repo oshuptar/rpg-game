@@ -37,7 +37,6 @@ public class GameState : IGameState
     {
         return RoomState.Grid[pos.X][pos.Y].Items;
     }
-
     public StringBuilder RenderMap()
     {
         return RoomState.RenderMap();
@@ -50,4 +49,24 @@ public class GameState : IGameState
     {
         return this;
     }
+    public List<Entity> GetVisibleEnemies()
+    {
+        return RoomState.Entities;
+    }
+    public void LockReadBlock(Position position)
+       => RoomState.LockReadBlock(position);
+    public void LockWriteBlock(Position position)
+        => RoomState.LockWriteBlock(position);
+    public void UnlockReadBlock(Position position)
+        => RoomState.UnlockReadBlock(position);
+    public void UnlockWriteBlock(Position position)
+        => RoomState.UnlockWriteBlock(position);
+    public void LockReadState()
+        => RoomState.StateLock.EnterReadLock();
+    public void LockWriteState()
+        => RoomState.StateLock.EnterWriteLock();
+    public void UnlockReadState()
+       => RoomState.StateLock.ExitReadLock();
+    public void UnlockWriteState()
+        => RoomState.StateLock.ExitWriteLock();
 }

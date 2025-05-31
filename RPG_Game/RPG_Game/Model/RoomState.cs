@@ -4,6 +4,7 @@ using RPG_Game.Enums;
 using RPG_Game.Interfaces;
 using RPG_Game.Model.Entities;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,7 +20,7 @@ public class RoomState
         public Entity? Entity { get; set; }
 
         [JsonInclude]
-        public List<Item>? Items;
+        public List<Item>? Items { get; set; }
         public string PrintCell()
         {
             switch (CellType)
@@ -37,6 +38,7 @@ public class RoomState
                     return "I";
             }
         }
+
         public bool IsWalkable()
         {
             if ((CellType & CellType.Wall) != 0
@@ -46,13 +48,17 @@ public class RoomState
         }
         public bool IsWall()
         {
-            if (CellType == CellType.Wall)
+            if ((CellType & CellType.Wall) != 0)
                 return true;
             return false;
         }
-    };
+    }
+    [JsonIgnore]
+    public ReaderWriterLockSlim[,] BlockLock = new ReaderWriterLockSlim[MapSettings.WidthBlockNumber, MapSettings.HeightBlockNumber];
+    [JsonIgnore]
+    public ReaderWriterLockSlim StateLock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
     [JsonInclude]
-    public Dictionary<int, Player> ActivePlayers = new Dictionary<int, Player>();
+    public ConcurrentDictionary<int, Player> ActivePlayers = new ConcurrentDictionary<int, Player>();
     [JsonInclude]
     public List<Entity> Entities = new List<Entity>();
     [JsonInclude]
@@ -66,19 +72,57 @@ public class RoomState
             for (int j = 0; j < MapSettings.Height; j++)
                 Grid[i][j] = new Cell();
         }
+
+        for (int i = 0; i < MapSettings.WidthBlockNumber; i++)
+            for (int j = 0; j < MapSettings.HeightBlockNumber; j++)
+                BlockLock[i, j] = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
     }
     public StringBuilder RenderMap()
     {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < MapSettings.Height; i++)
+        try
         {
-            for (int j = 0; j < MapSettings.Width; j++)
+            StateLock.EnterReadLock();
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < MapSettings.Height; i++)
             {
-                sb.Append(Grid[j][i].PrintCell());
+                for (int j = 0; j < MapSettings.Width; j++)
+                {
+                    sb.Append(Grid[j][i].PrintCell());
+                }
+                sb.Append('\n');
             }
-            sb.Append('\n');
+            return sb;
         }
-        return sb;
+        finally { StateLock.ExitReadLock(); }
+    }
+
+    public void LockReadBlock(Position position)
+    {
+        int i = position.X / 8;
+        int j = position.Y / 4;
+        BlockLock[i, j].EnterReadLock();
+
+    }
+    public void LockWriteBlock(Position position)
+    {
+        int i = position.X / 8;
+        int j = position.Y / 4;
+
+        BlockLock[i, j].EnterWriteLock();
+    }
+
+    public void UnlockReadBlock(Position position)
+    {
+        int i = position.X / 8;
+        int j = position.Y / 4;
+        BlockLock[i, j].ExitReadLock();
+    }
+
+    public void UnlockWriteBlock(Position position)
+    {
+        int i = position.X / 8;
+        int j = position.Y / 4;
+        BlockLock[i, j].ExitWriteLock();
     }
 }
 
@@ -109,4 +153,17 @@ public class MapSettings
     public const int FrameSize = 1;
     public const int Width = DefaultWidth + 2 * FrameSize;
     public const int Height = DefaultHeight + 2 * FrameSize;
+
+    public static int WidthBlockNumber = (int)Math.Ceiling((double)MapSettings.Width / 8);
+    public static int HeightBlockNumber = (int)Math.Ceiling((double)MapSettings.Height / 4);
+
+    public static bool IsInRange(Position position)
+    {
+        if (position.X >= MapSettings.FrameSize
+            && position.X < MapSettings.Width - MapSettings.FrameSize
+            && position.Y >= MapSettings.FrameSize
+            && position.Y < MapSettings.Height - MapSettings.FrameSize)
+            return true;
+        return false;
+    }
 }

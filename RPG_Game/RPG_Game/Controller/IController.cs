@@ -19,15 +19,15 @@ public interface IController
 
 public interface IServerController : IController
 {
-    public void Listen(CancellationToken cancellationToken, int playerId);
+    public Task Listen(CancellationToken cancellationToken, int playerId);
     public void SetView(ServerView view);
     public void SetGameState(AuthorityGameState gameState);
-    public void SendResponse(CancellationToken cancellationToken);
+    public Task SendResponse(CancellationToken cancellationToken);
 }
 
 public interface IClientController : IController
 {
-    public void Listen(CancellationToken cancellationToken);
+    public Task Listen(CancellationToken cancellationToken);
     public void SetView(ClientView view);
     public void SetGameState(GameState gameState);
 }

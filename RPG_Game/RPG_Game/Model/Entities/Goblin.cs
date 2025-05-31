@@ -1,4 +1,5 @@
 ﻿using RPG_Game.Controller;
+using RPG_Game.Controller.Server;
 using RPG_Game.Entiities;
 using RPG_Game.Enums;
 using RPG_Game.Interfaces;
@@ -15,34 +16,17 @@ using System.Threading.Tasks;
 
 namespace RPG_Game.Entities;
 
-public class Goblin : Entity
+public class Goblin : Enemy
 {
     [JsonInclude]
-    public EnemyStats goblinStats { get; private set; } = new EnemyStats();
-    [JsonInclude]
-    public AttackStrategy AttackStrategy { get; set; } = new NormalAttackStrategy();
-    [JsonInclude]
     public Weapon Weapon { get; set; } = new Sword();
-    public override bool Move(Direction direction, AuthorityGameState room)
-    {
-        throw new NotImplementedException();
-    }
-    public void Attack(Entity target)
+    public override void Attack(Entity target)
     {
         Weapon.Use(AttackStrategy, this, new List<Entity>() { target });
     }
-    public override void ReceiveDamage(int damage, Entity? source)
-    {
-        goblinStats.ModifyEntityAttribute(PlayerAttributes.Health, -damage);
-        if (source != null)
-        {
-            //ClientConsoleView.GetInstance().LogMessage(new OnAttackMessage(source, this, damage));
-            //ClientConsoleView.GetInstance().LogMessage(new OnEnemyDetectionMessage(this));
-            Attack(source);
-        }
-    }
     public Goblin() 
     {
+        EnemyStrategy = new AggressiveEnemyStrategy();
         //this.goblinStats.Died += OnDeath;
     }
     public override object Copy()
@@ -50,5 +34,4 @@ public class Goblin : Entity
         return new Goblin();
     }
     public override string ToString() => "Goblin";
-    public override EntityStats GetEntityStats() => this.goblinStats;
 }

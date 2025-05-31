@@ -22,6 +22,8 @@ public class ClientController : Controller, IClientController
     public TcpClient TcpClient { get; private set; }
 
     private ClientHandlerChain ClientChain = ClientHandlerChain.GetInstance();
+
+    public BlockingCollection<Request> ScheduledRequests = new(new ConcurrentQueue<Request>());
     public ClientController(ClientView clientView, GameState gameState)
     {
         GameState = gameState;
@@ -31,7 +33,8 @@ public class ClientController : Controller, IClientController
     {
         Task.Run(() => HandleRequest(ClientView.CancellationTokenSource.Token));
         Task.Run(() => ClientView.ReadInput(ClientView.CancellationTokenSource.Token));
-        Task.Run(() => Listen(ClientView.CancellationTokenSource.Token));
+        Task.Run(async () => await Listen(ClientView.CancellationTokenSource.Token));
+        Task.Run((async () => await SendNetworkRequest(ClientView.CancellationTokenSource.Token)));
         ClientView.HandleCommand();
     }
     public override void SendRequest(IRequest request)
@@ -59,20 +62,20 @@ public class ClientController : Controller, IClientController
             }
         }
     }
-    public void Listen(CancellationToken cancellationToken)
+    public async Task Listen(CancellationToken cancellationToken)
     {
         while (!cancellationToken.IsCancellationRequested)
         {
             try
             {
                 byte[] payloadLengthBuffer = new byte[4];
-                TcpClient.GetStream().ReadExactly(payloadLengthBuffer, 0, 4);
+                await TcpClient.GetStream().ReadExactlyAsync(payloadLengthBuffer, 0, 4);
 
                 int payloadLength = BitConverter.ToInt32(payloadLengthBuffer, 0);
                 payloadLength = IPAddress.NetworkToHostOrder(payloadLength);
 
                 byte[] payload = new byte[payloadLength];
-                TcpClient.GetStream().ReadExactly(payload, 0, payloadLength);
+                await TcpClient.GetStream().ReadExactlyAsync(payload, 0, payloadLength);
 
                 string json = Encoding.UTF8.GetString(payload);
 
@@ -100,26 +103,34 @@ public class ClientController : Controller, IClientController
         responseCommand.SetView(ClientView);
         ClientView.SendCommand(responseCommand);
     }
-    public void SendNetworkRequest(Request request)
+    public void ScheduleRequest(Request request)
     {
-        try
+        ScheduledRequests.Add(request);
+    }
+    public async Task SendNetworkRequest(CancellationToken cancellationToken)
+    {
+        while (!cancellationToken.IsCancellationRequested)
         {
-            string json = JsonSerializer.Serialize<Request>(request, new JsonSerializerOptions()
-            { ReferenceHandler = ReferenceHandler.Preserve, WriteIndented = true });
-            var payload = Encoding.UTF8.GetBytes(json);
-            int payloadLength = payload.Length;
+            Request request = ScheduledRequests.Take();
+            try
+            {
+                string json = JsonSerializer.Serialize<Request>(request, new JsonSerializerOptions()
+                { ReferenceHandler = ReferenceHandler.Preserve, WriteIndented = true });
+                var payload = Encoding.UTF8.GetBytes(json);
+                int payloadLength = payload.Length;
 
-            payloadLength = IPAddress.HostToNetworkOrder(payloadLength);
-            byte[] payloadLengthBuffer = BitConverter.GetBytes(payloadLength);
+                payloadLength = IPAddress.HostToNetworkOrder(payloadLength);
+                byte[] payloadLengthBuffer = BitConverter.GetBytes(payloadLength);
 
-            TcpClient.GetStream().Write(payloadLengthBuffer, 0, payloadLengthBuffer.Length);
-            TcpClient.GetStream().Write(payload, 0, payload.Length);
-        }
-        catch(Exception)
-        {
-            IClientViewCommand viewCommand = new QuitCommand();
-            viewCommand.SetView(ClientView);
-            ClientView.SendCommand(viewCommand);
+                await TcpClient.GetStream().WriteAsync(payloadLengthBuffer, 0, payloadLengthBuffer.Length);
+                await TcpClient.GetStream().WriteAsync(payload, 0, payload.Length);
+            }
+            catch (Exception)
+            {
+                IClientViewCommand viewCommand = new QuitCommand();
+                viewCommand.SetView(ClientView);
+                ClientView.SendCommand(viewCommand);
+            }
         }
     }
     public void BuildChain()

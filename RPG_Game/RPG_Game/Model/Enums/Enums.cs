@@ -81,3 +81,22 @@ public enum RequestType
     ServerStop,
     ClientJoined,
 };
+public static class DirectionTranslator
+{
+    public static (int, int) TranslateDirection(Direction direction)
+    {
+        switch (direction)
+        {
+            case Direction.East:
+                return (1, 0);
+            case Direction.West:
+                return (-1, 0);
+            case Direction.North:
+                return (0, -1);
+            case Direction.South:
+                return (0, 1);
+            default: return (0, 0);
+        }
+    }
+}
+

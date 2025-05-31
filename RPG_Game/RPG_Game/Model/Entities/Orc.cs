@@ -12,41 +12,24 @@ using System.Threading.Tasks;
 using RPG_Game.Model;
 using RPG_Game.Model.Entities;
 using System.Text.Json.Serialization;
+using RPG_Game.Controller.Server;
 
 namespace RPG_Game.Entities;
 
-public class Orc : Entity
+public class Orc : Enemy
 {
     [JsonInclude]
-    public EnemyStats orcStats { get; private set; } = new EnemyStats();
-    [JsonInclude]
     public Weapon Weapon { get; set; } = new Dagger();
-    [JsonInclude]
-    public AttackStrategy AttackStrategy { get; set; } = new NormalAttackStrategy();
-    public override bool Move(Direction direction, AuthorityGameState room)
-    {
-        throw new NotImplementedException();
-    }
-    public void Attack(Entity target)
+    public override void Attack(Entity target)
     {
         Weapon.Use(AttackStrategy, this, new List<Entity>() { target });
     }
-    public override void ReceiveDamage(int damage, Entity? source)
-    {
-        orcStats.ModifyEntityAttribute(PlayerAttributes.Health, -damage);
-        if (source != null)
-        {
-            //ClientConsoleView.GetInstance().LogMessage(new OnAttackMessage(source, this, damage));
-            //ClientConsoleView.GetInstance().LogMessage(new OnEnemyDetectionMessage(this));
-            Attack(source);
-        }
-    }
     public Orc() : base()
     {
+        EnemyStrategy = new CalmEnemyStrategy();
         //this.orcStats.Died += OnDeath;
     }
     public override string ToString() => "Orc";
-    public override EntityStats GetEntityStats() => this.orcStats;
     public override object Copy()
     {
         return new Orc();

@@ -16,7 +16,16 @@ public interface IGameState
     public int PlayerId { get; set; }
     public Player GetPlayer();
     public List<Entity> GetVisibleEntities();
+    public List<Entity> GetVisibleEnemies();
     public List<Item>? GetItems(Position pos);
     public StringBuilder RenderMap();
     public GameState GetGameState();
+    public void LockReadBlock(Position position);
+    public void LockWriteBlock(Position position);
+    public void UnlockReadBlock(Position position);
+    public void UnlockWriteBlock(Position position);
+    public void LockReadState();
+    public void LockWriteState();
+    public void UnlockReadState();
+    public void UnlockWriteState();
 }

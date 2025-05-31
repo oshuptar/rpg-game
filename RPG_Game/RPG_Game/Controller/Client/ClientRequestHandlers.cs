@@ -116,7 +116,7 @@ public class NormalAttackModeClientHandler : ClientRequestHandler
         // Modification of state predictively
         if (CanHandleRequest(request))
         {
-            ClientHandlerChain.GetInstance().ClientController.SendNetworkRequest(request);
+            ClientHandlerChain.GetInstance().ClientController.ScheduleRequest(request);  
             return null;
         }
         else
@@ -131,7 +131,7 @@ public class StealthAttackModeClientHandler : ClientRequestHandler
     {
         if (CanHandleRequest(request))
         {
-            ClientHandlerChain.GetInstance().ClientController.SendNetworkRequest(request);
+            ClientHandlerChain.GetInstance().ClientController.ScheduleRequest(request);
             return null;
         }
         else
@@ -145,7 +145,7 @@ public class MagicAttackModeClientHandler : ClientRequestHandler
     {
         if (CanHandleRequest(request))
         {
-            ClientHandlerChain.GetInstance().ClientController.SendNetworkRequest(request);
+            ClientHandlerChain.GetInstance().ClientController.ScheduleRequest(request);
             return null;
         }
         else
@@ -168,7 +168,7 @@ public class OneWeaponAttackClientHandler : ClientRequestHandler
                 if(weapon == null) return null;
                 itemRequest.Items.Add(weapon);
 
-                ClientHandlerChain.GetInstance().ClientController.SendNetworkRequest(itemRequest);
+                ClientHandlerChain.GetInstance().ClientController.ScheduleRequest(request);
             }
             return null;
         }
@@ -191,7 +191,7 @@ public class TwoWeaponAttackClientHandler : ClientRequestHandler
                 Weapon? weapon = item as Weapon;
                 if (weapon != null) itemRequest.Items.Add(weapon);
             }
-            ClientHandlerChain.GetInstance().ClientController.SendNetworkRequest(itemRequest);
+            ClientHandlerChain.GetInstance().ClientController.ScheduleRequest(request);
             return null;
         }
         else
@@ -214,7 +214,7 @@ public class UseItemClientHandler : ClientRequestHandler
             Item? item = player.Retrieve(request.CurrentFocus, request.FocusOn == FocusType.Inventory);
             if(item != null) itemRequest.Items.Add(item);
 
-            ClientHandlerChain.GetInstance().ClientController.SendNetworkRequest(itemRequest);
+            ClientHandlerChain.GetInstance().ClientController.ScheduleRequest(request);
             return null;
         }
         else
@@ -228,7 +228,7 @@ public class MoveUpClientHandler : ClientRequestHandler
     {
         if (CanHandleRequest(request))
         {
-            ClientHandlerChain.GetInstance().ClientController.SendNetworkRequest(request);
+            ClientHandlerChain.GetInstance().ClientController.ScheduleRequest(request);
             return null;
         }
         else
@@ -242,7 +242,7 @@ public class MoveDownClientHandler : ClientRequestHandler
     {
         if (CanHandleRequest(request))
         {
-            ClientHandlerChain.GetInstance().ClientController.SendNetworkRequest(request);
+            ClientHandlerChain.GetInstance().ClientController.ScheduleRequest(request);
             return null;
         }
         else
@@ -256,7 +256,7 @@ public class MoveRightClientHandler : ClientRequestHandler
     {
         if (CanHandleRequest(request))
         {
-            ClientHandlerChain.GetInstance().ClientController.SendNetworkRequest(request);
+            ClientHandlerChain.GetInstance().ClientController.ScheduleRequest(request);
             return null;
         }
         else
@@ -270,7 +270,7 @@ public class MoveLeftClientHandler : ClientRequestHandler
     {
         if (CanHandleRequest(request))
         {
-            ClientHandlerChain.GetInstance().ClientController.SendNetworkRequest(request);
+            ClientHandlerChain.GetInstance().ClientController.ScheduleRequest(request);
             return null;
         }
         else
@@ -303,7 +303,7 @@ public class PickUpItemClientHandler : ClientRequestHandler
                 if(items == null) return null;
                 Item item = items[request.CurrentFocus];
                 itemRequest.Items.Add(item);
-                ClientHandlerChain.GetInstance().ClientController.SendNetworkRequest(itemRequest);
+                ClientHandlerChain.GetInstance().ClientController.ScheduleRequest(request);
             }
             return null;
         }
@@ -327,7 +327,7 @@ public class DropItemClientHandler : ClientRequestHandler
             if (item == null) return null;
             itemRequest.Items.Add(item);
 
-            ClientHandlerChain.GetInstance().ClientController.SendNetworkRequest(itemRequest);
+            ClientHandlerChain.GetInstance().ClientController.ScheduleRequest(request);
             return null;
         }
         else
@@ -358,7 +358,7 @@ public class EquipItemClientHandler : ClientRequestHandler
             }
             if (item == null) return null;
             itemRequest.Items.Add(item);
-            ClientHandlerChain.GetInstance().ClientController.SendNetworkRequest(itemRequest);
+            ClientHandlerChain.GetInstance().ClientController.ScheduleRequest(request);
             return null;
         }
         else
@@ -373,7 +373,7 @@ public class EmptyInventoryClientHandler : ClientRequestHandler
         if (CanHandleRequest(request))
         {
             if(request.FocusOn == FocusType.Inventory)
-                ClientHandlerChain.GetInstance().ClientController.SendNetworkRequest(request);
+                ClientHandlerChain.GetInstance().ClientController.ScheduleRequest(request);
             return null;
         }
         else

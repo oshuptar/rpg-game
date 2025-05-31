@@ -1,4 +1,6 @@
 ﻿using RPG_Game.Entities;
+using RPG_Game.Enums;
+using RPG_Game.Model;
 using RPG_Game.Model.Entities;
 using System;
 using System.Collections.Generic;
@@ -12,3 +14,9 @@ public interface ICanReceiveDamage
 {
     public void ReceiveDamage(int damage, Entity? source);
 }
+
+public interface ICanMove
+{
+    public bool Move(Direction direction, AuthorityGameState room);
+}
+

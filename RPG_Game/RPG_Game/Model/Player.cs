@@ -20,10 +20,6 @@ namespace RPG_Game.Model;
 public class Player : Entity
 {
     [JsonInclude]
-    public AttackType AttackType { get; set; } = AttackType.NormalAttack;
-    [JsonInclude]
-    public AttackStrategy AttackStrategy { get; set; } = new NormalAttackStrategy();
-    [JsonInclude]
     public int PlayerId { get; set; }
     [JsonInclude]
     public string Name { get; private set; }
@@ -43,35 +39,6 @@ public class Player : Entity
         PlayerId = playerId;
         Name += playerId.ToString();
     }
-    public Position GetNewPosition(Direction direction)
-    {
-        Position tempPos = Position;
-        switch (direction)
-        {
-            case Direction.West:
-                tempPos.X -= 1;
-                break;
-            case Direction.East:
-                tempPos.X += 1;
-                break;
-            case Direction.North:
-                tempPos.Y -= 1;
-                break;
-            case Direction.South:
-                tempPos.Y += 1;
-                break;
-        }
-        return tempPos;
-    }
-    public Position? IsMovable(Direction direction, AuthorityGameState room) // whether we can move in the following direction
-    {
-        Position tempPos = GetNewPosition(direction);
-
-        if (!room.IsPosAvailable(tempPos))
-            return null;
-
-        return tempPos;
-    }
     public override bool Move(Direction direction, AuthorityGameState room)
     {
         Position? tempPos;
@@ -79,22 +46,11 @@ public class Player : Entity
         {
             room.RemovePlayer(this);
             room.AddPlayer(this, tempPos.Value);
-            //OnMove();
-
-            Entity? entity = room.GetClosestEntity(this);
-
-            //ClientConsoleView.GetInstance().LogMessage(new OnEnemyDetectionMessage(enemy));
-            //ClientConsoleView.GetInstance().LogMessage(new OnMoveMessage(direction, this.Name));
+            OnMove(direction);
             return true;
         }
         return false;
     }
-    //public void PlacePlayer(Room room)
-    //{
-    //    room.GetRoomState().GetGrid()[Position.X, Position.Y].CellType |= CellType.Player;
-    //    if(room.GetRoomState().GetGrid()[Position.X, Position.Y].Entity == null)
-    //        room.GetRoomState().GetGrid()[Position.X, Position.Y].Entity = this;
-    //}
     public override void ReceiveDamage(int damage, Entity? source) 
     { 
         PlayerStats.ModifyEntityAttribute(PlayerAttributes.Health, -damage);
@@ -102,22 +58,16 @@ public class Player : Entity
     public void PickUp(Item? item)
     {
         Inventory.PickUp(item, this);
-        //if(item != null)
-        //    ClientConsoleView.GetInstance().LogMessage(new OnItemPickUpMessage(item, this.Name));
     }
     public bool Equip(Item? item, bool isInInventory = true)
     {
         return Hands.Equip(item, this, isInInventory);
-        //if(isEquipped)
-        //    ClientConsoleView.GetInstance().LogMessage(new OnItemEquipMessage(item!, this.Name));
-        //return isEquipped;
     }
     public void UnEquip(int index)
     {
         Item? item = Hands.UnEquip(index);
         if (item != null)
             Inventory.AddItem(item);
-            //ClientConsoleView.GetInstance().LogMessage(new OnItemUnequipMessage(item, this.Name));  
     }
     public Item? Retrieve(int index, bool fromInventory)
     {
@@ -155,14 +105,11 @@ public class Player : Entity
             item = Inventory.DropFromInventory(room, index, this);
         else 
             item = Hands.DropFromHands(room, index, this);
-        //if(item != null)
-        //    ClientConsoleView.GetInstance().LogMessage(new OnItemDropMessage(item, this.Name));
         return item;
     }
     public void EmptyInventory(AuthorityGameState room)
     {
         Inventory.EmptyInventory(room, this);
-        //ClientConsoleView.GetInstance().LogMessage(new OnEmptyDirectory(this.Name));
     }
     public Hands GetHands() => this.Hands;
     public Inventory GetInventory() => this.Inventory;
@@ -179,5 +126,9 @@ public class Player : Entity
     {
         AttackType = attackType;
         AttackStrategy = attackStrategy;
+    }
+    public override void Attack(Entity target)
+    {
+        //throw new NotImplementedException();
     }
 }

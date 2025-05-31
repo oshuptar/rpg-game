@@ -21,11 +21,11 @@ public class Response : IResponse
     [JsonIgnore]
     public IController Controller { get; set; }
     [JsonInclude]
-    public GameState GameState { get; private set; }
+    public GameState GameState { get; set; }
     [JsonInclude]
     public int? PlayerId { get; set; } = null;
-    [JsonInclude]
-    public RequestType RequestType { get; private set; }
+    [JsonIgnore]
+    public RequestType RequestType { get;  set; }
     public void HandleResponse()
     {
         Controller.HandleResponse(this);
@@ -44,5 +44,13 @@ public class Response : IResponse
         RequestType = requestType;
         PlayerId = playerId;
         GameState = gameState;
+    }
+
+    public Response(Response response)
+    {
+        Controller = response.Controller;
+        GameState = response.GameState;
+        PlayerId = response.PlayerId;
+        RequestType = response.RequestType;
     }
 }

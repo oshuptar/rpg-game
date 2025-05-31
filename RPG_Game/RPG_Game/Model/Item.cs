@@ -17,19 +17,12 @@ using System.Threading.Tasks;
 namespace RPG_Game.Interfaces;
 
 [JsonPolymorphic(TypeDiscriminatorPropertyName = "$discriminator")]
-//[JsonDerivedType(typeof(Weapon), "Weapon")]
-//[JsonDerivedType(typeof(Potion), "Potion")]
 [JsonDerivedType(typeof(HealPotion), "HealPotion")]
-//[JsonDerivedType(typeof(TemporaryPotion), "TemporaryPotion")]
 [JsonDerivedType(typeof(DexterityPotion), "DexterityPotion")]
-//[JsonDerivedType(typeof(EternalPotion), "EternalPotion")]
 [JsonDerivedType(typeof(AggressionPotion), "AggressionPotion")]
 [JsonDerivedType(typeof(Dagger), "Dagger")]
 [JsonDerivedType(typeof(Hammer), "Hammer")]
 [JsonDerivedType(typeof(Sword), "Sword")]
-//[JsonDerivedType(typeof(HeavyWeapon), "HeavyWeapon")]
-//[JsonDerivedType(typeof(LightWeapon), "LightWeapon")]
-//[JsonDerivedType(typeof(MagicWeapon), "MagicWeapon")]
 [JsonDerivedType(typeof(PowerWeaponDecorator), "PowerWeaponDecorator")]
 [JsonDerivedType(typeof(WeaponDecorator), "WeaponDecorator")]
 [JsonDerivedType(typeof(ItemDecorator), "ItemDecorator")]
@@ -41,11 +34,8 @@ namespace RPG_Game.Interfaces;
 [JsonDerivedType(typeof(Key), "Key")]
 public abstract class Item : ICopyable
 {
-    //[JsonInclude]
     public abstract string Name { get; }
-    //[JsonInclude]
     public virtual int Capacity => 1;
-    //[JsonInclude]
     public abstract string Description { get; }
     public virtual void ApplyChanges(EntityStats entityStats) { }
     public virtual void RevertChanges(EntityStats entityStats) { }

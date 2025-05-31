@@ -17,7 +17,8 @@ public class AttributeValue
     private int Current;
     [JsonInclude]
     private int? Max;
-
+    [JsonIgnore]
+    public object Lock = new object();
     public AttributeValue(int current, int? max = null)
     {
         this.Current = current;
@@ -25,27 +26,48 @@ public class AttributeValue
     }
     public void ModifyAttributeValue(int addedValue, int addedMax = 0)
     {
-        this.Max += addedMax; // operations that involve null are handled automatically
-        if (addedValue > 0)
+        lock (Lock)
         {
-            if (this.Max != null)
-                this.Current = Math.Min(this.Max.Value, this.Current + addedValue);
-            else
-                this.Current += addedValue;
-        }
-        else if(addedValue <= 0)
-        {
-            this.Current = Math.Max(0, this.Current + addedValue); // would case a problem with money, be aware
+            this.Max += addedMax; // operations that involve null are handled automatically
+            if (addedValue > 0)
+            {
+                if (this.Max != null)
+                    this.Current = Math.Min(this.Max.Value, this.Current + addedValue);
+                else
+                    this.Current += addedValue;
+            }
+            else if (addedValue <= 0)
+            {
+                this.Current = Math.Max(0, this.Current + addedValue); // would case a problem with money, be aware
+            }
         }
     }
-    public int GetCurrentValue() => this.Current;
-    public void SetCurrentValue(int currentValue) => this.Current = currentValue;
-    public override string ToString() => this.Current.ToString();
+    public int GetCurrentValue()
+    {
+        lock (Lock)
+        {
+            return this.Current;
+        }
+    }
+    public void SetCurrentValue(int currentValue)
+    {
+        lock (Lock)
+        {
+            this.Current = currentValue;
+        }
+    }
+    public override string ToString()
+    {
+        lock (Lock)
+        {
+            return this.Current.ToString();
+        }
+    }
 }
 
 [JsonPolymorphic(TypeDiscriminatorPropertyName = "$discriminator")]
 [JsonDerivedType(typeof(PlayerStats), "PlayerStats")]
-[JsonDerivedType(typeof(EntityStats), "EntityStats")]
+[JsonDerivedType(typeof(EnemyStats), "EntityStats")]
 public abstract class EntityStats
 {
     public event EventHandler? Died;

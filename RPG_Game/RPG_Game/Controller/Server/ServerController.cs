@@ -12,6 +12,9 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
+using RPG_Game.Model.Entities;
+using System.Diagnostics.Metrics;
+using RPG_Game.Controller;
 
 namespace RPG_Game.Controller;
 
@@ -36,7 +39,7 @@ public class ServerController : Controller, IServerController
     public void ServerRun()
     {
         Task.Run(() => AcceptConnections(ServerView.CancellationTokenSource.Token));
-        Task.Run(() => SendResponse(ServerView.CancellationTokenSource.Token));
+        Task.Run(async () => await SendResponse(ServerView.CancellationTokenSource.Token));
         Task.Run(() => HandleRequest(ServerView.CancellationTokenSource.Token));
         Task.Run(() => ServerView.ReadInput(ServerView.CancellationTokenSource.Token));
         ServerView.HandleCommand();
@@ -49,11 +52,11 @@ public class ServerController : Controller, IServerController
     {
         while (!cancellationToken.IsCancellationRequested)
         {
-            // Extract this method to the abstract class
             var request = Requests.Take();
             Request handledRequest = (Request)request;
             //handledRequest.GameState = GetGameState();
             List<IServerViewCommand>? Commands = ServerChain.HandleRequest(handledRequest);
+
             if (Commands != null)
             {
                 foreach (IServerViewCommand command in Commands)
@@ -64,14 +67,8 @@ public class ServerController : Controller, IServerController
             }
         }
     }
-    public void Listen(CancellationToken cancellationToken, int playerID)
+    public async Task Listen(CancellationToken cancellationToken, int playerID)
     {
-        Response response = new Response(RequestType.ClientJoined,
-                null,
-                GetGameState());
-        response.Controller = this;
-        response.HandleResponse();
-
         ActiveClients.TryGetValue(playerID, out var client);
         if (client == null) return;
         while (!cancellationToken.IsCancellationRequested)
@@ -79,13 +76,13 @@ public class ServerController : Controller, IServerController
             try
             {
                 byte[] payloadLengthBuffer = new byte[4];
-                client.GetStream().ReadExactly(payloadLengthBuffer, 0, 4);
+                await client.GetStream().ReadExactlyAsync(payloadLengthBuffer, 0, 4);
 
                 int payloadLength = BitConverter.ToInt32(payloadLengthBuffer, 0);
                 payloadLength = IPAddress.NetworkToHostOrder(payloadLength);
 
                 byte[] payload = new byte[payloadLength];
-                client.GetStream().ReadExactly(payload, 0, payloadLength);
+                await client.GetStream().ReadExactlyAsync(payload, 0, payloadLength);
                 string json = Encoding.UTF8.GetString(payload);
                 Request? request = JsonSerializer.Deserialize<Request>(json,
                     new JsonSerializerOptions { ReferenceHandler = ReferenceHandler.Preserve, WriteIndented = true });
@@ -116,74 +113,103 @@ public class ServerController : Controller, IServerController
     {
         OutputResponses.Add((response.GetPlayerId(), response));
     }
-    public void SendResponse(CancellationToken cancellationToken)
+
+    public void HandleEnemyBehavior(int counter)
     {
-        while (!cancellationToken.IsCancellationRequested)
+        Parallel.ForEach(GameState.GetVisibleEnemies().Cast<Enemy>().ToList(), enemy => enemy.ExecuteEnemyStrategy(GameState));
+    }
+
+    public async Task SendSerializedResponse(Response sentResponse)
+    {
+        try
         {
-            var response = OutputResponses.Take();
-            List<int> clients = new List<int>();
-
-            if (response.Item1 == null)
-                clients = ActiveClients.Keys.ToList();
-            else
-                clients.Add(response.Item1.Value);
-            foreach (var clientId in clients)
+            string json = string.Empty;
+            NetworkStream stream = ActiveClients[sentResponse.PlayerId!.Value].GetStream();
+            try
             {
-                try
-                {
-                    Response sentResponse = (Response)response.Item2;
-                    sentResponse.PlayerId = clientId;
+                sentResponse.GetGameState().LockReadState();
+                json = JsonSerializer.Serialize<Response>(sentResponse, new JsonSerializerOptions
+                { WriteIndented = true, ReferenceHandler = ReferenceHandler.Preserve });
+            }
+            catch (Exception ex) { Console.WriteLine($"Error during serialization: {ex.Message}"); throw; }
+            finally { sentResponse.GetGameState().UnlockReadState(); }
 
-                    string json = JsonSerializer.Serialize<Response>(sentResponse, new JsonSerializerOptions
-                    { WriteIndented = true, ReferenceHandler = ReferenceHandler.Preserve });
-                    byte[] payload = Encoding.UTF8.GetBytes(json);
-                    int payloadLength = payload.Length;
+            byte[] payload = Encoding.UTF8.GetBytes(json);
+            int payloadLength = payload.Length;
 
-                    payloadLength = IPAddress.HostToNetworkOrder(payloadLength);
-                    byte[] payloadLengthBuffer = BitConverter.GetBytes(payloadLength);
+            payloadLength = IPAddress.HostToNetworkOrder(payloadLength);
+            byte[] payloadLengthBuffer = BitConverter.GetBytes(payloadLength);
 
-                    ActiveClients[clientId].GetStream().Write(payloadLengthBuffer, 0, payloadLengthBuffer.Length);
-                    ActiveClients[clientId].GetStream().Write(payload, 0, payload.Length);
-                }
-                catch (Exception)
-                {
-                    ActiveClients.TryRemove(clientId, out var client);
-                    client?.Dispose();
+            await stream.WriteAsync(payloadLengthBuffer, 0, payloadLengthBuffer.Length);
+            await stream.WriteAsync(payload, 0, payload.Length);
+        }
+        catch (Exception ex)
+        {
+            // Just for the sake of debugging, will be removed
+            //Console.WriteLine($"Error sending response to client {clientId}: {ex.Message}");
+            ActiveClients.TryRemove(sentResponse.PlayerId!.Value, out var client);
+            client?.Dispose();
 
-                    if(ActiveClients.Count == 0)
-                    {
-                        IServerViewCommand serverViewCommand = new ServerStopCommand();
-                        serverViewCommand.SetView(ServerView);
-                        ServerView.SendCommand(serverViewCommand);
-                    }
-                }
+            if (ActiveClients.Count == 0)
+            {
+                IServerViewCommand serverViewCommand = new ServerStopCommand();
+                serverViewCommand.SetView(ServerView);
+                ServerView.SendCommand(serverViewCommand);
             }
         }
     }
+    public async Task SendResponse(CancellationToken cancellationToken)
+    {
+        int tickCounter = 0;
+        while (!cancellationToken.IsCancellationRequested)
+        {
+            await Task.Delay(20);
+
+            if ((tickCounter %= 10) == 0)
+                HandleEnemyBehavior(tickCounter);
+
+            Response sentResponse = new Response();
+            sentResponse.GameState = GameState.GetGameState();
+
+            List<Task> tasks = new List<Task>();
+            var clients = ActiveClients.Keys.ToList();
+            foreach (var clientId in clients)
+            {
+                sentResponse.PlayerId = clientId;
+                tasks.Add(SendSerializedResponse(new Response(sentResponse)));
+            }
+            await Task.WhenAll(tasks);
+
+            tickCounter++;
+        }
+    }
+
     public void AcceptConnections(CancellationToken cancellationToken)
     {
         while (!cancellationToken.IsCancellationRequested)
         {
             //Console.WriteLine("Waiting for connection...");
             //Console.WriteLine($"Client {playerId} connected");
+            try
+            {
+                TcpClient client = Server.AcceptTcpClient();
+                ActiveClients.TryAdd(playerId, client);
 
-            TcpClient client = Server.AcceptTcpClient();
-            ActiveClients.TryAdd(playerId, client);
+                //playerId is captured by reference in the lambda — and its value changes before the lambda executes.
+                GameState.AddPlayer(new Player(playerId), new Position(2 * (playerId - 1) + 1, 1));
+                int clientId = playerId;
+                Task.Run(async () => await Listen(ServerView.CancellationTokenSource.Token, clientId));
+                playerId++;
 
-            //playerId is captured by reference in the lambda — and its value changes before the lambda executes.
-            GameState.AddPlayer(new Player(playerId), new Position(2 * (playerId - 1) + 1, 1));
-            int clientId = playerId;
-            Task.Run(() => Listen(ServerView.CancellationTokenSource.Token, clientId));
-            playerId++;
-
-            if (playerId > 9) return;
+                if (playerId > 9) return;
+            }
+            catch (SocketException) { }
         }
     }
     public void SetTcpListener(TcpListener tcpListener)
     {
         Server = tcpListener;
     }
-
     public override void SetViewController()
     {
         ServerView.SetController(this);
@@ -192,7 +218,6 @@ public class ServerController : Controller, IServerController
     {
         ServerView = serverView;
     }
-
     public void SetGameState(AuthorityGameState gameState)
     {
         GameState = gameState;
@@ -202,3 +227,101 @@ public class ServerController : Controller, IServerController
         return GameState.GetGameState();
     }
 }
+
+//while (!cancellationToken.IsCancellationRequested)
+//{
+//    var response = OutputResponses.Take();
+//    List<int> clients = new List<int>();
+
+//    if (response.Item1 == null)
+//        clients = ActiveClients.Keys.ToList();
+//    else
+//        clients.Add(response.Item1.Value);
+//    foreach (var clientId in clients)
+//    {
+//        try
+//        {
+//            Response sentResponse = (Response)response.Item2;
+//            sentResponse.PlayerId = clientId;
+
+//            string json = string.Empty;
+//            try
+//            {
+//                sentResponse.GetGameState().LockReadState();
+
+//                json = JsonSerializer.Serialize<Response>(sentResponse, new JsonSerializerOptions
+//                { WriteIndented = true, ReferenceHandler = ReferenceHandler.Preserve });
+//            }
+//            catch (Exception ex) { Console.WriteLine($"Error during serialization: {ex.Message}"); continue; }
+//            finally { sentResponse.GetGameState().UnlockReadState(); }
+
+//            byte[] payload = Encoding.UTF8.GetBytes(json);
+//            int payloadLength = payload.Length;
+
+//            payloadLength = IPAddress.HostToNetworkOrder(payloadLength);
+//            byte[] payloadLengthBuffer = BitConverter.GetBytes(payloadLength);
+
+
+//            ActiveClients[clientId].GetStream().Write(payloadLengthBuffer, 0, payloadLengthBuffer.Length);
+//            ActiveClients[clientId].GetStream().Write(payload, 0, payload.Length);
+//        }
+//        catch (Exception ex)
+//        {
+//            // Just for the sake of debugging, will be removed
+//            Console.WriteLine($"Error sending response to client {clientId}: {ex.Message}");
+
+//            ActiveClients.TryRemove(clientId, out var client);
+//            client?.Dispose();
+
+//            if(ActiveClients.Count == 0)
+//            {
+//                IServerViewCommand serverViewCommand = new ServerStopCommand();
+//                serverViewCommand.SetView(ServerView);
+//                ServerView.SendCommand(serverViewCommand);
+//            }
+//        }
+//    }
+//}
+
+
+//Parallel.ForEach(clients, clientId =>
+//            {
+//                try
+//                {
+//                    sentResponse.PlayerId = clientId;
+
+//                    string json = string.Empty;
+//                    try
+//                    {
+//                        sentResponse.GetGameState().LockReadState();
+
+//json = JsonSerializer.Serialize<Response>(sentResponse, new JsonSerializerOptions
+//                        { WriteIndented = true, ReferenceHandler = ReferenceHandler.Preserve });
+//                    }
+//                    catch (Exception ex) { Console.WriteLine($"Error during serialization: {ex.Message}"); throw; }
+//                    finally { sentResponse.GetGameState().UnlockReadState(); }
+
+//byte[] payload = Encoding.UTF8.GetBytes(json);
+//int payloadLength = payload.Length;
+
+//payloadLength = IPAddress.HostToNetworkOrder(payloadLength);
+//byte[] payloadLengthBuffer = BitConverter.GetBytes(payloadLength);
+
+//ActiveClients[clientId].GetStream().Write(payloadLengthBuffer, 0, payloadLengthBuffer.Length);
+//ActiveClients[clientId].GetStream().Write(payload, 0, payload.Length);
+//                }
+//                catch (Exception ex)
+//                {
+//                    // Just for the sake of debugging, will be removed
+//                    //Console.WriteLine($"Error sending response to client {clientId}: {ex.Message}");
+//                    ActiveClients.TryRemove(clientId, out var client);
+//client?.Dispose();
+
+//if (ActiveClients.Count == 0)
+//{
+//    IServerViewCommand serverViewCommand = new ServerStopCommand();
+//    serverViewCommand.SetView(ServerView);
+//    ServerView.SendCommand(serverViewCommand);
+//}
+//                }
+//            });
