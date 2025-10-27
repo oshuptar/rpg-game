@@ -26,6 +26,7 @@ public class Goblin : Enemy
     }
     public Goblin() 
     {
+        this.Stats = new EnemyStats();
         EnemyStrategy = new AggressiveEnemyStrategy();
         //this.goblinStats.Died += OnDeath;
     }

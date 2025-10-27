@@ -26,6 +26,7 @@ public class Orc : Enemy
     }
     public Orc() : base()
     {
+        this.Stats = new EnemyStats();
         EnemyStrategy = new CalmEnemyStrategy();
         //this.orcStats.Died += OnDeath;
     }
