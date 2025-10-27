@@ -48,14 +48,14 @@ internal class Program
                 return;
             }
             Console.WriteLine($"Connecting to {ipAddress.ToString()}:{serverPort}");
-            //string processPath = Environment.ProcessPath!;
-            //Process.Start(new ProcessStartInfo
-            //{
-            //    FileName = processPath,
-            //    Arguments = $"--server {serverPort}",
-            //    UseShellExecute = true,
-            //    CreateNoWindow = false
-            //});
+            string processPath = Environment.ProcessPath!;
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = processPath,
+                Arguments = $"--server {serverPort}",
+                UseShellExecute = true,
+                CreateNoWindow = false
+            });
             (new GameSession()).SetClient(new GameClient(ipAddress, serverPort));
 
         }
